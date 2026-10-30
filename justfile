@@ -13,13 +13,17 @@ build-frontend:
 check:
     cd pipeline && uv run siboga check
 
+# Clone the content repo into content/, or update it
+content:
+    if [ -d content/.git ]; then git -C content pull --ff-only; else git clone https://github.com/hay/siboga-content.git content; fi
+
 # Fetch, build and check
 data:
     cd pipeline && uv run siboga all && uv run siboga check
 
+# Build and deploy on the server right now, without waiting for the timer
 deploy:
-    just build-frontend
-    rsync -avzL --delete frontend/dist/* siboga:/var/www/siboga.nl/htdocs/
+    ssh siboga siboga/app/etc/deploy.sh --force
 
 # Run the frontend on http://localhost:5173
 dev:

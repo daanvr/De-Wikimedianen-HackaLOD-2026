@@ -1,0 +1,13 @@
+# Build and deploy siboga.nl if there are new commits. Started by siboga-deploy.timer.
+# Install: see docs/ontwikkelen.md#server-inrichten
+[Unit]
+Description=Build and deploy siboga.nl
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=hay
+Group=hay
+Environment=PATH=/home/hay/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/hay/siboga/app/etc/deploy.sh

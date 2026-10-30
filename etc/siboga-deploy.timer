@@ -1,0 +1,11 @@
+# Check for new commits in the content and code repo every minute.
+# Install: see docs/ontwikkelen.md#server-inrichten
+[Unit]
+Description=Check for new siboga.nl content every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=1min
+
+[Install]
+WantedBy=timers.target

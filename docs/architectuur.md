@@ -22,7 +22,7 @@ flowchart LR
 3. `build` combineert content en cache tot de frontend data ([frontend-data.md](frontend-data.md)).
 4. De frontend toont alles daaruit, met een URL per item ([frontend.md](frontend.md)).
 5. `vite build` maakt er statische bestanden van voor de server ([ontwikkelen.md](ontwikkelen.md)).
-6. Bij een nieuwe commit in de content-repo gaan stap 2 tot en met 5 automatisch, via een cronjob ([ontwikkelen.md](ontwikkelen.md#automatisch-bouwen)).
+6. Bij een nieuwe commit in de content-repo gaan stap 2 tot en met 5 automatisch, via een systemd-timer ([ontwikkelen.md](ontwikkelen.md#automatisch-bouwen)).
 
 ## Koppelingen tussen de onderdelen
 Elk onderdeel praat met het volgende via één afgesproken formaat, zodat je ze los kunt bouwen en vervangen.
