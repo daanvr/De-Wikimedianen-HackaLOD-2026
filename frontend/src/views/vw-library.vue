@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, inject, onMounted, ref, watch } from 'vue';
+    import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import ElIcon from '@/components/el-icon.vue';
     import ElSheet from '@/components/el-sheet.vue';
@@ -22,7 +22,11 @@
     const route = useRoute();
     const router = useRouter();
 
-    const query = ref('');
+    // Vue Router sets history.state.forward when the user came back with the back button
+    const isReturning = Boolean(window.history.state?.forward);
+
+    const sheet = ref(null);
+    const query = ref(isReturning ? store.library.query : '');
     const filter = ref(route.query.type ?? 'all');
 
     // A search always looks through everything, whatever the filter
@@ -100,16 +104,29 @@
         filter.value = type ?? 'all';
     });
 
-    onMounted(() => {
+    onMounted(async () => {
         store.setMap({
             sheet : 'full'
         });
+
+        if (isReturning) {
+            await nextTick();
+            sheet.value?.scrollTo(store.library.scrollTop);
+        }
+    });
+
+    onBeforeUnmount(() => {
+        store.library = {
+            query : query.value,
+            scrollTop : sheet.value?.scrollPosition() ?? 0
+        };
     });
 </script>
 
 <template>
     <div class="vw-library">
         <el-sheet
+            ref="sheet"
             state="full"
             v-bind:states="['full']">
             <div class="bar">

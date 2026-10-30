@@ -26,6 +26,11 @@ export const useStore = defineStore('data', {
         return {
             data : null,
             error : null,
+            // Where the library was left, so the back button returns to the same spot
+            library : {
+                query : '',
+                scrollTop : 0
+            },
             loading : true,
             map : {
                 mode : 'home',

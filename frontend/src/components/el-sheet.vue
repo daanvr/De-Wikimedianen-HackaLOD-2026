@@ -79,6 +79,10 @@
     });
 
     defineExpose({
+        scrollPosition : () => body.value?.scrollTop ?? 0,
+        scrollTo : (top) => body.value?.scrollTo({
+            top
+        }),
         scrollToTop : () => body.value?.scrollTo({
             top : 0
         })
