@@ -91,7 +91,6 @@ export const DEFAULT_MESSAGES = {
     station_operations : 'Tuig',
     station_remarks : 'Opmerkingen',
     station_source : 'Wikidata',
-    stations_all : 'Alle stations',
     stations_count : 'stations met een positie',
     story_mode : 'Verhaalmodus',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',

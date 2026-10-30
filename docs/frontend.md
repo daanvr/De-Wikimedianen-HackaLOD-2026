@@ -23,6 +23,7 @@ frontend/
     ├── router.js
     ├── components/      ← el-*.vue
     ├── views/           ← vw-*.vue
+    ├── plugins/         ← één component per plugin, plus index.js
     ├── services/        ← data laden, kaartlagen, markdown, standaardteksten
     └── scss/
 ```
@@ -37,8 +38,9 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 | `/chapters/:id` | `vw-chapter.vue`  | Verhaalmodus: kaart met boot en tekstvel                     |
 | `/records/:id`  | `vw-record.vue`   | Record met plaatje, velden, bron en "Genoemd in"             |
 | `/pages/:id`    | `vw-page.vue`     | Vaste pagina, zoals `/pages/about`                           |
+| `/plugins/:id`  | `vw-plugin.vue`   | Plugin schermvullend; `?argument=` gaat naar de plugin       |
 | `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype en stations   |
-| `/map`          | `vw-map.vue`      | Ontdekmodus: alle stations; `?station=117` opent een station |
+| `/map`          | `vw-map.vue`      | Ontdekmodus: kaart met stations en knoppen naar de plugins met `showInExplore`; `?station=117` opent een station |
 
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 
@@ -58,5 +60,12 @@ Geen losse tekst in de HTML. Alle tekst die de site zelf toont, zoals knoppen, m
 ## Velden van een record
 Een record heeft een lijst `fields`, al in de goede volgorde voor zijn contenttype. De frontend toont ze zoals ze komen: de naam via `t('field_' + key)`, en de waarden; bij `type: "date"` opgemaakt als datum.
 
+## Plugins
+Een plugin uit de content-repo ([type `plugin`](content-repo.md#plugins)) is één component in `src/plugins/`, geregistreerd onder zijn `id` in `src/plugins/index.js`. Een component krijgt twee props: `argument` (de tekst na de `#`, of `null`) en `fullscreen`. `components/el-plugin.vue` zet hem in de tekst, in een kader met een knop die hem schermvullend toont, en `vw-plugin.vue` toont hem schermvullend. Een plugin zonder component toont zijn titel en beschrijving met de melding dat er nog aan gewerkt wordt; zo staat `deepdive` er nu.
+
+Een nieuwe plugin: maak `src/plugins/el-plugin-<id>.vue` en voeg één regel toe aan `PLUGINS` in `src/plugins/index.js`.
+
+De IIIF-plugin (`el-plugin-iiif.vue`) gebruikt [OpenSeadragon](https://openseadragon.github.io/) en laadt de tegels live van de IIIF-server (`services/iiif.js`). Dat is een bewuste uitzondering op "alles lokaal": lukt het laden niet, dan toont de plugin een melding met een link naar de bron.
+
 ## Live bronnen
-Elke live bron, zoals de kaarttegels, is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. Welke live bronnen er naast de kaarttegels komen, is nog niet bepaald.
+Elke live bron is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. De kaart gebruikt geen tegels; de enige live bron is nu `services/iiif.js`, voor de [IIIF-plugin](#plugins).

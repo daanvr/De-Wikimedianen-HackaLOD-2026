@@ -15,6 +15,7 @@
     const route = useRoute();
     const router = useRouter();
 
+    const sheet = ref(null);
     const sheetState = ref('half');
     const isTravelling = ref(false);
 
@@ -40,6 +41,7 @@
             && (previous.lon !== position.lon || previous.lat !== position.lat);
 
         clearTimeout(travelTimer);
+        sheet.value?.scrollToTop();
 
         store.setMap({
             mode : 'story',
@@ -114,7 +116,33 @@
             v-bind:label="t('to_boat')"
             v-on:click="recenter()" />
 
-        <el-sheet v-model:state="sheetState">
+        <el-sheet
+            ref="sheet"
+            v-model:state="sheetState">
+            <nav
+                v-if="previousChapter || nextChapter"
+                class="chapter-nav">
+                <router-link
+                    v-if="previousChapter"
+                    class="back-link"
+                    v-bind:to="`/chapters/${previousChapter.id}`">
+                    <el-icon
+                        name="arrowLeft"
+                        v-bind:size="18" />
+                    {{ t('chapter_previous') }}
+                </router-link>
+
+                <router-link
+                    v-if="nextChapter"
+                    class="back-link chapter-nav__next"
+                    v-bind:to="`/chapters/${nextChapter.id}`">
+                    {{ t('chapter_next') }} {{ toRoman(nextChapter.number ?? index + 2) }}
+                    <el-icon
+                        name="arrowRight"
+                        v-bind:size="18" />
+                </router-link>
+            </nav>
+
             <header class="header">
                 <div class="kicker kicker-row">
                     <span>{{ t('chapter') }} {{ numeral }}</span>
@@ -184,6 +212,16 @@
                     v-bind:size="18" />
                 {{ t('chapter_previous') }}
             </router-link>
+
+            <router-link
+                v-if="nextChapter"
+                class="back-link all-chapters"
+                to="/chapters">
+                <el-icon
+                    name="list"
+                    v-bind:size="18" />
+                {{ t('chapters_last') }}
+            </router-link>
         </el-sheet>
     </div>
 </template>
@@ -242,6 +280,17 @@
         }
     }
 
+    .chapter-nav {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .chapter-nav__next {
+        margin-left: auto;
+    }
+
     .header {
         padding-top: 0.2rem;
     }
@@ -286,7 +335,8 @@
         animation: travel 2.6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
     }
 
-    .previous {
+    .previous,
+    .all-chapters {
         margin-top: 1.2rem;
     }
 

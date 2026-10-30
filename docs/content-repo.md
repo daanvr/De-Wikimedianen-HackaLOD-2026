@@ -9,6 +9,7 @@
 | `chapter` | Een verhaal                                 | Vooral tekst, met links naar records, andere chapters en externe pagina's | `chapters/` |
 | `record`  | Een persoon, voorwerp, plek, foto, artikel  | Vooral frontmatter met één bron, hooguit wat tekst                        | `records/`  |
 | `page`    | Een vaste pagina, zoals welkom of over ons  | `title` in de frontmatter, de inhoud als gewone markdown                  | `pages/`    |
+| `plugin`  | Een interactief onderdeel, zoals een IIIF-viewer | Alleen frontmatter; de code staat in de frontend                     | `plugins/`  |
 | `i18n`    | De teksten van de site zelf (knoppen, menu) | Elke sleutel in de frontmatter is een bericht                             | `etc/`      |
 
 De pipeline kijkt naar `type` in de frontmatter, niet naar de map. Bestanden zonder `type` (zoals `README.md`) slaat hij over. De titel van een chapter of record is de bestandsnaam zonder `.md`; een page heeft een eigen `title`.
@@ -59,6 +60,33 @@ field_birth_date: Geboren
 
 - Alle tekst die de site zelf toont, zoals knoppen en menu's, komt uit deze berichten; de frontend zet geen losse tekst in de HTML. Ook al is de site voorlopig alleen Nederlands.
 - De namen van velden heten `field_<veld>`, bijvoorbeeld `field_birth_date`. De pipeline waarschuwt welke daarvan nog ontbreken.
+
+## Plugins
+```yaml
+---
+type: plugin
+id: deepdive
+description_nl: Bekijk waar en welke specimen de Siboga vond
+show_in_explore: "true"
+---
+```
+
+- `id`: verplicht, de naam van de plugin in de frontend (`frontend/src/plugins/index.js`). Ook het id in de URL: `/plugins/deepdive`.
+- `title`: optioneel; zonder `title` is de bestandsnaam de titel.
+- `description_nl`: optioneel, de beschrijving onder de titel.
+- `show_in_explore`: `true` (ook `"true"`) zet de plugin als knop in de ontdekmodus. Standaard `false`.
+
+Een plugin gebruik je in de tekst met een wikilink naar het bestand. Alles na de `#` is het argument voor de plugin:
+
+```markdown
+[[IIIF#https://iiif.mcz.harvard.edu/iiif/3/3898457/full/max/0/default.jpg]]
+```
+
+Staat zo'n link in een eigen alinea, dan toont de site de plugin in de tekst, met een knop om hem schermvullend te tonen. Midden in een zin is het een gewone link naar de plugin, die dan schermvullend opent.
+
+| Plugin | Argument                                                         |
+| ------ | ---------------------------------------------------------------- |
+| `iiif` | Een IIIF Image API-URL (of `info.json`); anders een gewoon plaatje |
 
 ## Obsidian-markdown
 De pipeline moet in elk geval dit herkennen:

@@ -19,6 +19,7 @@ Elke page, chapter en record krijgt een eigen URL. Het id is een slug van de bes
 | `pages/about.md`                                    | `pages/about`                                           | `/pages/about`              |
 | `Hoofdstuk 1 - de Siboga vertrekt uit Amsterdam.md` | `chapters/hoofdstuk-1-de-siboga-vertrekt-uit-amsterdam` | `/chapters/hoofdstuk-1-...` |
 | `Anna Weber.md`                                     | `records/anna-weber`                                    | `/records/anna-weber`       |
+| `plugins/IIIF.md` met `id: iiif`                    | `plugins/iiif`                                          | `/plugins/iiif`             |
 
 ## siboga.json
 Sleutels in camelCase.
@@ -43,6 +44,18 @@ Sleutels in camelCase.
             "body": "Deze prachtige website is gebouwd door ...",
             "links": [],
             "backlinks": []
+        }
+    },
+    "plugins": {
+        "iiif": {
+            "ref": "plugins/iiif",
+            "id": "iiif",
+            "title": "IIIF",
+            "description": null,
+            "showInExplore": false,
+            "body": null,
+            "links": [],
+            "backlinks": ["records/ophioplinthaca-pulchra-koehler-1904"]
         }
     },
     "chapters": [
@@ -130,7 +143,7 @@ Sleutels in camelCase.
 ```
 
 - `messages` zijn de teksten van de site zelf, uit `type: i18n` in de content-repo. De frontend gebruikt ze voor alle tekst in de HTML.
-- Pages en records staan in een object met het id als sleutel. Chapters staan in een lijst, gesorteerd op `number` (niet op `location`).
+- Pages, plugins en records staan in een object met het id als sleutel. Het id van een plugin komt uit `id` in de frontmatter, niet uit de bestandsnaam. Chapters staan in een lijst, gesorteerd op `number` (niet op `location`).
 - `title` is bij chapters en records de bestandsnaam, bij pages het veld `title`. `label` is de naam volgens de bron. `description` komt uit `description_nl`, anders uit de bron. `source` is de naam van de adapter van `uri`.
 - **Elke waarde zegt waar hij vandaan komt.** `sources` zijn alle bronnen waar het record data uit haalt, met naam en URI; de eerste is altijd `uri` zelf, daarna komen [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata) zoals de NTA. `labelSource`, `descriptionSource`, `coordinatesSource`, `image.source` en `source` bij elk veld noemen de bron van die ene waarde, met een `name` uit `sources`. `descriptionSource` is `content` als de beschrijving uit `description_nl` komt. Zonder waarde is de bron `null`. Een record waarvan de bron niets opleverde, heeft een lege `sources`.
 - `links` zijn de refs waar de tekst naar verwijst, `backlinks` de items die naar dit item verwijzen.
@@ -150,6 +163,7 @@ Sleutels in camelCase.
 `body` is markdown; de frontend zet die om in HTML. Wel zet de pipeline de Obsidian-schrijfwijzen om in gewone markdown, zodat elke markdown-parser ermee overweg kan:
 - `[[Anna Weber]]` wordt `[Anna Weber](/records/anna-weber)`;
 - `![[foto.jpg]]` wordt `![](media/foto.jpg)`;
+- `[[IIIF#https://…/default.jpg]]` wordt `[IIIF](/plugins/iiif?argument=https%3A%2F%2F…)`: het argument komt URL-gecodeerd in `argument`. Een alinea met alleen zo'n link toont de frontend als de plugin zelf;
 - een link naar iets wat niet bestaat wordt gewone tekst, met een waarschuwing.
 
 ## Wijzigen

@@ -57,21 +57,24 @@
             </template>
         </figcaption>
 
-        <div
-            v-if="isFullscreen"
-            class="lightbox"
-            v-on:click="isFullscreen = false">
-            <img
-                v-bind:src="src"
-                v-bind:alt="alt">
-            <button
-                type="button"
-                class="lightbox__close"
-                v-bind:aria-label="t('close')"
+        <!-- In body, so the lightbox lies above the menu and not in the stacking context of the sheet -->
+        <teleport to="body">
+            <div
+                v-if="isFullscreen"
+                class="lightbox"
                 v-on:click="isFullscreen = false">
-                <el-icon name="close" />
-            </button>
-        </div>
+                <img
+                    v-bind:src="src"
+                    v-bind:alt="alt">
+                <button
+                    type="button"
+                    class="lightbox__close"
+                    v-bind:aria-label="t('close')"
+                    v-on:click="isFullscreen = false">
+                    <el-icon name="close" />
+                </button>
+            </div>
+        </teleport>
     </figure>
 </template>
 

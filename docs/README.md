@@ -3,7 +3,7 @@ Technische documentatie van de website De Siboga Expeditie, en het startpunt voo
 
 ## In het kort
 - De site is statisch: een [Vue-frontend](frontend.md) die één JSON-bestand en een map met plaatjes leest, de [frontend data](frontend-data.md).
-- De inhoud komt uit de [content-repo](content-repo.md), geschreven in Obsidian: **chapters** (verhalen), **records** (verwijzingen naar Linked Data elders), **pages** (vaste pagina's) en **i18n** (de teksten van de site zelf).
+- De inhoud komt uit de [content-repo](content-repo.md), geschreven in Obsidian: **chapters** (verhalen), **records** (verwijzingen naar Linked Data elders), **pages** (vaste pagina's), **plugins** (interactieve onderdelen) en **i18n** (de teksten van de site zelf).
 - Welke gegevens een record toont, hangt af van zijn contenttype ([velden per contenttype](pipeline.md#velden-per-contenttype)).
 - Een [Python-pipeline](pipeline.md) haalt de bronnen op, bewaart ze in SQLite en schrijft de frontend data.
 - Alles staat lokaal. Valt een externe dienst uit, dan kunnen we nog presenteren.
@@ -35,6 +35,7 @@ Codeconventies staan in [CLAUDE.md](../CLAUDE.md). Het inhoudelijke overzicht va
 | Contenttype   | Soort record (`person`, `specimen`, `media` ...). Bepaalt welke velden het record toont                     |
 | Veld          | Eén gegeven van een record, zoals `birth_date` of `scientific_name`                                         |
 | Page          | Een vaste pagina, zoals welkom of over ons                                                                  |
+| Plugin        | Een interactief onderdeel, zoals een IIIF-viewer: schermvullend in de ontdekmodus of in de tekst            |
 | Bericht       | Een tekst van de site zelf (knop, menu, veldnaam), uit `type: i18n`                                         |
 | Bron          | Waar een record naar verwijst: Linked Data zoals Wikidata, of een andere API                                |
 | Cache         | SQLite-database met de opgehaalde bronnen; alleen voor de pipeline                                          |

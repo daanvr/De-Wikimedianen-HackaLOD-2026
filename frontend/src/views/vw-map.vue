@@ -51,23 +51,13 @@
 
 <template>
     <div class="vw-map">
-        <div class="top">
-            <router-link
-                class="dataset"
-                to="/library?type=station">
-                <el-icon
-                    class="dataset__icon"
-                    name="station"
-                    v-bind:size="20" />
-                <span class="dataset__label">{{ t('stations_all') }}</span>
-                <span class="dataset__count">{{ store.stations.length }}</span>
-            </router-link>
-
+        <div
+            v-if="store.explorePlugins.length"
+            class="top">
             <router-link
                 v-for="plugin in store.explorePlugins"
                 v-bind:key="plugin.id"
                 class="dataset"
-                is-plugin
                 v-bind:to="`/plugins/${plugin.id}`">
                 <el-icon
                     class="dataset__icon"
@@ -162,13 +152,11 @@
 
     .dataset {
         pointer-events: auto;
-        flex: 1;
-        min-width: 0;
-        height: 4.8rem;
+        min-height: 4.8rem;
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding: 0 1.2rem;
+        padding: 0.8rem 1.2rem;
         background: var(--c-paper);
         color: var(--c-ink);
         text-decoration: none;
@@ -179,12 +167,6 @@
         &:hover {
             color: var(--c-ink);
         }
-
-        &[is-plugin] {
-            height: auto;
-            min-height: 4.8rem;
-            padding: 0.8rem 1.2rem;
-        }
     }
 
     .dataset__icon {
@@ -192,7 +174,6 @@
     }
 
     .dataset__label {
-        flex: 1;
         font-family: var(--font-header);
         font-size: 1.7rem;
         white-space: nowrap;
@@ -205,21 +186,12 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-
-        .dataset__label {
-            flex: none;
-        }
     }
 
     .dataset__description {
         font-size: 1.4rem;
         line-height: 1.3;
         font-style: italic;
-        color: var(--c-ink-soft);
-    }
-
-    .dataset__count {
-        font-size: 1.4rem;
         color: var(--c-ink-soft);
     }
 

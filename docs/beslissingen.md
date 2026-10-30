@@ -6,6 +6,9 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 ## Besloten
 | Beslissing                                                                                                           | Waar                                                |
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Nieuw type `plugin` (map `plugins/`): interactieve onderdelen, schermvullend vanuit de ontdekmodus of inline met `[[IIIF#argument]]` | [content-repo.md](content-repo.md#plugins) |
+| De IIIF-plugin laadt live van de IIIF-server (deep zoom). Een bewuste uitzondering op "alles lokaal": valt de server uit, dan toont de plugin een melding en werkt de rest door | [frontend.md](frontend.md#plugins) |
+| De ontdekmodus toont geen knop "Alle stations" meer; de stations staan nog wel in de bibliotheek | [frontend.md](frontend.md#routes) |
 | MapLibre GL JS voor de kaart in plaats van Leaflet: vectorkaart met vloeiend zoomen, eigen stijl, geen kaarttegels van buiten | [frontend.md](frontend.md#kaart) |
 | Kaartlagen (diepte, land, route, stations) staan als GeoJSON in `frontend/public/map/`, in git | [frontend.md](frontend.md#structuur) |
 | Standaardteksten van de site in `frontend/src/services/messages.js`; berichten uit de content-repo gaan voor | [frontend.md](frontend.md#teksten-i18n) |
