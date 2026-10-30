@@ -44,7 +44,7 @@ In woorden:
 | Frontend | `frontend/` | Vue 3, JavaScript, SCSS | De website | [frontend.md](frontend.md) |
 | Server | `etc/` | nginx | Het serveren van de statische bestanden | [ontwikkelen.md](ontwikkelen.md#server) |
 
-## Naden tussen de onderdelen
+## Koppelingen tussen de onderdelen
 Elk onderdeel praat met het volgende via één afgesproken formaat. Daardoor kan elk onderdeel apart gebouwd, getest en vervangen worden.
 1. **Content → pipeline**: Obsidian-markdown met YAML-frontmatter en wikilinks. Zie [content-repo.md](content-repo.md).
 2. **Bron → cache**: per soort bron één adapter in de pipeline. Een nieuwe bron toevoegen is één nieuw bestand. Zie [pipeline.md](pipeline.md#bronadapters).
@@ -59,7 +59,7 @@ Elk onderdeel praat met het volgende via één afgesproken formaat. Daardoor kan
 - **Statisch.** Geen server-side code. De site werkt met elke webserver die bestanden kan serveren.
 - **Modulair.** Eén adapter per bron, één view per scherm, één module per live bron. De frontend is te ontwikkelen met een voorbeeld-JSON, zonder dat de pipeline draait.
 - **Verdraagzaam voor content.** Content wordt door mensen geschreven en is vaak onaf. Ontbrekende velden of kapotte links geven een waarschuwing, geen crash.
-- **Eenvoud boven volledigheid.** Het is een hackathon. Bouw het kleinste dat werkt, maar houd de naden hierboven heel.
+- **Eenvoud boven volledigheid.** Het is een hackathon. Bouw het kleinste dat werkt, maar houd de koppelingen hierboven heel.
 
 ## Voorgestelde indeling van de repo
 ```

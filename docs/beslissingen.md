@@ -22,36 +22,35 @@ Wat vastligt, wat voorgesteld is, en wat nog open staat. Voeg nieuwe beslissinge
 | 2026-10-30 | Eerst lokaal ontwikkelen, daarna de server                                                                                                      | [ontwikkelen.md](ontwikkelen.md)                                                 |
 | 2026-10-30 | Codeconventies volgens CLAUDE.md                                                                                                                | [CLAUDE.md](../CLAUDE.md)                                                        |
 
-## Voorgesteld, nog te bevestigen
-Deze keuzes staan in de documentatie, maar zijn nog niet besproken.
+## Verder genomen beslissingen
+Waar een vinkje (✅) voorstaat is besloten
 
-| Voorstel                                                                        | Waarom                                                                           | Waar                                                         |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| URL's volgen de mappen van de content-repo: `/chapters/<id>` en `/records/<id>` | De structuur van de content blijft herkenbaar op de site                         | [frontend-data.md](frontend-data.md#url-structuur)           |
-| Router met gewone URL's in plaats van `#/...`                                   | Nette URL's die je kunt delen; kost één regel in nginx                           | [frontend.md](frontend.md#routes)                            |
-| Bronnen bij voorkeur als RDF ophalen en met `rdflib` naar triples omzetten      | Werkt voor elke Linked Data-bron op dezelfde manier                              | [pipeline.md](pipeline.md#bronadapters)                      |
-| Een tabel `triple` in de cache, afgeleid van de ruwe antwoorden                 | Makkelijk filteren en zoeken, zonder de volledige kopie aan te tasten            | [pipeline.md](pipeline.md#cache)                             |
-| Het filter per `contenttype` en per bron in de configuratie                     | Wat we tonen aanpassen zonder code te veranderen                                 | [pipeline.md](pipeline.md#filteren)                          |
-| Gekoppelde items één stap diep meeophalen                                       | Labels tonen in plaats van Q-nummers                                             | [pipeline.md](pipeline.md#eén-stap-verder)                   |
-| Pipeline in twee stappen, `fetch` en `build`                                    | `build` blijft snel en werkt offline                                             | [pipeline.md](pipeline.md#twee-stappen)                      |
-| Eén adapter per soort bron, met `fetch`, `matches` en `triples`                 | Een bron toevoegen is één bestand                                                | [pipeline.md](pipeline.md#bronadapters)                      |
-| Content lokaal in `content/`, pad in te stellen                                 | Geen submodule nodig, wel overal hetzelfde                                       | [content-repo.md](content-repo.md#hoe-de-content-binnenkomt) |
-| De pipeline kijkt naar `type`, niet naar de map                                 | Robuust voor bestanden in de verkeerde map                                       | [content-repo.md](content-repo.md#mappen)                    |
-| `uri` mag ook een lijst zijn                                                    | Een record kan meerdere bronnen hebben                                           | [content-repo.md](content-repo.md#record)                    |
-| De pipeline zet markdown om in HTML                                             | De frontend heeft geen markdown-parser nodig                                     | [frontend-data.md](frontend-data.md#links-in-bodyhtml)       |
-| camelCase in `siboga.json`                                                      | Sluit aan bij de JavaScript-conventies                                           | [frontend-data.md](frontend-data.md#sibogajson)              |
-| Ids als slug van de bestandsnaam                                                | Leesbare URL's, geen extra veld nodig in de content                              | [frontend-data.md](frontend-data.md#ids)                     |
-| Voorbeeld-JSON in `frontend/fixtures/`                                          | Frontend bouwen zonder pipeline                                                  | [frontend-data.md](frontend-data.md#bestanden)               |
-| Leaflet voor de kaart, met een lokale GeoJSON-ondergrond als terugval           | Al gebruikt in het kaartprototype; werkt zonder kaartdienst                      | [frontend.md](frontend.md#live-bronnen)                      |
-| Store via `provide`/`inject`                                                    | Zo staat het in de conventies, hoewel de template `useStore()` direct importeert | [frontend.md](frontend.md#data-en-store)                     |
+| Besloten | Voorstel                                                          | Waarom                                                                                | Waar                                 |
+| -------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------ |
+| ✅        | Pipeline in twee stappen, `fetch` en `build`                      | `build` blijft snel en werkt offline                                                  | [pipeline.md](pipeline.md)           |
+| ✅        | Eén adapter per soort bron, met `fetch`, `matches` en `normalize` | Een bron toevoegen is één bestand                                                     | [pipeline.md](pipeline.md)           |
+| ✅        | De cache bewaart alleen ruwe antwoorden                           | Normalisatie aanpassen zonder opnieuw op te halen                                     | [pipeline.md](pipeline.md)           |
+| ✅        | Content lokaal in `content/`, pad in te stellen                   | Geen submodule nodig, wel overal hetzelfde                                            | [content-repo.md](content-repo.md)   |
+| ✅        | De pipeline kijkt naar `type`, niet naar de map                   | Robuust voor bestanden in de verkeerde map                                            | [content-repo.md](content-repo.md)   |
+| ✅        | `uri` mag geen lijst zijn                                         | Een record kan maar één bron hebben                                                   | [content-repo.md](content-repo.md)   |
+| ✅        | De pipeline zet markdown NIET om in HTML                          | De frontend maakt gebruik van een markdown parser om de markdown om te zetten in HTML | [frontend-data.md](frontend-data.md) |
+| ✅        | camelCase in `siboga.json`                                        | Sluit aan bij de JavaScript-conventies                                                | [frontend-data.md](frontend-data.md) |
+| ✅        | Ids als slug van de bestandsnaam                                  | Leesbare URL's, geen extra veld nodig in de content                                   | [frontend-data.md](frontend-data.md) |
+| ✅        | Voorbeeld-JSON in `frontend/fixtures/`                            | Frontend bouwen zonder pipeline                                                       | [frontend-data.md](frontend-data.md) |
+| ✅        | Router maakt gebruik van volledige paden (geen hashes)            |                                                                                       | [frontend.md](frontend.md)           |
+| ✅        | Leaflet voor de kaart                                             | Al gebruikt in het kaartprototype                                                     | [frontend.md](frontend.md)           |
+| ✅        | Store via `provide`/`inject`                                      | Zo staat het in de conventies, hoewel de template `useStore()` direct importeert      | [frontend.md](frontend.md)           |
 
 ## Open vragen
-- Welke gegevens willen we per `contenttype` tonen, en in welke volgorde? Dat bepaalt het [filter](pipeline.md#filteren).
+- Welke velden willen we per `contenttype` uit de bronnen halen en tonen?
+	- Dit gaan we nog later bepalen
 - Hoe schrijft een redacteur meerdere bronnen voor één record: `uri` als lijst, of een apart veld `sources`?
+	- Apart veld sources, een record mag altijd maar één uri hebben
+- Plaatjes zelf serveren (downloaden naar `media/`) of rechtstreeks van Wikimedia Commons en archieven laden? Zelf serveren is sneller en betrouwbaarder, maar dan moeten we licentie en bronvermelding goed overnemen.
+	- Altijd licentie en bronvermelding overnemen! Plaatjes lokaal ophalen
 - Hoe gaan we om met bronnen zonder Linked Data-endpoint, zoals Delpher en het Stadsarchief Amsterdam?
-- Hoe nemen we licentie en bronvermelding van plaatjes over, nu we ze zelf serveren?
-- Willen we naast de terugval-ondergrond ook kaarttegels vooraf downloaden voor het gebied van de expeditie?
-- Waarvoor gebruiken we `location` bij een chapter: alleen voor de kaart, of ook voor de volgorde?
+	- Kijk of er een
+- Waarvoor gebruiken we `location` bij een hoofdstuk: alleen voor de kaart, of ook voor de volgorde?
 - Is de site alleen Nederlands? `description_nl` doet vermoeden dat er later meer talen komen.
 - Welke live bronnen komen er naast de kaarttegels?
 - Wanneer wordt er opnieuw gebouwd: met de hand, of automatisch bij een wijziging in de content-repo (bijvoorbeeld met een GitHub Action of een cronjob op de server)?
