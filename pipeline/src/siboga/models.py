@@ -22,6 +22,7 @@ class FieldType(Enum):
 class ItemKind(Enum):
     CHAPTER = "chapters"
     PAGE = "pages"
+    PLUGIN = "plugins"
     RECORD = "records"
 
 @dataclass
@@ -52,7 +53,7 @@ class CachedResponse:
 
 @dataclass
 class ContentItem:
-    """One chapter or record from the content repo."""
+    """One chapter, page, plugin or record from the content repo."""
     body: str
     frontmatter: dict
     id: str

@@ -57,7 +57,13 @@ export const useStore = defineStore('data', {
 
         meta : (state) => state.data?.meta ?? null,
 
+        explorePlugins() {
+            return Object.values(this.plugins).filter((plugin) => plugin.showInExplore);
+        },
+
         pages : (state) => state.data?.pages ?? {},
+
+        plugins : (state) => state.data?.plugins ?? {},
 
         recordList : (state) => Object.values(state.data?.records ?? {}),
 
@@ -103,6 +109,10 @@ export const useStore = defineStore('data', {
                 return this.pages[id] ?? null;
             }
 
+            if (kind === 'plugins') {
+                return this.plugins[id] ?? null;
+            }
+
             return null;
         },
 
@@ -111,6 +121,10 @@ export const useStore = defineStore('data', {
 
             if (kind === 'records') {
                 return this.records[id]?.contentType ?? 'record';
+            }
+
+            if (kind === 'plugins') {
+                return 'plugin';
             }
 
             return kind === 'chapters' ? 'chapter' : 'internal';

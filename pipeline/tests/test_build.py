@@ -74,9 +74,11 @@ def config(tmp_path: Path) -> Config:
     _write(
         vault / "chapters" / "Hoofdstuk 1 - Vertrek.md",
         "---\ntype: chapter\nchapter: \"1\"\nlocation: \"[[Haven]]\"\n---\n"
-        "[[Anna Weber|Anna]] ging mee. Zie ook [[Bestaat niet]].\n\n![[kaart.png]]\n"
+        "[[Anna Weber|Anna]] ging mee. Zie ook [[Bestaat niet]].\n\n![[kaart.png]]\n\n[[IIIF#https://example.org/iiif/1/full/max/0/default.jpg]]\n"
     )
     _write(vault / "pages" / "about.md", "---\ntype: page\ntitle: Over deze website\n---\nGemaakt door het team. Lees over [[Anna Weber]].\n")
+    _write(vault / "plugins" / "IIIF.md", "---\ntype: plugin\nid: iiif\nshow_in_explore: false\n---\n")
+    _write(vault / "plugins" / "Diep.md", "---\ntype: plugin\nid: deepdive\ndescription_nl: Specimens\nshow_in_explore: \"true\"\n---\n")
     _write(vault / "etc" / "i18n.md", "---\ntype: i18n\nabout_site: Over deze site\nfield_birth_date: Geboren\n---\n")
     (vault / "kaart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     return Config(
@@ -126,7 +128,21 @@ def test_build_writes_frontend_data(config: Config):
     assert chapter["location"] == "records/haven"
     assert "[Anna](/records/anna-weber)" in chapter["body"]
     assert "![](media/kaart.png)" in chapter["body"]
-    assert chapter["links"] == ["records/anna-weber"]
+    assert chapter["links"] == ["records/anna-weber", "plugins/iiif"]
+    assert "[IIIF](/plugins/iiif?argument=https%3A%2F%2Fexample.org%2Fiiif%2F1%2Ffull%2Fmax%2F0%2Fdefault.jpg)" in chapter["body"]
+    assert data["plugins"]["iiif"] == {
+        "ref": "plugins/iiif",
+        "id": "iiif",
+        "title": "IIIF",
+        "description": None,
+        "showInExplore": False,
+        "body": None,
+        "links": [],
+        "backlinks": ["chapters/hoofdstuk-1-vertrek"]
+    }
+    assert data["plugins"]["deepdive"]["title"] == "Diep"
+    assert data["plugins"]["deepdive"]["description"] == "Specimens"
+    assert data["plugins"]["deepdive"]["showInExplore"] is True
     anna = data["records"]["anna-weber"]
     assert anna["contentType"] == "person"
     assert anna["description"] == "Nederlandse algoloog"

@@ -1,7 +1,8 @@
 <script setup>
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
-    import { renderMarkdown } from '@/services/markdown.js';
+    import ElPlugin from '@/components/el-plugin.vue';
+    import { renderSegments } from '@/services/markdown.js';
 
     const router = useRouter();
 
@@ -20,7 +21,7 @@
         }
     });
 
-    const html = computed(() => renderMarkdown(props.body, props.lookupKind));
+    const segments = computed(() => renderSegments(props.body, props.lookupKind));
 
     function onClick(event) {
         const link = event.target.closest('a[data-internal]');
@@ -38,8 +39,21 @@
     <div
         class="el-markdown"
         v-bind:has-drop-cap="dropCap ? '' : null"
-        v-on:click="onClick"
-        v-html="html"></div>
+        v-on:click="onClick">
+        <template
+            v-for="(segment, index) in segments"
+            v-bind:key="index">
+            <el-plugin
+                v-if="segment.type === 'plugin'"
+                v-bind:id="segment.id"
+                v-bind:argument="segment.argument" />
+
+            <div
+                v-else
+                class="segment"
+                v-html="segment.html"></div>
+        </template>
+    </div>
 </template>
 
 <style lang="scss" scoped>
@@ -124,6 +138,7 @@
         }
 
         :deep(a[data-kind="chapter"])::after,
+        :deep(a[data-kind="plugin"])::after,
         :deep(a[data-kind="internal"])::after,
         :deep(a[data-kind="item"])::after,
         :deep(a[data-kind="location"])::after,
@@ -133,7 +148,7 @@
             display: none;
         }
 
-        &[has-drop-cap] :deep(> p:first-child::first-letter) {
+        &[has-drop-cap] > .segment:first-child :deep(> p:first-child::first-letter) {
             float: left;
             font-family: var(--font-header);
             font-weight: 700;

@@ -5,6 +5,7 @@ import VwHome from '@/views/vw-home.vue';
 import VwLibrary from '@/views/vw-library.vue';
 import VwMap from '@/views/vw-map.vue';
 import VwPage from '@/views/vw-page.vue';
+import VwPlugin from '@/views/vw-plugin.vue';
 import VwRecord from '@/views/vw-record.vue';
 
 export const router = createRouter({
@@ -34,6 +35,11 @@ export const router = createRouter({
             path : '/pages/:id',
             name : 'page',
             component : VwPage
+        },
+        {
+            path : '/plugins/:id',
+            name : 'plugin',
+            component : VwPlugin
         },
         {
             path : '/library',

@@ -10,10 +10,12 @@ from siboga.content import (
     convert_body,
     description,
     page_title,
+    plugin_title,
     read_content,
     read_messages,
     record_uri,
     resolve_link,
+    show_in_explore,
     slugify
 )
 from siboga.models import ContentItem, ItemKind, Report
@@ -317,3 +319,38 @@ def test_read_messages(tmp_path: Path):
     items_report = Report()
     assert [item.ref for item in read_content(vault, items_report)] == ["records/gewoon"]
     assert items_report.warnings == []
+
+def test_plugins(tmp_path: Path):
+    vault = _vault(tmp_path, {
+        "plugins/IIIF.md": "---\ntype: plugin\nid: iiif\nshow_in_explore: false\n---\n",
+        "plugins/Diep onder het schip.md": "---\ntype: plugin\nid: deepdive\ndescription_nl: Specimens\nshow_in_explore: \"true\"\n---\n",
+        "plugins/Zonder id.md": "---\ntype: plugin\ntitle: Met titel\nshow_in_explore: misschien\n---\n"
+    })
+    report = Report()
+    items = {item.ref: item for item in read_content(vault, report)}
+    assert set(items) == {"plugins/deepdive", "plugins/iiif", "plugins/zonder-id"}
+    assert items["plugins/iiif"].kind == ItemKind.PLUGIN
+    assert any("plugin without id" in warning for warning in report.warnings)
+    assert plugin_title(items["plugins/deepdive"]) == "Diep onder het schip"
+    assert plugin_title(items["plugins/zonder-id"]) == "Met titel"
+    assert description(items["plugins/deepdive"]) == "Specimens"
+    report = Report()
+    assert show_in_explore(items["plugins/deepdive"], report) is True
+    assert show_in_explore(items["plugins/iiif"], report) is False
+    assert report.warnings == []
+    assert show_in_explore(items["plugins/zonder-id"], report) is False
+    assert len(report.warnings) == 1
+
+def test_convert_plugin_wikilink(tmp_path: Path):
+    vault = _vault(tmp_path, {
+        "plugins/IIIF.md": "---\ntype: plugin\nid: iiif\n---\n"
+    })
+    index = build_link_index(read_content(vault, Report()), vault)
+    body = "[[IIIF#https://iiif.example.org/iiif/3/1/full/max/0/default.jpg]]\n\n[[IIIF]] [[iiif#a b|Bekijk]]"
+    converted, report = _convert(body, index)
+    assert converted.markdown == (
+        "[IIIF](/plugins/iiif?argument=https%3A%2F%2Fiiif.example.org%2Fiiif%2F3%2F1%2Ffull%2Fmax%2F0%2Fdefault.jpg)\n\n"
+        "[IIIF](/plugins/iiif) [Bekijk](/plugins/iiif?argument=a%20b)"
+    )
+    assert converted.links == ["plugins/iiif"]
+    assert report.warnings == []

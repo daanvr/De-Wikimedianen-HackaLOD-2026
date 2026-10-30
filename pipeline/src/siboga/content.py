@@ -1,7 +1,7 @@
-"""Reads the content repo (chapters, records, pages and i18n) and converts Obsidian markdown to plain markdown."""
+"""Reads the content repo (chapters, records, pages, plugins and i18n) and converts Obsidian markdown to plain markdown."""
 from dataclasses import dataclass, field
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urlparse
 import re
 import unicodedata
 
@@ -12,6 +12,7 @@ from siboga.models import ContentItem, ContentType, ItemKind, Report
 
 _CONTENT_TYPES = {content_type.value for content_type in ContentType}
 _EXTENSION = re.compile(r"\.[A-Za-z0-9]{1,5}$")
+_FALSE_VALUES = {"false", "no", "0", ""}
 _FRONTMATTER = re.compile(
     r"\A﻿?---[ \t]*\n(.*?)^(?:---|\.\.\.)[ \t]*(?:\n|\Z)",
     re.DOTALL | re.MULTILINE
@@ -20,10 +21,12 @@ _I18N_TYPE = "i18n"
 _KINDS = {
     "chapter": ItemKind.CHAPTER,
     "page": ItemKind.PAGE,
+    "plugin": ItemKind.PLUGIN,
     "record": ItemKind.RECORD
 }
 _LINK_TITLE = re.compile(r"\s+(?:\"[^\"]*\"|'[^']*')$")
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+_TRUE_VALUES = {"true", "yes", "1"}
 # A single scan over the text. Code blocks and inline code are matched first,
 # so links and comments inside them stay untouched.
 _TOKEN = re.compile(
@@ -86,6 +89,18 @@ class _BodyConverter:
             return f"{match.group('image')}[{label}]({self._attachment(attachment)})"
         return original
 
+    def _plugin_link(
+        self,
+        ref: str,
+        target: str,
+        alias: str
+    ) -> str:
+        """[[IIIF#argument]] becomes a link to the plugin, with everything after the # as its argument."""
+        self._link(ref)
+        argument = target.partition("#")[2].strip()
+        href = f"/{ref}?argument={quote(argument, safe = '')}" if argument else f"/{ref}"
+        return f"[{alias or _default_label(target.partition('#')[0])}]({href})"
+
     def _wikilink(self, match: re.Match) -> str:
         target, _, alias = match.group("inner").replace("\\|", "|").partition("|")
         target = target.strip()
@@ -93,6 +108,8 @@ class _BodyConverter:
         page = target.split("#", 1)[0].strip()
         name = _last_part(page)
         ref = resolve_link(target, self.index)
+        if ref and ref.startswith(f"{ItemKind.PLUGIN.value}/"):
+            return self._plugin_link(ref, target, alias)
         attachment = None if ref else self.index.attachments.get(_key(name))
         if match.group("embed"):
             if attachment:
@@ -198,6 +215,13 @@ def page_title(item: ContentItem, report: Report) -> str:
         return item.title
     return str(value).strip()
 
+def plugin_title(item: ContentItem) -> str:
+    """A plugin's title comes from `title`; without a title, the file name is used."""
+    value = item.frontmatter.get("title")
+    if value is None or not str(value).strip():
+        return item.title
+    return str(value).strip()
+
 def read_content(content_path: Path, report: Report) -> list[ContentItem]:
     items = []
     for path in _walk_files(content_path):
@@ -244,6 +268,18 @@ def resolve_link(target: str, index: LinkIndex) -> str | None:
     if name.lower().endswith(".md"):
         name = name[:-3]
     return index.refs.get(_key(name))
+
+def show_in_explore(item: ContentItem, report: Report) -> bool:
+    """`show_in_explore` as a boolean; YAML gives a bool, but editors also write "true" in quotes."""
+    value = item.frontmatter.get("show_in_explore")
+    if isinstance(value, bool):
+        return value
+    text = "" if value is None else str(value).strip().lower()
+    if text in _TRUE_VALUES:
+        return True
+    if text not in _FALSE_VALUES:
+        report.warn(f"invalid show_in_explore: {value!r}, becomes false", item.path)
+    return False
 
 def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text.lower())
@@ -341,10 +377,17 @@ def _read_item(
         report.warn(f"unknown type: {frontmatter['type']!r}, skipped", relative)
         return None
     title = unicodedata.normalize("NFC", path.stem)
+    item_id = slugify(title)
+    if kind == ItemKind.PLUGIN:
+        # The id names the plugin in the frontend, so it comes from the frontmatter.
+        if frontmatter.get("id") in (None, ""):
+            report.warn(f"plugin without id, becomes {item_id}", relative)
+        else:
+            item_id = slugify(str(frontmatter["id"]))
     return ContentItem(
         body = body,
         frontmatter = frontmatter,
-        id = slugify(title),
+        id = item_id,
         kind = kind,
         path = relative,
         title = title

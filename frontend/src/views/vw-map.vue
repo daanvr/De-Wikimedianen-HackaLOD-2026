@@ -62,6 +62,24 @@
                 <span class="dataset__label">{{ t('stations_all') }}</span>
                 <span class="dataset__count">{{ store.stations.length }}</span>
             </router-link>
+
+            <router-link
+                v-for="plugin in store.explorePlugins"
+                v-bind:key="plugin.id"
+                class="dataset"
+                is-plugin
+                v-bind:to="`/plugins/${plugin.id}`">
+                <el-icon
+                    class="dataset__icon"
+                    name="explore"
+                    v-bind:size="20" />
+                <span class="dataset__text">
+                    <span class="dataset__label">{{ plugin.title }}</span>
+                    <span
+                        v-if="plugin.description"
+                        class="dataset__description">{{ plugin.description }}</span>
+                </span>
+            </router-link>
         </div>
 
         <article
@@ -132,6 +150,7 @@
         // Leaves room for the menu button (see app.vue)
         right: 7.4rem;
         display: flex;
+        flex-direction: column;
         gap: 1rem;
         z-index: 30;
 
@@ -160,6 +179,12 @@
         &:hover {
             color: var(--c-ink);
         }
+
+        &[is-plugin] {
+            height: auto;
+            min-height: 4.8rem;
+            padding: 0.8rem 1.2rem;
+        }
     }
 
     .dataset__icon {
@@ -173,6 +198,24 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .dataset__text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+
+        .dataset__label {
+            flex: none;
+        }
+    }
+
+    .dataset__description {
+        font-size: 1.4rem;
+        line-height: 1.3;
+        font-style: italic;
+        color: var(--c-ink-soft);
     }
 
     .dataset__count {

@@ -22,9 +22,11 @@ from siboga.content import (
     convert_body,
     description,
     page_title,
+    plugin_title,
     read_content,
     read_messages,
-    record_uri
+    record_uri,
+    show_in_explore
 )
 from siboga.fields import FieldCatalog, load_fields
 from siboga.models import ContentItem, ImageInfo, ItemKind, Report, SourceData
@@ -73,6 +75,16 @@ class PageOut(OutputModel):
     links: list[str]
     backlinks: list[str]
 
+class PluginOut(OutputModel):
+    ref: str
+    id: str
+    title: str
+    description: str | None
+    show_in_explore: bool
+    body: str | None
+    links: list[str]
+    backlinks: list[str]
+
 class ChapterOut(OutputModel):
     ref: str
     id: str
@@ -113,6 +125,7 @@ class FrontendData(OutputModel):
     meta: Meta
     messages: dict[str, str]
     pages: dict[str, PageOut]
+    plugins: dict[str, PluginOut] = {}
     chapters: list[ChapterOut]
     records: dict[str, RecordOut]
 
@@ -125,8 +138,8 @@ def check_output(output_path: Path) -> list[str]:
     problems = []
     if data.meta.schema_version != SCHEMA_VERSION:
         problems.append(f"schemaVersion is {data.meta.schema_version}, expected {SCHEMA_VERSION}")
-    items = {item.ref: item for item in [*data.pages.values(), *data.chapters, *data.records.values()]}
-    for key, item in [*data.pages.items(), *data.records.items()]:
+    items = {item.ref: item for item in [*data.pages.values(), *data.plugins.values(), *data.chapters, *data.records.values()]}
+    for key, item in [*data.pages.items(), *data.plugins.items(), *data.records.items()]:
         if key != item.id:
             problems.append(f"{item.ref}: key {key} is not the id")
     for item in items.values():
@@ -137,7 +150,8 @@ def check_output(output_path: Path) -> list[str]:
             if ref not in items:
                 problems.append(f"{item.ref}: refers to unknown ref {ref}")
         for target in MARKDOWN_LINK.findall(item.body or ""):
-            if target.startswith("/") and target[1:] not in items:
+            # A plugin link carries its argument in the query string.
+            if target.startswith("/") and re.split(r"[?#]", target[1:], maxsplit = 1)[0] not in items:
                 problems.append(f"{item.ref}: link in body to unknown page {target}")
             elif target.startswith("media/") and not (output_path / target).exists():
                 problems.append(f"{item.ref}: media file {target} is missing")
@@ -164,10 +178,10 @@ def run_build(
     media_dir = staging / "media"
     media_dir.mkdir(parents = True)
     try:
-        pages, chapters, records = _build_items(items, index, registry, cache, catalog, media_dir, report)
+        pages, plugins, chapters, records = _build_items(items, index, registry, cache, catalog, media_dir, report)
     finally:
         cache.close()
-    _add_backlinks([*pages.values(), *chapters, *records.values()])
+    _add_backlinks([*pages.values(), *plugins.values(), *chapters, *records.values()])
     data = FrontendData(
         meta = Meta(
             schema_version = SCHEMA_VERSION,
@@ -177,6 +191,7 @@ def run_build(
         ),
         messages = dict(sorted(messages.items())),
         pages = dict(sorted(pages.items())),
+        plugins = dict(sorted(plugins.items())),
         chapters = sorted(chapters, key = lambda chapter: (chapter.number is None, chapter.number or 0, chapter.id)),
         records = dict(sorted(records.items()))
     )
@@ -187,10 +202,10 @@ def run_build(
     )
     _replace_dir(staging, config.output_path)
     media_count = len(list((config.output_path / "media").iterdir()))
-    logger.info(f"build done: {len(pages)} pages, {len(chapters)} chapters, {len(records)} records, {len(messages)} messages, {media_count} media files in {config.output_path}")
+    logger.info(f"build done: {len(pages)} pages, {len(plugins)} plugins, {len(chapters)} chapters, {len(records)} records, {len(messages)} messages, {media_count} media files in {config.output_path}")
     return config.output_path / "siboga.json"
 
-def _add_backlinks(items: list[PageOut | ChapterOut | RecordOut]) -> None:
+def _add_backlinks(items: list[PageOut | PluginOut | ChapterOut | RecordOut]) -> None:
     by_ref = {item.ref: item for item in items}
     for item in items:
         for ref in item.links:
@@ -255,18 +270,21 @@ def _build_items(
     catalog: FieldCatalog,
     media_dir: Path,
     report: Report
-) -> tuple[dict[str, PageOut], list[ChapterOut], dict[str, RecordOut]]:
+) -> tuple[dict[str, PageOut], dict[str, PluginOut], list[ChapterOut], dict[str, RecordOut]]:
     pages = {}
+    plugins = {}
     chapters = []
     records = {}
     for item in items:
         if item.kind == ItemKind.PAGE:
             pages[item.id] = _build_page(item, index, media_dir, report)
+        elif item.kind == ItemKind.PLUGIN:
+            plugins[item.id] = _build_plugin(item, index, media_dir, report)
         elif item.kind == ItemKind.CHAPTER:
             chapters.append(_build_chapter(item, index, media_dir, report))
         else:
             records[item.id] = _build_record(item, index, registry, cache, catalog, media_dir, report)
-    return pages, chapters, records
+    return pages, plugins, chapters, records
 
 def _build_page(
     item: ContentItem,
@@ -280,6 +298,25 @@ def _build_page(
         ref = item.ref,
         id = item.id,
         title = page_title(item, report),
+        body = _body_or_none(converted.markdown),
+        links = converted.links,
+        backlinks = []
+    )
+
+def _build_plugin(
+    item: ContentItem,
+    index: LinkIndex,
+    media_dir: Path,
+    report: Report
+) -> PluginOut:
+    converted = convert_body(item, index, report)
+    _copy_attachments(converted.attachments, media_dir, item, report)
+    return PluginOut(
+        ref = item.ref,
+        id = item.id,
+        title = plugin_title(item),
+        description = description(item),
+        show_in_explore = show_in_explore(item, report),
         body = _body_or_none(converted.markdown),
         links = converted.links,
         backlinks = []
