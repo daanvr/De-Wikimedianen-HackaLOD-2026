@@ -5,6 +5,8 @@ Dit is de Github repository van team De Wikimedianen voor hun bijdragen aan de H
 
 Hier kunnen we vertellen wat we gedaan hebben en waarom en hoe het allemaal werkt
 
+De technische documentatie van de website staat in [docs/](docs/README.md). De codeconventies staan in [CLAUDE.md](CLAUDE.md).
+
 # "Gratis" datavisualisaties, naast onze HackaLOD output
 
 Hier gaat Sandra ook nog links plaatsen naar allerlei andere interfaces die er zijn doordat Wikidata-communityleden deze al gebouwd hebben, zoals Expeditia en Wikidocumentaries en Reasonator en zo.
