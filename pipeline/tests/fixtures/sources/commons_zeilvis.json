@@ -1,0 +1,56 @@
+{
+    "batchcomplete": true,
+    "query": {
+        "pages": [
+            {
+                "ns": 6,
+                "title": "File:COLLECTIE TROPENMUSEUM Zeilvis (Histiopterus orientalis of mal. ikan layer) 2.68 m. lang gevangen aan boord van het schip H.M. Siboga te Banda TMnr 10006545.jpg",
+                "imageinfo": [
+                    {
+                        "thumburl": "https://upload.wikimedia.org/wikipedia/commons/5/52/COLLECTIE_TROPENMUSEUM_Zeilvis_%28Histiopterus_orientalis_of_mal._ikan_layer%29_2.68_m._lang_gevangen_aan_boord_van_het_schip_H.M._Siboga_te_Banda_TMnr_10006545.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+                        "thumbwidth": 1600,
+                        "thumbheight": 1152,
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/COLLECTIE_TROPENMUSEUM_Zeilvis_%28Histiopterus_orientalis_of_mal._ikan_layer%29_2.68_m._lang_gevangen_aan_boord_van_het_schip_H.M._Siboga_te_Banda_TMnr_10006545.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+                        "descriptionurl": "https://commons.wikimedia.org/wiki/File:COLLECTIE_TROPENMUSEUM_Zeilvis_(Histiopterus_orientalis_of_mal._ikan_layer)_2.68_m._lang_gevangen_aan_boord_van_het_schip_H.M._Siboga_te_Banda_TMnr_10006545.jpg",
+                        "mime": "image/jpeg",
+                        "extmetadata": {
+                            "ObjectName": {
+                                "value": "COLLECTIE TROPENMUSEUM Zeilvis (Histiopterus orientalis of mal. ikan layer) 2.68 m. lang gevangen aan boord van het schip H.M. Siboga te Banda TMnr 10006545",
+                                "source": "mediawiki-metadata"
+                            },
+                            "ImageDescription": {
+                                "value": "Repronegatief. Zeilvis (<i>Istiophorus platypterus</i> syn. <s>Histiopterus orientalis</s> <i>Histiophorus orientalis</i> (sailfish) of mal. ikan layer), 2.68 m. lang gevangen aan boord van het schip H.M. Siboga te Banda",
+                                "source": "commons-desc-page"
+                            },
+                            "DateTimeOriginal": {
+                                "value": "tussen 1900 en 1901<div style=\"display: none;\">date QS:P,+1900-00-00T00:00:00Z/8,P1319,+1900-00-00T00:00:00Z/9,P1326,+1901-00-00T00:00:00Z/9</div>",
+                                "source": "commons-desc-page"
+                            },
+                            "Artist": {
+                                "value": "Onbekend<span style=\"display: none;\">Unknown author</span>",
+                                "source": "commons-desc-page"
+                            },
+                            "Credit": {
+                                "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/nl:Wereldmuseum_Amsterdam\" class=\"extiw\" title=\"w:nl:Wereldmuseum Amsterdam\"><span title=\"museum in Amsterdam\">Wereldmuseum Amsterdam</span></a>\n</bdi>",
+                                "source": "commons-desc-page"
+                            },
+                            "LicenseShortName": {
+                                "value": "CC BY-SA 3.0",
+                                "source": "commons-desc-page",
+                                "hidden": ""
+                            },
+                            "LicenseUrl": {
+                                "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                                "source": "commons-desc-page"
+                            },
+                            "UsageTerms": {
+                                "value": "Creative Commons Attribution-Share Alike 3.0",
+                                "source": "commons-desc-page"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

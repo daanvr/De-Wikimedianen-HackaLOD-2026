@@ -1,0 +1,125 @@
+{
+    "entities": {
+        "Q727": {
+            "type": "item",
+            "id": "Q727",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "Amsterdam"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "Amsterdam"
+                },
+                "mul": {
+                    "language": "mul",
+                    "value": "Amsterdam"
+                }
+            }
+        },
+        "Q765914": {
+            "type": "item",
+            "id": "Q765914",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "Eerbeek"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "Eerbeek"
+                },
+                "mul": {
+                    "language": "mul",
+                    "value": "Eerbeek"
+                }
+            }
+        },
+        "Q864503": {
+            "type": "item",
+            "id": "Q864503",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "biologist"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "bioloog"
+                }
+            }
+        },
+        "Q2083925": {
+            "type": "item",
+            "id": "Q2083925",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "botanical collector"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "plantenverzamelaar"
+                }
+            }
+        },
+        "Q2374149": {
+            "type": "item",
+            "id": "Q2374149",
+            "labels": {
+                "nl": {
+                    "language": "nl",
+                    "value": "botanicus"
+                },
+                "en": {
+                    "language": "en",
+                    "value": "botanist"
+                }
+            }
+        },
+        "Q2487799": {
+            "type": "item",
+            "id": "Q2487799",
+            "labels": {
+                "nl": {
+                    "language": "nl",
+                    "value": "mycoloog"
+                },
+                "en": {
+                    "language": "en",
+                    "value": "mycologist"
+                }
+            }
+        },
+        "Q12358881": {
+            "type": "item",
+            "id": "Q12358881",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "phycologist"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "algenkundige"
+                }
+            }
+        },
+        "Q98544732": {
+            "type": "item",
+            "id": "Q98544732",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "scientific collector"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "wetenschappelijk verzamelaar"
+                }
+            }
+        }
+    },
+    "success": 1
+}

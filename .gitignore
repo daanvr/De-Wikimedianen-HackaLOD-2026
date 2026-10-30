@@ -1,2 +1,10 @@
 .DS_Store
 .obsidian
+!pipeline/tests/fixtures/content/.obsidian/
+/content/
+pipeline/.venv/
+pipeline/cache/
+pipeline/config.toml
+frontend/public/data/
+__pycache__/
+.pytest_cache/

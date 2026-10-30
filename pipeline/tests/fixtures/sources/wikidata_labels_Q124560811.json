@@ -1,0 +1,37 @@
+{
+    "entities": {
+        "Q917031": {
+            "type": "item",
+            "id": "Q917031",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "Brill"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "Koninklijke Brill NV"
+                },
+                "mul": {
+                    "language": "mul",
+                    "value": "Brill"
+                }
+            }
+        },
+        "Q1940785": {
+            "type": "item",
+            "id": "Q1940785",
+            "labels": {
+                "nl": {
+                    "language": "nl",
+                    "value": "Anna Weber-van Bosse"
+                },
+                "en": {
+                    "language": "en",
+                    "value": "Anna Weber-van Bosse"
+                }
+            }
+        }
+    },
+    "success": 1
+}

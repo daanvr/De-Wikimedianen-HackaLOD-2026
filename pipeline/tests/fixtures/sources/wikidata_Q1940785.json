@@ -1,0 +1,242 @@
+{
+    "entities": {
+        "Q1940785": {
+            "type": "item",
+            "id": "Q1940785",
+            "labels": {
+                "nl": {
+                    "language": "nl",
+                    "value": "Anna Weber-van Bosse"
+                },
+                "en": {
+                    "language": "en",
+                    "value": "Anna Weber-van Bosse"
+                }
+            },
+            "descriptions": {
+                "nl": {
+                    "language": "nl",
+                    "value": "Nederlandse algoloog (1852-1942)"
+                },
+                "en": {
+                    "language": "en",
+                    "value": "Dutch phycologist (1852-1942)"
+                }
+            },
+            "claims": {
+                "P106": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 864503,
+                                    "id": "Q864503"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "q1940785$D6AD6979-FCCD-4CF6-B54F-08FD09BC0049",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 2374149,
+                                    "id": "Q2374149"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$FD5EF3F0-FC89-4413-8A97-D93A8441E63A",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 12358881,
+                                    "id": "Q12358881"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$30452ee8-405d-63c6-73d9-4be85e2858a8",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 2083925,
+                                    "id": "Q2083925"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$75656512-4432-882f-bfa0-47324aa6a098",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 98544732,
+                                    "id": "Q98544732"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$940A8721-1D93-48AD-A5B9-2C8DCBE4DA17",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P106",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 2487799,
+                                    "id": "Q2487799"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$12CB358D-49B6-40F9-9045-3E708C217263",
+                        "rank": "normal"
+                    }
+                ],
+                "P18": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P18",
+                            "datavalue": {
+                                "value": "Anna Antoinette Weber-van Bosse.jpg",
+                                "type": "string"
+                            },
+                            "datatype": "commonsMedia"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$A10CEE29-84B9-49DA-942A-CA66D1A28443",
+                        "rank": "normal"
+                    }
+                ],
+                "P19": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P19",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 727,
+                                    "id": "Q727"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$1592c153-44b7-879d-0287-8bf78a4b5a71",
+                        "rank": "normal"
+                    }
+                ],
+                "P20": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P20",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 765914,
+                                    "id": "Q765914"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$c2605f97-44f6-5070-a094-fa81dea6acbe",
+                        "rank": "normal"
+                    }
+                ],
+                "P569": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P569",
+                            "datavalue": {
+                                "value": {
+                                    "time": "+1852-03-27T00:00:00Z",
+                                    "timezone": 0,
+                                    "before": 0,
+                                    "after": 0,
+                                    "precision": 11,
+                                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                                },
+                                "type": "time"
+                            },
+                            "datatype": "time"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$641218fc-4776-b87a-dd83-7712599565a8",
+                        "rank": "normal"
+                    }
+                ],
+                "P570": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P570",
+                            "datavalue": {
+                                "value": {
+                                    "time": "+1942-10-29T00:00:00Z",
+                                    "timezone": 0,
+                                    "before": 0,
+                                    "after": 0,
+                                    "precision": 11,
+                                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                                },
+                                "type": "time"
+                            },
+                            "datatype": "time"
+                        },
+                        "type": "statement",
+                        "id": "Q1940785$35a25cba-4c76-2c88-cf23-3dad934e83c0",
+                        "rank": "normal"
+                    }
+                ]
+            }
+        }
+    }
+}

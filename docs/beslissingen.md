@@ -6,6 +6,9 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 ## Besloten
 | Beslissing                                                                                                           | Waar                                                |
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Het contenttype bepaalt welke velden een record toont, niet de bron; vastgelegd in `pipeline/fields.toml`            | [pipeline.md](pipeline.md#velden-per-contenttype)   |
+| Nieuw type `page` (map `pages/`): vaste pagina's met `title` en gewone markdown, URL `/pages/<id>`                   | [content-repo.md](content-repo.md#types)            |
+| Nieuw type `i18n` (map `etc/`): alle tekst van de site zelf komt uit berichten, ook al is de site alleen Nederlands  | [content-repo.md](content-repo.md#types)            |
 | Bronnen zonder Linked Data-endpoint krijgen ook een adapter, op hun eigen API (bijvoorbeeld JSON)                    | [pipeline.md](pipeline.md#bronadapters)             |
 | Bij een nieuwe commit in de content-repo bouwt een cronjob de site opnieuw                                           | [ontwikkelen.md](ontwikkelen.md#automatisch-bouwen) |
 | De site is voorlopig alleen Nederlands                                                                               | [content-repo.md](content-repo.md#frontmatter)      |

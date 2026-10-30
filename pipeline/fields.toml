@@ -1,0 +1,48 @@
+# Welke velden een record toont, hangt af van zijn contenttype (niet van de bron).
+#
+# [contenttypes]: per contenttype de velden, in de volgorde waarin ze getoond worden.
+# [fields]: per veld het soort waarde.
+#   date = altijd YYYY, YYYY-MM of YYYY-MM-DD
+#   text = gewone tekst
+#
+# Welke bron welk veld kan vullen, staat in de adapters (pipeline/src/siboga/sources/).
+# Het label van een veld op de site komt uit i18n, als bericht field_<veld>, bijvoorbeeld field_birth_date.
+
+[contenttypes]
+person = ["birth_date", "birth_place", "death_date", "death_place", "occupation", "employer"]
+specimen = ["scientific_name", "vernacular_name", "taxon_rank", "family", "order", "parent_taxon"]
+media = ["creator", "created", "date_description", "collection", "archive"]
+item = ["author", "publication_date", "inception", "publisher", "published_in", "collection"]
+article = ["author", "publication_date", "published_in"]
+expedition = ["start_date", "end_date", "location", "participant"]
+location = ["country", "location"]
+
+[fields]
+archive = "text"
+author = "text"
+birth_date = "date"
+birth_place = "text"
+collection = "text"
+country = "text"
+created = "date"
+creator = "text"
+date_description = "text"
+death_date = "date"
+death_place = "text"
+employer = "text"
+end_date = "date"
+family = "text"
+inception = "date"
+location = "text"
+occupation = "text"
+order = "text"
+parent_taxon = "text"
+participant = "text"
+point_in_time = "date"
+publication_date = "date"
+published_in = "text"
+publisher = "text"
+scientific_name = "text"
+start_date = "date"
+taxon_rank = "text"
+vernacular_name = "text"

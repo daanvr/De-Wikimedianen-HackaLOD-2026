@@ -1,0 +1,93 @@
+{
+    "entities": {
+        "Q124560811": {
+            "type": "item",
+            "id": "Q124560811",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "Een jaar aan boord H.M. Siboga"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "Een jaar aan boord H.M. Siboga"
+                }
+            },
+            "descriptions": {
+                "en": {
+                    "language": "en",
+                    "value": "work by Anna Weber - van Bosse"
+                },
+                "nl": {
+                    "language": "nl",
+                    "value": "werk van Anna Weber - van Bosse"
+                }
+            },
+            "claims": {
+                "P50": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P50",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 1940785,
+                                    "id": "Q1940785"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q124560811$aeab24fd-4c96-b940-577b-400c96a5f542",
+                        "rank": "normal"
+                    }
+                ],
+                "P577": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P577",
+                            "datavalue": {
+                                "value": {
+                                    "time": "+1904-00-00T00:00:00Z",
+                                    "timezone": 0,
+                                    "before": 0,
+                                    "after": 0,
+                                    "precision": 9,
+                                    "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                                },
+                                "type": "time"
+                            },
+                            "datatype": "time"
+                        },
+                        "type": "statement",
+                        "id": "Q124560811$fdb1b924-4967-7c30-91f8-4caf0a4f7c8d",
+                        "rank": "normal"
+                    }
+                ],
+                "P123": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P123",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 917031,
+                                    "id": "Q917031"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q124560811$7ea21b09-4567-77be-ec59-a4c7011671d7",
+                        "rank": "normal"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "batchcomplete": true,
+    "query": {
+        "pages": [
+            {
+                "ns": 6,
+                "title": "File:UvA-Artis 300.005 - Siboga - bovenkomen van de kor.jpg",
+                "imageinfo": [
+                    {
+                        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/UvA-Artis_300.005_-_Siboga_-_bovenkomen_van_de_kor.jpg/1920px-UvA-Artis_300.005_-_Siboga_-_bovenkomen_van_de_kor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+                        "thumbwidth": 1600,
+                        "thumbheight": 1354,
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/UvA-Artis_300.005_-_Siboga_-_bovenkomen_van_de_kor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+                        "descriptionurl": "https://commons.wikimedia.org/wiki/File:UvA-Artis_300.005_-_Siboga_-_bovenkomen_van_de_kor.jpg",
+                        "mime": "image/jpeg",
+                        "extmetadata": {
+                            "ObjectName": {
+                                "value": "UvA-Artis 300.005 - Siboga - bovenkomen van de kor",
+                                "source": "mediawiki-metadata"
+                            },
+                            "ImageDescription": {
+                                "value": "1899-1900, Siboga-expeditie naar Nederlands Oost-Indië, onder leiding van Max Wilhelm Carl Weber\n<p>bovenkomen van de kor\n</p>\n<a rel=\"nofollow\" class=\"external free\" href=\"http://academischecollecties.nl/search?identifier=300.005\">http://academischecollecties.nl/search?identifier=300.005</a>",
+                                "source": "commons-desc-page"
+                            },
+                            "DateTimeOriginal": {
+                                "value": "tussen maart 1899 en februari 1900<div style=\"display: none;\">date QS:P,+1500-00-00T00:00:00Z/6,P1319,+1899-03-00T00:00:00Z/10,P1326,+1900-02-00T00:00:00Z/10</div>",
+                                "source": "commons-desc-page"
+                            },
+                            "Artist": {
+                                "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/nl:Hugo_Frederik_Nierstrasz\" class=\"extiw\" title=\"w:nl:Hugo Frederik Nierstrasz\"><span title=\"Nederlands zoöloog (1872-1937)\">Hugo Frederik Nierstrasz</span></a></bdi>",
+                                "source": "commons-desc-page"
+                            },
+                            "Credit": {
+                                "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/nl:Bijzondere_Collecties_van_de_Universiteit_van_Amsterdam\" class=\"extiw\" title=\"w:nl:Bijzondere Collecties van de Universiteit van Amsterdam\"><span title=\"erfgoedcollectie van de Universiteit van Amsterdam\">Bijzondere Collecties van de Universiteit van Amsterdam</span></a>\n</bdi>",
+                                "source": "commons-desc-page"
+                            },
+                            "LicenseShortName": {
+                                "value": "Public domain",
+                                "source": "commons-desc-page",
+                                "hidden": ""
+                            },
+                            "UsageTerms": {
+                                "value": "Public domain",
+                                "source": "commons-desc-page"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

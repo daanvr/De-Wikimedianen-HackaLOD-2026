@@ -1,0 +1,21 @@
+# Standaardinstellingen. Overschrijf wat je wilt in config.toml (niet in git).
+# Paden zijn relatief aan de root van de code-repo.
+
+[content]
+path = "content"
+
+[cache]
+path = "pipeline/cache/siboga.sqlite"
+media_path = "pipeline/cache/media"
+max_age_days = 30
+
+[output]
+path = "frontend/public/data"
+
+[http]
+user_agent = "SibogaExpeditie/0.1 (https://siboga.nl; team De Wikimedianen, HackaLOD 2026)"
+delay_seconds = 0.2
+timeout_seconds = 30
+
+[media]
+image_width = 1600

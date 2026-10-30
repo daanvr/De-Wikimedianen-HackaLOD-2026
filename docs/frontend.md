@@ -27,6 +27,7 @@ frontend/src/
 | `/`             | `vw-home.vue`    |
 | `/chapters/:id` | `vw-chapter.vue` |
 | `/records/:id`  | `vw-record.vue`  |
+| `/pages/:id`    | `vw-page.vue`    |
 | `/map`          | `vw-map.vue`     |
 
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
@@ -35,6 +36,12 @@ Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via d
 - `app.vue` laadt `data/siboga.json` één keer en controleert `meta.schemaVersion`.
 - De store wordt met `provide('store', store)` doorgegeven; componenten doen `inject('store')`.
 - Views halen data uit de store, componenten krijgen hun data via props.
+
+## Teksten (i18n)
+Geen losse tekst in de HTML. Alle tekst die de site zelf toont, zoals knoppen, menu's en de namen van velden, komt uit `messages` in `siboga.json`, via één functie (bijvoorbeeld `t('start_bn')`) die via `provide`/`inject` beschikbaar is. Ontbreekt een bericht, dan toont die functie de sleutel. De berichten staan in de content-repo ([content-repo.md](content-repo.md#frontmatter)).
+
+## Velden van een record
+Een record heeft een lijst `fields`, al in de goede volgorde voor zijn contenttype. De frontend toont ze zoals ze komen: de naam via `t('field_' + key)`, en de waarden; bij `type: "date"` opgemaakt als datum.
 
 ## Live bronnen
 Elke live bron, zoals de kaarttegels, is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. Welke live bronnen er naast de kaarttegels komen, is nog niet bepaald.

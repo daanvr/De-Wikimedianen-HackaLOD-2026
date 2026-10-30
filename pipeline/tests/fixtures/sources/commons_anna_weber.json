@@ -1,0 +1,52 @@
+{
+    "batchcomplete": true,
+    "query": {
+        "pages": [
+            {
+                "ns": 6,
+                "title": "File:Anna Antoinette Weber-van Bosse.jpg",
+                "imageinfo": [
+                    {
+                        "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Anna_Antoinette_Weber-van_Bosse.jpg/1920px-Anna_Antoinette_Weber-van_Bosse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+                        "thumbwidth": 1600,
+                        "thumbheight": 2217,
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Anna_Antoinette_Weber-van_Bosse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+                        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Anna_Antoinette_Weber-van_Bosse.jpg",
+                        "mime": "image/jpeg",
+                        "extmetadata": {
+                            "ObjectName": {
+                                "value": "Anna Antoinette Weber-van Bosse",
+                                "source": "mediawiki-metadata"
+                            },
+                            "ImageDescription": {
+                                "value": "Portrait photo of Anna Antoinette Weber-van Bosse. Date unknown.",
+                                "source": "commons-desc-page"
+                            },
+                            "DateTimeOriginal": {
+                                "value": "ca. 1910<div style=\"display: none;\">date QS:P,+1910-00-00T00:00:00Z/9,P1480,Q5727902</div>",
+                                "source": "commons-desc-page"
+                            },
+                            "Artist": {
+                                "value": "University of Amsterdam, Artis Library",
+                                "source": "commons-desc-page"
+                            },
+                            "Credit": {
+                                "value": "Dit mediabestand is geüpload naar Wikimedia Commons via het project <a href=\"https://nl.wikipedia.org/wiki/Wikipedia:GLAM/Expedities\" class=\"extiw\" title=\"nl:Wikipedia:GLAM/Expedities\">Expeditie Wikipedia</a>.",
+                                "source": "commons-desc-page"
+                            },
+                            "LicenseShortName": {
+                                "value": "Public domain",
+                                "source": "commons-desc-page",
+                                "hidden": ""
+                            },
+                            "UsageTerms": {
+                                "value": "Public domain",
+                                "source": "commons-desc-page"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

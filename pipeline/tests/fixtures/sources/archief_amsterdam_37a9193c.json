@@ -1,0 +1,215 @@
+{
+ "@graph": [
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/ef29a99b-6f89-2799-2642-387e22edf3a7/context",
+   "http://purl.org/dc/terms/title": "2576, Vrouwen",
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/ef29a99b-6f89-2799-2642-387e22edf3a7"
+   }
+  },
+  {
+   "@id": "https://id.archief.amsterdam/ef29a99b-6f89-2799-2642-387e22edf3a7",
+   "@type": "rt:File"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/37a9193c-31fa-4a34-a239-3f6928cb9094/accessibility_and_rights",
+   "memorix:accessModeScanningOnDemand": {
+    "@value": "false",
+    "@type": "xsd:boolean"
+   },
+   "memorix:accessModeReservation": {
+    "@value": "false",
+    "@type": "xsd:boolean"
+   },
+   "memorix:accessModeDownload": {
+    "@value": "true",
+    "@type": "xsd:boolean"
+   },
+   "memorix:hasContext": {
+    "@id": "https://id.archief.amsterdam/resources/records/37a9193c-31fa-4a34-a239-3f6928cb9094/context"
+   },
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/37a9193c-31fa-4a34-a239-3f6928cb9094"
+   },
+   "@type": "memorix:AccessibilityAndRightsComponent"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/37a9193c-31fa-4a34-a239-3f6928cb9094/context",
+   "memorix:hasDigitalDocument": {
+    "@list": [
+     {
+      "@id": "https://id.archief.amsterdam/resources/assets/bc744236-a210-4c76-8edc-64c996d6b43d"
+     }
+    ]
+   },
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/37a9193c-31fa-4a34-a239-3f6928cb9094"
+   },
+   "memorix:iiifManifest": {
+    "@id": "https://id.archief.amsterdam/resources/records/media/37a9193c-31fa-4a34-a239-3f6928cb9094/iiif/3/manifest.json"
+   },
+   "http://purl.org/dc/terms/isPartOf": {
+    "@id": "https://id.archief.amsterdam/resources/collections/b56cf0f3-49a5-43c4-b7bd-aec1fef46e5b"
+   },
+   "http://purl.org/dc/terms/title": "Opname, 1882, Anna Weber",
+   "@type": "memorix:Context"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/37a9193c-31fa-4a34-a239-3f6928cb9094",
+   "rico:hasDocumentaryFormType": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/b9189ebc-c58a-4f7f-9605-4c3d2d6660d7"
+   },
+   "rico:normalizedDateValue": {
+    "@value": "1882-01-01",
+    "@type": "xsd:date"
+   },
+   "rico:hasOrHadSubject": {
+    "@id": "_:f9e312acefb4b447b24bcb212bae18d5"
+   },
+   "saa:isOrWasAlsoIncludedIn": {
+    "@id": "https://id.archief.amsterdam/80ae8643-7b66-40ae-e053-b784100ad8d3"
+   },
+   "rico:hasOrHadCategory": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/4100fb93-de61-43d3-ad64-daff1f477301"
+   },
+   "saa:hasSpecification": [
+    {
+     "@id": "_:c28afa9d7a85b2c85ca2a681e33169c1"
+    },
+    {
+     "@id": "_:1229b3b3367287c4be3792435ed0dd00"
+    }
+   ],
+   "@type": [
+    "memorix:Record",
+    "rt:Deed"
+   ],
+   "rico:title": "Opname, 1882, Anna Weber",
+   "rico:isOrWasIncludedIn": {
+    "@id": "https://id.archief.amsterdam/ef29a99b-6f89-2799-2642-387e22edf3a7"
+   }
+  },
+  {
+   "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e",
+   "@type": "rt:PersonObservation"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/4100fb93-de61-43d3-ad64-daff1f477301",
+   "skos:prefLabel": "Patiëntenregisters",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "_:c28afa9d7a85b2c85ca2a681e33169c1",
+   "saa:specificationType": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-efdf-4b2e-e053-b784100a3466"
+   },
+   "saa:specificationTextualValue": "Vrouwen Zieken",
+   "@type": "saa:Specification"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-efdf-4b2e-e053-b784100a3466",
+   "skos:prefLabel": "afdeling",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-f000-4b2e-e053-b784100a3466",
+   "skos:prefLabel": "geregistreerde",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/80ae8643-7b66-40ae-e053-b784100ad8d3",
+   "@type": "rt:Fonds"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-efe5-4b2e-e053-b784100a3466",
+   "skos:prefLabel": "instelling",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/b9189ebc-c58a-4f7f-9605-4c3d2d6660d7",
+   "skos:prefLabel": "opname",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "_:f9e312acefb4b447b24bcb212bae18d5",
+   "saa:relatedPersonObservationRole": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-f000-4b2e-e053-b784100a3466"
+   },
+   "saa:relatedPersonObservation": {
+    "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e"
+   },
+   "memorix:order": {
+    "@value": "1",
+    "@type": "xsd:integer"
+   },
+   "@type": "saa:LinkedPersonObservation"
+  },
+  {
+   "@id": "_:1229b3b3367287c4be3792435ed0dd00",
+   "saa:specificationType": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/e8a92b13-efe5-4b2e-e053-b784100a3466"
+   },
+   "saa:specificationTextualValue": "Binnengasthuis",
+   "@type": "saa:Specification"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/assets/bc744236-a210-4c76-8edc-64c996d6b43d",
+   "http://schema.org/fileSize": {
+    "@value": "4709173",
+    "@type": "xsd:long"
+   },
+   "memorix:iiif": {
+    "@id": "https://id.archief.amsterdam/resources/iiif/3/bc744236-a210-4c76-8edc-64c996d6b43d"
+   },
+   "http://schema.org/width": {
+    "@value": "5695",
+    "@type": "xsd:int"
+   },
+   "http://schema.org/height": {
+    "@value": "4460",
+    "@type": "xsd:int"
+   },
+   "http://schema.org/position": {
+    "@value": "1",
+    "@type": "xsd:int"
+   },
+   "http://schema.org/encodingFormat": "image/jp2",
+   "http://schema.org/name": "PARA00153000023.jp2",
+   "@type": "http://schema.org/DigitalDocument"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/80ae8643-7b66-40ae-e053-b784100ad8d3/context",
+   "http://purl.org/dc/terms/title": "5268, Archief van de Gemeenteziekenhuizen",
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/80ae8643-7b66-40ae-e053-b784100ad8d3"
+   }
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/99e87e40-953e-2bb2-e053-b784100a6a2e/context",
+   "http://purl.org/dc/terms/title": "Weber, Anna",
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e"
+   }
+  }
+ ],
+ "@context": {
+  "vocabularies": "https://id.archief.amsterdam/resources/vocabularies/conceptschemes/",
+  "rt": "https://id.archief.amsterdam/resources/recordtypes/",
+  "owl": "http://www.w3.org/2002/07/owl#",
+  "xsd": "http://www.w3.org/2001/XMLSchema#",
+  "skos": "http://www.w3.org/2004/02/skos/core#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "ric-dft": "https://www.ica.org/standards/RiC/vocabularies/documentaryFormTypes#",
+  "deed": "https://id.archief.amsterdam/resources/recordtypes/Deed#",
+  "ric-rst": "https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#",
+  "saa": "https://data.archief.amsterdam/ontology#",
+  "file": "https://id.archief.amsterdam/resources/recordtypes/File#",
+  "memorix": "http://memorix.io/ontology#",
+  "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "sh": "http://www.w3.org/ns/shacl#",
+  "rico": "https://www.ica.org/standards/RiC/ontology#",
+  "html": "http://www.w3.org/1999/xhtml/",
+  "dash": "http://datashapes.org/dash#",
+  "dc": "http://purl.org/dc/elements/1.1/"
+ }
+}

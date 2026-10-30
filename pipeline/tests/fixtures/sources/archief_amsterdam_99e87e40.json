@@ -1,0 +1,124 @@
+{
+ "@graph": [
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/99e87e40-953e-2bb2-e053-b784100a6a2e/accessibility_and_rights",
+   "memorix:accessModeScanningOnDemand": {
+    "@value": "false",
+    "@type": "xsd:boolean"
+   },
+   "memorix:accessModeReservation": {
+    "@value": "false",
+    "@type": "xsd:boolean"
+   },
+   "memorix:accessModeDownload": {
+    "@value": "true",
+    "@type": "xsd:boolean"
+   },
+   "memorix:limitationOfAccess": {
+    "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/b91d25b5-a1b4-4bc9-a15c-d48883a95d0b"
+   },
+   "memorix:hasContext": {
+    "@id": "https://id.archief.amsterdam/resources/records/99e87e40-953e-2bb2-e053-b784100a6a2e/context"
+   },
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e"
+   },
+   "@type": "memorix:AccessibilityAndRightsComponent"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/vocabularies/concepts/b91d25b5-a1b4-4bc9-a15c-d48883a95d0b",
+   "skos:prefLabel": "Geen beperking",
+   "@type": "skos:Concept"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/records/99e87e40-953e-2bb2-e053-b784100a6a2e/context",
+   "memorix:hasDigitalDocument": {
+    "@list": [
+     {
+      "@id": "https://id.archief.amsterdam/resources/assets/bc744236-a210-4c76-8edc-64c996d6b43d"
+     }
+    ]
+   },
+   "memorix:hasRecord": {
+    "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e"
+   },
+   "memorix:iiifManifest": {
+    "@id": "https://id.archief.amsterdam/resources/records/media/99e87e40-953e-2bb2-e053-b784100a6a2e/iiif/3/manifest.json"
+   },
+   "http://purl.org/dc/terms/isPartOf": {
+    "@id": "https://id.archief.amsterdam/resources/collections/b56cf0f3-49a5-43c4-b7bd-aec1fef46e5b"
+   },
+   "http://purl.org/dc/terms/title": "Weber, Anna",
+   "@type": "memorix:Context"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/99e87e40-953e-2bb2-e053-b784100a6a2e",
+   "pnv:hasName": {
+    "@id": "_:deee9a8b7dc2b870ec81ffc9fa8b60c5"
+   },
+   "schema:birthPlace": "Amst",
+   "schema:birthDate": {
+    "@value": "1805-08-22",
+    "@type": "xsd:date"
+   },
+   "@type": [
+    "memorix:Record",
+    "rt:PersonObservation"
+   ]
+  },
+  {
+   "@id": "_:deee9a8b7dc2b870ec81ffc9fa8b60c5",
+   "pnv:literalName": "Anna Weber",
+   "pnv:givenName": "Anna",
+   "pnv:baseSurname": "Weber",
+   "@type": "pnv:PersonName"
+  },
+  {
+   "@id": "https://id.archief.amsterdam/resources/assets/bc744236-a210-4c76-8edc-64c996d6b43d",
+   "schema:fileSize": {
+    "@value": "4709173",
+    "@type": "xsd:long"
+   },
+   "memorix:iiif": {
+    "@id": "https://id.archief.amsterdam/resources/iiif/3/bc744236-a210-4c76-8edc-64c996d6b43d"
+   },
+   "schema:width": {
+    "@value": "5695",
+    "@type": "xsd:int"
+   },
+   "schema:height": {
+    "@value": "4460",
+    "@type": "xsd:int"
+   },
+   "schema:position": {
+    "@value": "1",
+    "@type": "xsd:int"
+   },
+   "schema:encodingFormat": "image/jp2",
+   "schema:name": "PARA00153000023.jp2",
+   "@type": "schema:DigitalDocument"
+  }
+ ],
+ "@context": {
+  "schema": "http://schema.org/",
+  "vocabularies": "https://id.archief.amsterdam/resources/vocabularies/conceptschemes/",
+  "rt": "https://id.archief.amsterdam/resources/recordtypes/",
+  "owl": "http://www.w3.org/2002/07/owl#",
+  "xsd": "http://www.w3.org/2001/XMLSchema#",
+  "skos": "http://www.w3.org/2004/02/skos/core#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "ric-dft": "https://www.ica.org/standards/RiC/vocabularies/documentaryFormTypes#",
+  "ric-rst": "https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#",
+  "saa": "https://data.archief.amsterdam/ontology#",
+  "memorix": "http://memorix.io/ontology#",
+  "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "sh": "http://www.w3.org/ns/shacl#",
+  "person": "https://id.archief.amsterdam/resources/recordtypes/Person#",
+  "rico": "https://www.ica.org/standards/RiC/ontology#",
+  "pnv": "https://w3id.org/pnv#",
+  "personObservation": "https://id.archief.amsterdam/resources/recordtypes/PersonObservation#",
+  "html": "http://www.w3.org/1999/xhtml/",
+  "dash": "http://datashapes.org/dash#",
+  "dc": "http://purl.org/dc/elements/1.1/"
+ }
+}

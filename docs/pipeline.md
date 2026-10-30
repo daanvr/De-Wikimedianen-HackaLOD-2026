@@ -5,26 +5,35 @@ Een Python-programma in `pipeline/` dat van de [content-repo](content-repo.md) e
 
 De pipeline haalt van elke bron een **volledige kopie** op en kiest pas daarna lokaal wat we tonen. Zo kunnen we bouwen en presenteren als een bron uitvalt, en kost een ander filter geen nieuwe verzoeken.
 
-## Twee stappen
+## Stappen
 | Stap    | Doet                                                      | Internet |
 | ------- | --------------------------------------------------------- | -------- |
 | `fetch` | Bronnen van alle records ophalen en in de cache zetten    | ja       |
 | `build` | Content en cache combineren tot `siboga.json` en `media/` | nee      |
+| `check` | De uitvoer controleren tegen het contract                 | nee      |
 
 ```bash
+cd pipeline
 uv run siboga fetch            # --refresh haalt alles opnieuw op
 uv run siboga build
+uv run siboga all              # fetch en build
+uv run siboga check            # klopt elke ref, bestaat elk bestand, heeft elk plaatje een licentie?
 ```
+
+Met `-v` zie je ook de debugmeldingen. Waarschuwingen over de content (kapotte links, een `uri` die geen URL is) staan in de log met de bestandsnaam erbij; ze houden de build niet tegen. `build` schrijft eerst naar een tijdelijke map en vervangt de oude uitvoer pas als alles gelukt is.
 
 ## Modules
 ```
 pipeline/src/siboga/
-├── cli.py
+├── cli.py         ← de commando's
 ├── config.py      ← defaults.toml, overschreven door config.toml
-├── content.py     ← markdown en frontmatter lezen
+├── models.py      ← gedeelde datatypes
+├── fields.py      ← fields.toml lezen: velden per contenttype
+├── content.py     ← chapters, records, pages en i18n lezen, wikilinks omzetten
+├── fetcher.py     ← HTTP: User-Agent, pauze per host, retries
+├── cache.py       ← SQLite en gedownloade bestanden
 ├── sources/       ← één adapter per soort bron
-├── cache.py       ← SQLite
-└── build.py       ← frontend data schrijven
+└── build.py       ← frontend data schrijven en controleren
 ```
 
 ## Bronadapters
@@ -32,40 +41,58 @@ pipeline/src/siboga/
 class SourceAdapter:
     name: str
 
-    def fetch(self, uri: str) -> CachedResponse:
+    def fetch(self, uri: str, fetcher: Fetcher) -> None:
         ...
 
     def matches(self, uri: str) -> bool:
         ...
 
-    def normalize(self, response: CachedResponse) -> SourceData:
+    def normalize(self, uri: str, cache: Cache) -> SourceData | None:
         ...
 ```
 
-- `fetch` haalt de volledige bron op (bij `fetch`).
+- `fetch` haalt via de fetcher alles op wat nodig is, inclusief plaatjes. Alleen in de stap `fetch`.
 - `matches` zegt of de adapter bij een URI hoort.
-- `normalize` haalt uit het ruwe antwoord wat we tonen: label, beschrijving, afbeelding, coördinaten, datums (bij `build`).
+- `normalize` leest uitsluitend uit de cache en geeft label, beschrijving, afbeelding (met bronvermelding en licentie), coördinaten en **alle velden die de bron kan vullen** terug. Alleen in de stap `build`.
 
-De eerste adapter is Wikidata (`Special:EntityData/Q….json`). Een adapter hoeft geen Linked Data te lezen: elke bron met een API die bijvoorbeeld JSON teruggeeft kan er een krijgen, ook Delpher en het Stadsarchief Amsterdam. De rest van de pipeline ziet alleen wat `normalize` teruggeeft. Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
+| Adapter             | URI's                                               | Wat hij ophaalt                                                                  |
+| ------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `wikidata`          | `wikidata.org/wiki/Q…`                              | Het hele item (`Special:EntityData/Q….json`), en het plaatje uit P18 via Commons |
+| `commons`           | `commons.wikimedia.org/wiki/File:…` en `/entity/M…` | De imageinfo met metadata en licentie, en het plaatje op 1600 px                 |
+| `gbif`              | `gbif.org/taxon/…` en `gbif.org/species/…`          | Het taxon via ChecklistBank of de GBIF-API; een plaatje alleen met licentie      |
+| `archief_amsterdam` | `archief.amsterdam/detail/…`                        | Het record als JSON-LD via `id.archief.amsterdam`; een scan alleen met licentie  |
+
+Een adapter hoeft geen Linked Data te lezen: elke bron met een API kan er een krijgen. Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
+
+## Velden per contenttype
+De adapter bepaalt wat er uit een bron te halen is; het contenttype van het record bepaalt wat er getoond wordt. Een Wikidata-item over een persoon en een Wikidata-item over een soort gaan door dezelfde adapter, maar tonen andere velden.
+
+- Elke adapter vult alle velden die hij kan, met vaste namen zoals `birth_date`, `occupation` of `scientific_name`.
+- [pipeline/fields.toml](../pipeline/fields.toml) zegt per contenttype welke velden getoond worden en in welke volgorde, en per veld of het een `date` of `text` is.
+- `build` kiest per record de velden van zijn contenttype en zet ze als `fields` in `siboga.json`. Een datum die geen `YYYY`, `YYYY-MM` of `YYYY-MM-DD` is, geeft een waarschuwing.
+
+Een veld erbij voor een contenttype is dus een regel in `fields.toml`. Een nieuw soort veld vraagt ook een regel in de adapter die het moet vullen. Bij Wikidata haalt `fetch` ook de labels op van items waar een veld naar verwijst (zoals het beroep of de geboorteplaats), zodat de site namen toont en geen Q-nummers.
 
 ## Cache
-Eén SQLite-bestand in `pipeline/cache/` (niet in git), met de ruwe antwoorden:
+Eén SQLite-bestand in `pipeline/cache/` (niet in git), met de ruwe antwoorden per opgevraagde URL:
 
 ```sql
 CREATE TABLE response (
-    uri TEXT PRIMARY KEY,
+    url TEXT PRIMARY KEY,
     adapter TEXT NOT NULL,
     fetched_at TEXT NOT NULL,
     status INTEGER NOT NULL,
+    content_type TEXT,
     body BLOB
 );
 ```
 
-- Een mislukte poging overschrijft nooit een eerder goed antwoord.
-- Plaatjes worden altijd gedownload naar `pipeline/cache/media/`, met licentie en bronvermelding.
+- Een mislukte poging overschrijft nooit een eerder goed antwoord of een eerder gedownload bestand.
+- Plaatjes staan in `pipeline/cache/media/`, met `body` leeg in de tabel. In de uitvoer komt een plaatje alleen met licentie en bronvermelding.
+- Antwoorden ouder dan `max_age_days` (standaard 30) worden bij `fetch` opnieuw opgehaald.
 
 ## Configuratie
-`defaults.toml` staat in git, `config.toml` (niet in git) overschrijft wat je wilt. Paden zijn relatief aan de root van de repo.
+`pipeline/defaults.toml` staat in git; `pipeline/config.toml` (niet in git) overschrijft wat je wilt. Paden zijn relatief aan de root van de repo.
 
 ```toml
 [content]
@@ -73,12 +100,7 @@ path = "content"
 
 [output]
 path = "frontend/public/data"
-
-[http]
-user_agent = "SibogaExpeditie/0.1 (https://siboga.nl)"
 ```
 
-## Verder
-- Logging met Loguru; aan het eind een samenvatting met het aantal waarschuwingen.
-- Tests met Pytest, op een kleine voorbeeldkluis en opgeslagen antwoorden.
-- Altijd een eigen `User-Agent` meesturen; Wikimedia weigert verzoeken zonder.
+## Tests
+`uv run pytest` in `pipeline/`. De tests draaien zonder internet, op een kleine voorbeeldkluis en echte, ingekorte antwoorden van de bronnen in `tests/fixtures/`.

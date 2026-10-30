@@ -1,0 +1,259 @@
+"""Adapter voor bestanden op Wikimedia Commons, plus hulpjes voor plaatjes van Commons."""
+from __future__ import annotations
+
+from datetime import date
+from html.parser import HTMLParser
+from pathlib import PurePosixPath
+from typing import TYPE_CHECKING
+from urllib.parse import quote, unquote, urlencode
+import re
+
+from loguru import logger
+
+from siboga.models import ImageInfo, SourceData
+from siboga.sources.base import SourceAdapter
+
+if TYPE_CHECKING:
+    from siboga.cache import Cache
+    from siboga.fetcher import Fetcher
+
+API_URL = "https://commons.wikimedia.org/w/api.php"
+BLOCK_TAGS = {"br", "div", "li", "p", "td", "tr"}
+# Een MediaInfo-entity op Commons; het nummer na de M is de page id van het bestand.
+ENTITY_URL = re.compile(r"https?://commons\.wikimedia\.org/(entity/|wiki/Special:EntityPage/)M(\d+)(?![\w/])")
+FILE_PREFIXES = ("file:", "bestand:")
+FILE_URL = re.compile(r"https?://commons\.wikimedia\.org/wiki/(File|Bestand):.+", re.IGNORECASE)
+ISO_DATE = re.compile(r"\d{4}(-\d{2}(-\d{2})?)?")
+USELESS_CREDIT = re.compile(r"^(eigen werk|own work)\b|geüpload|uploaded", re.IGNORECASE)
+VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+
+class CommonsAdapter(SourceAdapter):
+    name = "commons"
+
+    def __init__(self, image_width: int):
+        self.image_width = image_width
+
+    def fetch(
+        self,
+        uri: str,
+        fetcher: Fetcher
+    ) -> None:
+        _fetch_download(self._url(uri), uri, fetcher, self.name)
+
+    def matches(self, uri: str) -> bool:
+        return FILE_URL.match(uri) is not None or ENTITY_URL.match(uri) is not None
+
+    def normalize(
+        self,
+        uri: str,
+        cache: Cache
+    ) -> SourceData | None:
+        data = cache.get_json(self._url(uri))
+        info = _imageinfo(data)
+        if info is None:
+            logger.warning(f"Geen imageinfo van Commons in de cache voor {uri}")
+            return None
+        # Bij een M-entity staat de bestandsnaam alleen in het antwoord.
+        filename = (_page_filename(data) or uri) if ENTITY_URL.match(uri) else filename_from_url(uri)
+        metadata = info.get("extmetadata") or {}
+        return SourceData(
+            description = _metadata_text(metadata, "ImageDescription"),
+            fields = _fields(metadata),
+            image = _image(info, filename),
+            label = _metadata_text(metadata, "ObjectName") or PurePosixPath(filename).stem
+        )
+
+    def _url(self, uri: str) -> str:
+        """De imageinfo-URL bij een URI: op page id voor een M-entity, anders op bestandsnaam."""
+        match = ENTITY_URL.match(uri)
+        if match:
+            return pageid_imageinfo_url(int(match.group(2)), self.image_width)
+        return imageinfo_url(filename_from_url(uri), self.image_width)
+
+class _TextExtractor(HTMLParser):
+    """Haalt de zichtbare platte tekst uit een stukje HTML; verborgen elementen vallen weg."""
+    def __init__(self):
+        super().__init__(convert_charrefs = True)
+        self.open_tags: list[tuple[str, bool]] = []
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        if not any(hidden for _, hidden in self.open_tags):
+            self.parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in BLOCK_TAGS:
+            self.parts.append(" ")
+        for index in range(len(self.open_tags) - 1, -1, -1):
+            if self.open_tags[index][0] == tag:
+                del self.open_tags[index:]
+                break
+
+    def handle_starttag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]]
+    ) -> None:
+        if tag in BLOCK_TAGS:
+            self.parts.append(" ")
+        if tag in VOID_TAGS:
+            return
+        style = (dict(attrs).get("style") or "").replace(" ", "").lower()
+        self.open_tags.append((tag, "display:none" in style))
+
+def fetch_image(
+    filename: str,
+    width: int,
+    fetcher: Fetcher,
+    adapter: str
+) -> None:
+    """Haalt de imageinfo van een Commons-bestand op en downloadt het plaatje."""
+    _fetch_download(imageinfo_url(filename, width), filename, fetcher, adapter)
+
+def filename_from_url(url_or_name: str) -> str:
+    """Bestandsnaam zoals Commons hem toont, uit een URL of een kale naam."""
+    name = unquote(url_or_name.strip())
+    if "/wiki/" in name:
+        name = name.split("/wiki/", 1)[1]
+    name = name.split("?", 1)[0].split("#", 1)[0]
+    for prefix in FILE_PREFIXES:
+        if name.lower().startswith(prefix):
+            name = name[len(prefix):]
+            break
+    return name.replace("_", " ").strip()
+
+def imageinfo_url(filename: str, width: int) -> str:
+    """API-URL voor de imageinfo van een bestand; altijd dezelfde bij dezelfde invoer."""
+    return _api_url(("titles", f"File:{filename}"), width)
+
+def pageid_imageinfo_url(page_id: int, width: int) -> str:
+    """Als imageinfo_url, maar op page id, voor een MediaInfo-entity (M + page id)."""
+    return _api_url(("pageids", str(page_id)), width)
+
+def read_image(
+    filename: str,
+    width: int,
+    cache: Cache
+) -> ImageInfo | None:
+    """Plaatje met bronvermelding en licentie, uit de imageinfo in de cache."""
+    info = _imageinfo(cache.get_json(imageinfo_url(filename, width)))
+    if info is None:
+        logger.warning(f"Geen imageinfo van Commons in de cache voor {filename}")
+        return None
+    return _image(info, filename)
+
+def strip_html(value: str | None) -> str | None:
+    """Platte tekst zonder tags, met witruimte samengevoegd; None als er niets overblijft."""
+    if not value:
+        return None
+    parser = _TextExtractor()
+    parser.feed(value)
+    parser.close()
+    text = " ".join("".join(parser.parts).split())
+    return text or None
+
+def _api_url(target: tuple[str, str], width: int) -> str:
+    """API-URL voor de imageinfo van één pagina (titles of pageids); altijd dezelfde bij dezelfde invoer."""
+    params = [
+        ("action", "query"),
+        ("format", "json"),
+        ("formatversion", "2"),
+        ("prop", "imageinfo"),
+        ("iiprop", "url|extmetadata|mime|size"),
+        ("iiurlwidth", str(width)),
+        ("iiextmetadatalanguage", "nl"),
+        target
+    ]
+    return f"{API_URL}?{urlencode(params, quote_via = quote)}"
+
+def _credit(metadata: dict) -> str | None:
+    artist = _metadata_text(metadata, "Artist")
+    credit = _metadata_text(metadata, "Credit")
+    if credit and USELESS_CREDIT.search(credit):
+        credit = None
+    if not artist:
+        return credit
+    if not credit or credit.lower() in artist.lower():
+        return artist
+    return f"{artist}, {credit}"
+
+def _fetch_download(
+    url: str,
+    name: str,
+    fetcher: Fetcher,
+    adapter: str
+) -> None:
+    """Haalt de imageinfo op url op en downloadt het plaatje; name is alleen voor de meldingen."""
+    info = _imageinfo(fetcher.get_json(url, adapter))
+    if info is None:
+        logger.warning(f"Geen imageinfo van Commons voor {name}")
+        return
+    download_url = info.get("thumburl") or info.get("url")
+    if not download_url:
+        logger.warning(f"Geen download-URL op Commons voor {name}")
+        return
+    fetcher.download(download_url, adapter)
+
+def _fields(metadata: dict) -> dict[str, list[str]]:
+    """De velden uit de extmetadata; een datum die geen ISO is, wordt date_description."""
+    fields = {}
+    creator = _metadata_text(metadata, "Artist")
+    if creator:
+        fields["creator"] = [creator]
+    date_text = _metadata_text(metadata, "DateTimeOriginal")
+    created = _iso_date(date_text)
+    if created:
+        fields["created"] = [created]
+    elif date_text:
+        fields["date_description"] = [date_text]
+    return fields
+
+def _image(info: dict, name: str) -> ImageInfo | None:
+    """Plaatje met bronvermelding en licentie uit één imageinfo; name is alleen voor de melding."""
+    download_url = info.get("thumburl") or info.get("url")
+    if not download_url:
+        logger.warning(f"Geen download-URL op Commons voor {name}")
+        return None
+    metadata = info.get("extmetadata") or {}
+    return ImageInfo(
+        credit = _credit(metadata),
+        download_url = download_url,
+        license = _metadata_text(metadata, "LicenseShortName"),
+        license_url = _metadata_text(metadata, "LicenseUrl"),
+        source_url = info.get("descriptionurl")
+    )
+
+def _imageinfo(data: dict | list | None) -> dict | None:
+    if not isinstance(data, dict):
+        return None
+    for page in data.get("query", {}).get("pages", []):
+        infos = page.get("imageinfo") or []
+        if infos:
+            return infos[0]
+    return None
+
+def _iso_date(value: str | None) -> str | None:
+    if not value or not ISO_DATE.fullmatch(value):
+        return None
+    parts = [int(part) for part in value.split("-")] + [1, 1]
+    try:
+        date(parts[0], parts[1], parts[2])
+    except ValueError:
+        return None
+    return value
+
+def _metadata_text(metadata: dict, key: str) -> str | None:
+    entry = metadata.get(key)
+    if not isinstance(entry, dict):
+        return None
+    return strip_html(str(entry.get("value", "")))
+
+def _page_filename(data: dict | list | None) -> str | None:
+    """De bestandsnaam uit de titel van de eerste pagina in het antwoord."""
+    if not isinstance(data, dict):
+        return None
+    for page in data.get("query", {}).get("pages", []):
+        title = page.get("title")
+        if title:
+            return filename_from_url(title)
+    return None

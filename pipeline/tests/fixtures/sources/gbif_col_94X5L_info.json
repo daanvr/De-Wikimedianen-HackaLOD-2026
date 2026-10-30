@@ -1,0 +1,184 @@
+{
+ "usage": {
+  "created": "2026-10-13T13:33:36.772245",
+  "createdBy": 102,
+  "modified": "2026-10-13T13:33:36.772245",
+  "modifiedBy": 102,
+  "datasetKey": 316691,
+  "id": "94X5L",
+  "sectorKey": 1738,
+  "verbatimSourceKey": 364139228,
+  "name": {
+   "created": "2026-10-17T03:42:29.815223",
+   "createdBy": 102,
+   "modified": "2026-10-17T03:42:29.815223",
+   "modifiedBy": 102,
+   "datasetKey": 316691,
+   "id": "y5qPZNp16yAo5Sug3OuEy2",
+   "sectorKey": 1738,
+   "verbatimSourceKey": 364139228,
+   "namesIndexId": 9554058,
+   "scientificName": "Weberolegra weberi",
+   "authorship": "(Tams, 1929)",
+   "rank": "species",
+   "genus": "Weberolegra",
+   "specificEpithet": "weberi",
+   "basionymAuthorship": {
+    "authors": [
+     "Tams"
+    ],
+    "year": "1929"
+   },
+   "code": "zoological",
+   "nomStatus": "acceptable",
+   "publishedInId": "becd1f8b-5e2e-4b67-a9ce-da1327718c76",
+   "publishedInPage": "145–146",
+   "origin": "source",
+   "type": "scientific",
+   "remarks": "http://purl.obolibrary.org/obo/NOMEN_0000224",
+   "merged": false,
+   "parsed": true,
+   "notho": []
+  },
+  "status": "accepted",
+  "origin": "source",
+  "parentId": "94PSW",
+  "identifier": [
+   "afromoths:S520750010",
+   "inat:1015442",
+   "wikidata:Q14517960"
+  ],
+  "scrutinizer": "Ian Kitching",
+  "scrutinizerDate": "2017-07-17",
+  "label": "Weberolegra weberi (Tams, 1929)",
+  "labelHtml": "<i>Weberolegra weberi</i> (Tams, 1929)",
+  "merged": false
+ },
+ "publishedIn": {
+  "created": "2026-10-17T03:42:21.043271",
+  "createdBy": 466,
+  "modified": "2026-10-17T03:42:21.043271",
+  "modifiedBy": 466,
+  "datasetKey": 316691,
+  "id": "becd1f8b-5e2e-4b67-a9ce-da1327718c76",
+  "sectorKey": 2214,
+  "verbatimSourceKey": 366466121,
+  "csl": {
+   "id": "2700",
+   "author": [
+    {
+     "family": "Tams",
+     "given": "W. H. T."
+    }
+   ],
+   "issued": {
+    "date-parts": [
+     [
+      1929
+     ]
+    ]
+   },
+   "page": "145–146",
+   "title": "New African Lasiocampidae."
+  },
+  "citation": "Tams, W. H. T. (1929). New African Lasiocampidae.",
+  "year": 1929,
+  "page": "145–146",
+  "parsed": true,
+  "merged": true
+ },
+ "classification": [
+  {
+   "id": "CS5HF",
+   "name": "Eukaryota",
+   "authorship": "(Chatton, 1925) Whittaker & Margulis, 1978",
+   "rank": "domain",
+   "label": "Eukaryota (Chatton, 1925) Whittaker & Margulis, 1978",
+   "labelHtml": "Eukaryota (Chatton, 1925) Whittaker & Margulis, 1978"
+  },
+  {
+   "id": "N",
+   "name": "Animalia",
+   "rank": "kingdom",
+   "label": "Animalia",
+   "labelHtml": "Animalia"
+  },
+  {
+   "id": "RT",
+   "name": "Arthropoda",
+   "rank": "phylum",
+   "label": "Arthropoda",
+   "labelHtml": "Arthropoda"
+  },
+  {
+   "id": "L2655",
+   "name": "Hexapoda",
+   "rank": "subphylum",
+   "label": "Hexapoda",
+   "labelHtml": "Hexapoda"
+  },
+  {
+   "id": "H6",
+   "name": "Insecta",
+   "rank": "class",
+   "label": "Insecta",
+   "labelHtml": "Insecta"
+  },
+  {
+   "id": "B6L67",
+   "name": "Lepidoptera",
+   "authorship": "Linnaeus, 1758",
+   "rank": "order",
+   "label": "Lepidoptera Linnaeus, 1758",
+   "labelHtml": "Lepidoptera Linnaeus, 1758"
+  },
+  {
+   "id": "KZ9P7",
+   "name": "Lasiocampoidea",
+   "authorship": "Harris, 1841",
+   "rank": "superfamily",
+   "label": "Lasiocampoidea Harris, 1841",
+   "labelHtml": "Lasiocampoidea Harris, 1841"
+  },
+  {
+   "id": "KX2VN",
+   "name": "Lasiocampidae",
+   "authorship": "Harris, 1841",
+   "rank": "family",
+   "label": "Lasiocampidae Harris, 1841",
+   "labelHtml": "Lasiocampidae Harris, 1841"
+  },
+  {
+   "id": "KZ9P6",
+   "name": "Lasiocampinae",
+   "authorship": "Harris, 1841",
+   "rank": "subfamily",
+   "label": "Lasiocampinae Harris, 1841",
+   "labelHtml": "Lasiocampinae Harris, 1841"
+  },
+  {
+   "id": "94PSW",
+   "name": "Weberolegra",
+   "authorship": "Prozorov, 2011",
+   "rank": "genus",
+   "label": "Weberolegra Prozorov, 2011",
+   "labelHtml": "<i>Weberolegra</i> Prozorov, 2011"
+  }
+ ],
+ "group": "lepidoptera",
+ "source": {
+  "id": 364139228,
+  "datasetKey": 316691,
+  "sectorKey": 1738,
+  "sourceId": "333582",
+  "sourceDatasetKey": 55434,
+  "sourceEntity": "name usage",
+  "secondarySources": {
+   "published in": {
+    "id": "S520750010",
+    "datasetKey": 2017,
+    "type": "published in"
+   }
+  }
+ }
+}
