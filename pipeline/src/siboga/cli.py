@@ -1,4 +1,4 @@
-"""Commando's: `siboga fetch`, `siboga build` en `siboga all`."""
+"""Commands: `siboga fetch`, `siboga build` and `siboga all`."""
 import argparse
 import sys
 
@@ -60,7 +60,7 @@ def run_fetch(
     report: Report,
     refresh: bool = False
 ) -> None:
-    """Haalt voor elk record een volledige kopie van zijn bron op, met plaatjes."""
+    """Fetches a full copy of each record's source, including images."""
     items = read_content(config.content_path, report)
     registry = build_registry(config)
     cache = Cache(config.cache_path, config.media_path)
@@ -87,7 +87,7 @@ def run_fetch(
             try:
                 adapter.fetch(uri, fetcher)
             except Exception as error:
-                # Eén kapotte bron mag de rest niet tegenhouden.
+                # One broken source must not stop the rest.
                 report.warn(f"ophalen mislukt ({adapter.name}): {error!r}", item.path)
     finally:
         fetcher.close()

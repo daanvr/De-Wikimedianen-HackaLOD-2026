@@ -71,7 +71,7 @@ def test_chapter_location(items, index):
 
 def test_chapter_location_variants(index):
     report = Report()
-    # Zonder aanhalingstekens maakt YAML er een geneste lijst van.
+    # Without quotes, YAML turns it into a nested list.
     assert chapter_location(_item({"location": [["Haven Jakarta"]]}), index, report) == "records/haven-jakarta"
     assert chapter_location(_item({"location": "[[haven jakarta|de haven]]"}), index, report) == "records/haven-jakarta"
     assert report.warnings == []
@@ -225,7 +225,7 @@ def test_read_content_warnings():
     assert any("Kapotte YAML.md" in warning for warning in report.warnings)
     assert any("Onbekend type.md" in warning for warning in report.warnings)
     assert any("duplicaat-2" in warning for warning in report.warnings)
-    # Zonder frontmatter, zonder type of in een verborgen map: stil overgeslagen.
+    # No frontmatter, no type, or in a hidden folder: silently skipped.
     assert not any("README" in warning or "Notitie" in warning or "Verborgen" in warning for warning in report.warnings)
 
 def test_real_content_smoke():

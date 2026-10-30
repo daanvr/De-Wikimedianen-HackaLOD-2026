@@ -1,12 +1,12 @@
-# Welke velden een record toont, hangt af van zijn contenttype (niet van de bron).
+# Which fields a record shows depends on its contenttype (not on its source).
 #
-# [contenttypes]: per contenttype de velden, in de volgorde waarin ze getoond worden.
-# [fields]: per veld het soort waarde.
-#   date = altijd YYYY, YYYY-MM of YYYY-MM-DD
-#   text = gewone tekst
+# [contenttypes]: per contenttype the fields, in the order in which they are shown.
+# [fields]: per field the kind of value.
+#   date = always YYYY, YYYY-MM or YYYY-MM-DD
+#   text = plain text
 #
-# Welke bron welk veld kan vullen, staat in de adapters (pipeline/src/siboga/sources/).
-# Het label van een veld op de site komt uit i18n, als bericht field_<veld>, bijvoorbeeld field_birth_date.
+# Which source can fill which field is defined in the adapters (pipeline/src/siboga/sources/).
+# The label of a field on the site comes from i18n, as the message field_<field>, e.g. field_birth_date.
 
 [contenttypes]
 person = ["birth_date", "birth_place", "death_date", "death_place", "occupation", "employer"]

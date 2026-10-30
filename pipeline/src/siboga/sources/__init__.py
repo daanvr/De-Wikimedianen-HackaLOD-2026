@@ -1,4 +1,4 @@
-"""Bronadapters en de registry die bij een URI de juiste adapter kiest."""
+"""Source adapters and the registry that picks the right adapter for a URI."""
 from siboga.config import Config
 from siboga.sources.archief_amsterdam import ArchiefAmsterdamAdapter
 from siboga.sources.base import SourceAdapter

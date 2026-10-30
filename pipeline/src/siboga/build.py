@@ -1,4 +1,4 @@
-"""Stap `build`: content en cache samenvoegen tot de frontend data. Draait zonder internet."""
+"""Step `build`: merges content and cache into the frontend data. Runs without internet."""
 from datetime import datetime, timezone
 from pathlib import Path
 import json
@@ -35,7 +35,7 @@ SCHEMA_VERSION = 2
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
 
 class OutputModel(BaseModel):
-    """Basis voor de uitvoer: snake_case in Python, camelCase in de JSON."""
+    """Base for the output: snake_case in Python, camelCase in the JSON."""
     model_config = ConfigDict(
         alias_generator = to_camel,
         populate_by_name = True
@@ -105,7 +105,7 @@ class FrontendData(OutputModel):
     records: dict[str, RecordOut]
 
 def check_output(output_path: Path) -> list[str]:
-    """Controleert de frontend data tegen het contract. Geeft een lijst met problemen terug."""
+    """Checks the frontend data against the contract. Returns a list of problems."""
     json_path = output_path / "siboga.json"
     if not json_path.exists():
         return [f"{json_path} bestaat niet"]
@@ -138,7 +138,7 @@ def run_build(
     config: Config,
     report: Report
 ) -> Path:
-    """Bouwt siboga.json en media/ in een tijdelijke map en zet die daarna op zijn plek."""
+    """Builds siboga.json and media/ in a temporary directory, then moves it into place."""
     items = read_content(config.content_path, report)
     messages = read_messages(config.content_path, report)
     catalog = load_fields()
@@ -216,7 +216,7 @@ def _build_fields(
     item: ContentItem,
     report: Report
 ) -> list[FieldOut]:
-    """Kiest de velden die bij het contenttype horen, in de volgorde van fields.toml."""
+    """Picks the fields that belong to the content type, in the order of fields.toml."""
     fields = []
     for key in profile:
         values = []
@@ -309,7 +309,7 @@ def _check_field_messages(
     messages: dict[str, str],
     report: Report
 ) -> None:
-    """De frontend toont veldnamen via i18n; meld welke berichten field_<veld> nog ontbreken."""
+    """The frontend shows field names via i18n; reports which field_<key> messages are still missing."""
     used = sorted({key for profile in catalog.profiles.values() for key in profile})
     missing = [f"field_{key}" for key in used if f"field_{key}" not in messages]
     if missing:
@@ -349,7 +349,7 @@ def _copy_image(
     media_dir: Path,
     report: Report
 ) -> ImageOut | None:
-    """Kopieert het plaatje uit de cache naar media/. Zonder bestand, licentie of bronvermelding geen plaatje."""
+    """Copies the image from the cache to media/. No file, license or credit means no image."""
     if image is None:
         return None
     if not image.license or not image.credit:
@@ -392,7 +392,7 @@ def _normalize(
     try:
         source = adapter.normalize(uri, cache)
     except Exception as error:
-        # Eén kapotte bron mag de rest van de build niet tegenhouden.
+        # One broken source must not stop the rest of the build.
         report.warn(f"normaliseren mislukt ({adapter.name}): {error!r}", item.path)
         return None
     if source is None:

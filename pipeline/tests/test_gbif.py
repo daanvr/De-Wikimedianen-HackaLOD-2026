@@ -23,7 +23,7 @@ WEBEROLEGRA_FIELDS = {
 WIDTH = 1600
 
 class FakeCache:
-    """Cache in het geheugen: URL naar JSON-antwoord."""
+    """In-memory cache: URL to JSON response."""
     def __init__(self, responses: dict[str, object]):
         self.responses = responses
 
@@ -50,7 +50,7 @@ class FakeCache:
         return Path("/media") / hashlib.sha1(url.encode()).hexdigest()
 
 class FakeFetcher:
-    """Fetcher die antwoorden uit een dict geeft en bijhoudt wat er gevraagd is."""
+    """Fetcher that serves responses from a dict and records what was requested."""
     def __init__(self, responses: dict[str, object]):
         self.cache = FakeCache(responses)
         self.downloads: list[str] = []
@@ -143,7 +143,7 @@ def test_normalize_missing_cache():
 
 def test_normalize_picks_first_image_with_own_license():
     search = _fixture("gbif_occurrences_with_image.json")
-    # Zonder licentie bij het plaatje zelf telt het niet, ook al heeft het record een licentie.
+    # Without a license on the image itself it doesn't count, even if the record has one.
     search["results"].reverse()
     responses = _col_responses()
     responses[COL_OCCURRENCES_URL] = search

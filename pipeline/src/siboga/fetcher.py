@@ -1,4 +1,4 @@
-"""Haalt URL's op via de cache: beleefd, met herpogingen, en zonder ooit een goede kopie kwijt te raken."""
+"""Fetches URLs through the cache: politely, with retries, and without ever losing a good copy."""
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -12,13 +12,13 @@ import httpx
 from siboga.cache import Cache
 from siboga.models import CachedResponse
 
-# Wachttijd vóór de eerste en de tweede herpoging.
+# Wait time before the first and the second retry.
 _BACKOFF_SECONDS = (1.0, 3.0)
 _MAX_RETRY_AFTER_SECONDS = 10.0
 _RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 class Fetcher:
-    """Doet alle HTTP-verzoeken van de pipeline en schrijft elk antwoord in de cache."""
+    """Makes all HTTP requests for the pipeline and writes every response to the cache."""
     def __init__(
         self,
         cache: Cache,
@@ -50,7 +50,7 @@ class Fetcher:
             self._client.close()
 
     def download(self, url: str, adapter: str) -> Path | None:
-        """Downloadt url naar cache.media_path(url). Een bestaand bestand blijft staan als het misgaat."""
+        """Downloads url to cache.media_path(url). An existing file is kept if the download fails."""
         path = self.cache.media_path(url)
         if path.is_file() and not self.refresh:
             self.stats["cached"] += 1
@@ -78,7 +78,7 @@ class Fetcher:
         adapter: str,
         headers: dict[str, str] | None = None
     ) -> CachedResponse | None:
-        """Geeft het antwoord voor url, uit de cache als dat kan. Gooit nooit een fout bij netwerkproblemen."""
+        """Returns the response for url, from the cache if possible. Never raises on network problems."""
         cached = self.cache.get(url)
         has_good_copy = cached is not None and cached.is_ok()
         if has_good_copy and not self.refresh and self._is_fresh(cached):
@@ -121,7 +121,7 @@ class Fetcher:
         adapter: str,
         headers: dict[str, str] | None = None
     ) -> CachedResponse:
-        """Eén GET met maximaal twee herpogingen. Status 0 betekent een netwerkfout."""
+        """One GET with at most two retries. Status 0 means a network error."""
         request_headers = {**(headers or {}), "User-Agent": self.user_agent}
         for attempt in range(len(_BACKOFF_SECONDS) + 1):
             is_last = attempt == len(_BACKOFF_SECONDS)
@@ -157,7 +157,7 @@ class Fetcher:
         return _failure(url, adapter)
 
     def _wait(self, url: str) -> None:
-        """Wacht tot er minstens delay_seconds voorbij is sinds het vorige verzoek aan dezelfde host."""
+        """Waits until at least delay_seconds have passed since the previous request to the same host."""
         host = urlsplit(url).netloc
         last = self._last_request.get(host)
         if last is not None:
@@ -167,12 +167,12 @@ class Fetcher:
         self._last_request[host] = time.monotonic()
 
     def _write_atomic(self, path: Path, data: bytes) -> None:
-        """Schrijft eerst naar een tijdelijk bestand en zet het dan in één keer op zijn plek."""
+        """Writes to a temporary file first, then moves it into place in one step."""
         descriptor, temp_name = tempfile.mkstemp(dir = path.parent, prefix = ".download-")
         try:
             with os.fdopen(descriptor, "wb") as file:
                 file.write(data)
-            # mkstemp maakt het bestand alleen voor de eigenaar leesbaar.
+            # mkstemp makes the file readable by the owner only.
             os.chmod(temp_name, 0o644)
             os.replace(temp_name, path)
         except BaseException:
@@ -193,7 +193,7 @@ def _now() -> str:
     return datetime.now(UTC).isoformat(timespec = "seconds")
 
 def _retry_delay(response: httpx.Response, default: float) -> float:
-    """Retry-After in seconden als de server die geeft, nooit langer dan het maximum."""
+    """Retry-After in seconds if the server sends it, never longer than the maximum."""
     try:
         seconds = float(response.headers.get("retry-after", default))
     except ValueError:

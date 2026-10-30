@@ -1,4 +1,4 @@
-"""Welke velden een record toont, per contenttype. Zie pipeline/fields.toml."""
+"""Which fields a record shows, per content type. See pipeline/fields.toml."""
 from dataclasses import dataclass
 from pathlib import Path
 import re

@@ -9,10 +9,10 @@ if TYPE_CHECKING:
     from siboga.fetcher import Fetcher
 
 class SourceAdapter:
-    """Basis voor één soort bron.
+    """Base for one kind of source.
 
-    fetch() draait alleen in de stap `fetch` en mag het internet op, via de fetcher.
-    normalize() draait alleen in de stap `build` en leest uitsluitend uit de cache.
+    fetch() runs only in the `fetch` step and may access the internet, through the fetcher.
+    normalize() runs only in the `build` step and reads exclusively from the cache.
     """
     name: str = ""
 

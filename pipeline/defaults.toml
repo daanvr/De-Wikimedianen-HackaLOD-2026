@@ -1,5 +1,5 @@
-# Standaardinstellingen. Overschrijf wat je wilt in config.toml (niet in git).
-# Paden zijn relatief aan de root van de code-repo.
+# Default settings. Override whatever you want in config.toml (not in git).
+# Paths are relative to the root of the code repo.
 
 [content]
 path = "content"

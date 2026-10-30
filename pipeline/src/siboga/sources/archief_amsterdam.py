@@ -1,4 +1,4 @@
-"""Adapter voor records van het Stadsarchief Amsterdam, via hun Linked Data (JSON-LD) op id.archief.amsterdam."""
+"""Adapter for records of the Stadsarchief Amsterdam, through their Linked Data (JSON-LD) at id.archief.amsterdam."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from siboga.cache import Cache
     from siboga.fetcher import Fetcher
 
-# De beta-site haalt zelf ook deze JSON-LD op; hetzelfde adres geeft HTML of Turtle bij een andere Accept.
+# The beta site fetches this same JSON-LD itself; the same address returns HTML or Turtle with a different Accept.
 ACCEPT_JSON_LD = {"Accept": "application/ld+json"}
 DCTERMS = "http://purl.org/dc/terms/"
 DEFAULT_CREDIT = "Stadsarchief Amsterdam"
@@ -36,7 +36,7 @@ RICO = "https://www.ica.org/standards/RiC/ontology#"
 SAA = "https://data.archief.amsterdam/ontology#"
 SCHEMA = "http://schema.org/"
 SKOS_LABEL = "http://www.w3.org/2004/02/skos/core#prefLabel"
-# Memorix slaat een los jaar op als 1 januari van dat jaar.
+# Memorix stores a bare year as 1 January of that year.
 YEAR_ONLY = re.compile(r"(\d{4})-01-01")
 
 class ArchiefAmsterdamAdapter(SourceAdapter):
@@ -91,7 +91,7 @@ def _capitalize(text: str) -> str:
     return f"{text[0].upper()}{text[1:]}" if text else text
 
 def _date(record: dict) -> str | None:
-    """De genormaliseerde datum als YYYY, YYYY-MM of YYYY-MM-DD."""
+    """The normalized date as YYYY, YYYY-MM or YYYY-MM-DD."""
     date = _literal(record, f"{RICO}normalizedDateValue")
     if not date:
         return None
@@ -105,7 +105,7 @@ def _description(
     record_iri: str,
     cache: Cache
 ) -> str | None:
-    """Soort stuk, specificaties, betrokken personen en archief, in de woorden van het archief."""
+    """Document type, specifications, persons involved and archive, in the archive's own words."""
     record = graph[record_iri]
     sentences = []
     form = _label(graph, _ref(record, f"{RICO}hasDocumentaryFormType"))
@@ -130,7 +130,7 @@ def _description(
     return ". ".join(sentences) + "." if sentences else None
 
 def _dutch_date(value: str) -> str:
-    """2026-10-30 wordt 30-10-2026; al het andere blijft zoals het is."""
+    """2026-10-30 becomes 30-10-2026; everything else stays as it is."""
     match = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", value)
     return f"{match.group(3)}-{match.group(2)}-{match.group(1)}" if match else value
 
@@ -140,7 +140,7 @@ def _expand(term: str, context: dict) -> str:
     return f"{namespace}{local}" if isinstance(namespace, str) and local else term
 
 def _fields(graph: dict, record_iri: str) -> dict[str, list[str]]:
-    """Datum van het stuk en het archief (fonds) waar het in zit."""
+    """Date of the document and the archive (fonds) that contains it."""
     record = graph[record_iri]
     fields = {}
     date = _date(record)
@@ -153,7 +153,7 @@ def _fields(graph: dict, record_iri: str) -> dict[str, list[str]]:
     return fields
 
 def _graph(data: dict | list | None) -> dict[str, dict[str, list]]:
-    """De JSON-LD als {iri: {volledige property-IRI: [waarden]}}; een verwijzing is {"@id": iri}."""
+    """The JSON-LD as {iri: {full property IRI: [values]}}; a reference is {"@id": iri}."""
     if not isinstance(data, dict):
         return {}
     context = data.get("@context") if isinstance(data.get("@context"), dict) else {}
@@ -178,7 +178,7 @@ def _image(
     uri: str,
     width: int
 ) -> ImageInfo | None:
-    """De eerste scan van het record, maar alleen als het archief er een licentie bij noemt."""
+    """The first scan of the record, but only if the archive states a license for it."""
     uuid = record_iri.rsplit("/", 1)[1]
     rights = graph.get(f"{ID_BASE}resources/records/{uuid}/accessibility_and_rights", {})
     license_info = None
@@ -222,7 +222,7 @@ def _nodes(
     return [graph[value["@id"]] for value in node.get(prop) or [] if isinstance(value, dict) and value.get("@id") in graph]
 
 def _person(iri: str | None, cache: Cache) -> str | None:
-    """Naam en geboortedatum uit de eigen JSON-LD van een persoonsvermelding."""
+    """Name and date of birth from the person observation's own JSON-LD."""
     if not iri:
         return None
     graph = _graph(cache.get_json(iri))
@@ -252,7 +252,7 @@ def _record_iri(uri: str) -> str:
     return f"{ID_BASE}{match.group(3).lower()}"
 
 def _record_title(graph: dict, iri: str | None) -> str | None:
-    """Titel van een ander record, uit zijn context-node in dezelfde JSON-LD."""
+    """Title of another record, from its context node in the same JSON-LD."""
     if not iri or not iri.startswith(ID_BASE):
         return None
     uuid = iri.rstrip("/").rsplit("/", 1)[1]
@@ -265,7 +265,7 @@ def _ref(node: dict, prop: str) -> str | None:
     return None
 
 def _term(value: object, context: dict) -> object:
-    """Een verwijzing wordt {"@id": volledige IRI}, een literal een string."""
+    """A reference becomes {"@id": full IRI}, a literal a string."""
     if isinstance(value, dict):
         if "@id" in value:
             return {"@id": _expand(value["@id"], context)}

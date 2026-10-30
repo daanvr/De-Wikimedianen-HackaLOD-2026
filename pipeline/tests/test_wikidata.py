@@ -14,7 +14,7 @@ FIXTURES = Path(__file__).parent / "fixtures" / "sources"
 WIDTH = 1600
 
 class FakeCache:
-    """Cache in het geheugen: URL naar JSON-antwoord."""
+    """In-memory cache: URL to JSON response."""
     def __init__(self, responses: dict[str, object]):
         self.responses = responses
 
@@ -41,7 +41,7 @@ class FakeCache:
         return Path("/media") / str(abs(hash(url)))
 
 class FakeFetcher:
-    """Fetcher die antwoorden uit een dict geeft en bijhoudt wat er gevraagd is."""
+    """Fetcher that serves responses from a dict and records what was requested."""
     def __init__(self, responses: dict[str, object]):
         self.downloads: list[tuple[str, str]] = []
         self.requests: list[tuple[str, str]] = []
@@ -95,7 +95,7 @@ def _item(qid: str) -> dict:
     return {"entity-type": "item", "id": qid, "numeric-id": int(qid[1:])}
 
 def _labels(labels: dict[str, dict[str, str] | None]) -> dict:
-    """Antwoord van wbgetentities; None staat voor een item dat niet bestaat."""
+    """wbgetentities response; None stands for an item that does not exist."""
     entities = {}
     for qid, values in labels.items():
         if values is None:
@@ -113,9 +113,9 @@ def _normalize(
     uri: str = "https://www.wikidata.org/wiki/Q1",
     labels: dict[str, dict[str, str] | None] | None = None
 ):
-    """Normaliseert uit een cache met de entity en, onder de URL voor precies deze Q-nummers, de labels.
+    """Normalizes from a cache holding the entity and, under the URL for exactly these Q-numbers, the labels.
 
-    Vraagt de adapter labels van andere items, dan vindt hij ze niet; zo toetst dit ook welke items hij vraagt.
+    If the adapter asks for labels of other items, it won't find them; so this also tests which items it requests.
     """
     responses = {entity_url("Q1"): response}
     if labels:

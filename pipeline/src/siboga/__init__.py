@@ -1,1 +1,1 @@
-"""Pipeline die de frontend data van De Siboga Expeditie bouwt."""
+"""Pipeline that builds the frontend data for De Siboga Expeditie."""

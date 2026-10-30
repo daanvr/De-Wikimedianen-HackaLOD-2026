@@ -1,4 +1,4 @@
-"""Integratietest voor de stap build: kleine kluis, nep-bron, echte cache, geen internet."""
+"""Integration test for the build step: small vault, fake source, real cache, no internet."""
 from pathlib import Path
 import json
 

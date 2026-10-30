@@ -1,4 +1,4 @@
-"""Adapter voor taxa op GBIF: Catalogue of Life-taxa (/taxon/…) en GBIF-soorten (/species/…)."""
+"""Adapter for taxa on GBIF: Catalogue of Life taxa (/taxon/…) and GBIF species (/species/…)."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from siboga.cache import Cache
     from siboga.fetcher import Fetcher
 
-# De taxonpagina's van GBIF gebruiken de uitgebreide release van de Catalogue of Life (COL XR).
+# GBIF's taxon pages use the extended release of the Catalogue of Life (COL XR).
 COL_CHECKLIST_KEY = "7ddf754f-d193-4cc9-b351-99906754a03b"
 COL_INFO_URL = "https://api.checklistbank.org/dataset/3LXR/taxon/{id}/info"
 DUTCH = ("nld", "nl")
@@ -29,7 +29,7 @@ GBIF_VERNACULAR_URL = "https://api.gbif.org/v1/species/{id}/vernacularNames?limi
 LICENSE_URL = re.compile(r"https?://creativecommons\.org/(licenses|publicdomain)/([a-z-]+)/(\d\.\d)", re.IGNORECASE)
 OCCURRENCE_PAGE_URL = "https://www.gbif.org/occurrence/{key}"
 OCCURRENCE_SEARCH_URL = "https://api.gbif.org/v1/occurrence/search?{taxon}&mediaType=StillImage&limit=20"
-# Van hoog naar laag; bepaalt of familie en orde in de beschrijving horen.
+# From high to low; determines whether family and order belong in the description.
 RANKS = (
     "kingdom",
     "phylum",
@@ -108,7 +108,7 @@ class GbifAdapter(SourceAdapter):
         )
 
     def _occurrences_url(self, uri: str) -> str:
-        """Waarnemingen en specimens van dit taxon met een plaatje."""
+        """Observations and specimens of this taxon that have an image."""
         match = TAXON_URL.match(uri)
         if match:
             taxon = f"checklistKey={COL_CHECKLIST_KEY}&taxonKey={match.group(2)}"
@@ -117,7 +117,7 @@ class GbifAdapter(SourceAdapter):
         return OCCURRENCE_SEARCH_URL.format(taxon = taxon)
 
     def _source_urls(self, uri: str) -> list[str]:
-        """De API-URL's met de gegevens van het taxon zelf; de eerste is de hoofdbron."""
+        """The API URLs with the data of the taxon itself; the first is the main source."""
         match = TAXON_URL.match(uri)
         if match:
             return [COL_INFO_URL.format(id = match.group(2))]
@@ -125,7 +125,7 @@ class GbifAdapter(SourceAdapter):
         return [GBIF_SPECIES_URL.format(id = key), GBIF_VERNACULAR_URL.format(id = key)]
 
 def license_name(value: str | None) -> tuple[str, str] | None:
-    """Korte naam en URL van een Creative Commons-licentie, of None als het geen CC-licentie is."""
+    """Short name and URL of a Creative Commons license, or None if it is not a CC license."""
     if not value:
         return None
     value = GBIF_LICENSE_CODES.get(value.strip(), value.strip())
@@ -150,7 +150,7 @@ def _col_taxon(data: dict) -> dict | None:
         return None
     classification = data.get("classification") or []
     ranks = {item.get("rank"): item.get("name") for item in classification}
-    # De directe ouder is de parentId van het taxon, anders de laagste rang in de classificatie.
+    # The direct parent is the parentId of the taxon, otherwise the lowest rank in the classification.
     parents = [item for item in classification if item.get("id") == usage.get("parentId")] or classification[-1:]
     return {
         "family": ranks.get("family"),
@@ -162,7 +162,7 @@ def _col_taxon(data: dict) -> dict | None:
     }
 
 def _credit(media: dict, occurrence: dict) -> str | None:
-    """Maker en rechthebbende van het plaatje, anders de herkomst van het record."""
+    """Creator and rights holder of the image, otherwise the provenance of the record."""
     parts = []
     for value in (media.get("creator"), media.get("rightsHolder") or occurrence.get("rightsHolder")):
         if value and value not in parts:
@@ -172,7 +172,7 @@ def _credit(media: dict, occurrence: dict) -> str | None:
     return occurrence.get("datasetName") or occurrence.get("institutionCode")
 
 def _description(taxon: dict) -> str | None:
-    """Rang en plaats in de classificatie, met de Nederlandse naam als de bron die heeft."""
+    """Rank and position in the classification, with the Dutch name if the source has one."""
     rank = taxon["rank"]
     depth = RANKS.index(rank) if rank in RANKS else len(RANKS)
     text = RANK_NAMES.get(rank, "taxon")
@@ -191,7 +191,7 @@ def _dutch_names(
     names: list | None,
     field: str
 ) -> list[str]:
-    """Alle Nederlandse namen, de voorkeursnaam eerst."""
+    """All Dutch names, the preferred name first."""
     dutch = [item for item in names or [] if item.get("language") in DUTCH and item.get(field)]
     dutch.sort(key = lambda item: not item.get("preferred"))
     return _values(*(item[field] for item in dutch))
@@ -232,7 +232,7 @@ def _pick_image(
     search: dict | list | None,
     width: int
 ) -> ImageInfo | None:
-    """Het eerste plaatje met een eigen Creative Commons-licentie en een bronvermelding."""
+    """The first image with its own Creative Commons license and an attribution."""
     if not isinstance(search, dict):
         return None
     for occurrence in search.get("results") or []:
@@ -260,7 +260,7 @@ def _species_key(uri: str) -> str:
     return match.group(2)
 
 def _values(*values: str | None) -> list[str]:
-    """Niet-lege, ontdubbelde waarden in bronvolgorde."""
+    """Non-empty, deduplicated values in source order."""
     result = []
     for value in values:
         value = (value or "").strip()

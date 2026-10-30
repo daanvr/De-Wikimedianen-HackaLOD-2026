@@ -14,7 +14,7 @@ RIGHTS_IRI = "https://id.archief.amsterdam/resources/records/37a9193c-31fa-4a34-
 WIDTH = 1600
 
 class FakeCache:
-    """Cache in het geheugen: URL naar JSON-antwoord."""
+    """In-memory cache: URL to JSON response."""
     def __init__(self, responses: dict[str, object]):
         self.responses = responses
 
@@ -41,7 +41,7 @@ class FakeCache:
         return Path("/media") / hashlib.sha1(url.encode()).hexdigest()
 
 class FakeFetcher:
-    """Fetcher die antwoorden uit een dict geeft en bijhoudt wat er gevraagd is, met headers."""
+    """Fetcher that serves responses from a dict and records what was requested, with headers."""
     def __init__(self, responses: dict[str, object]):
         self.cache = FakeCache(responses)
         self.downloads: list[str] = []
@@ -74,7 +74,7 @@ class FakeFetcher:
         return response.json() if response else None
 
 def _licensed_responses() -> dict[str, object]:
-    """Het echte record, met een licentie erbij zoals een beeldrecord die zou kunnen hebben."""
+    """The real record, plus a license such as an image record might have."""
     responses = _responses()
     record = copy.deepcopy(responses[RECORD_IRI])
     for node in record["@graph"]:

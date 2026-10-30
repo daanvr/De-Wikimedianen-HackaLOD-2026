@@ -1,4 +1,4 @@
-"""Gedeelde datatypes tussen content, bronnen, cache en build."""
+"""Data types shared between content, sources, cache and build."""
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -26,7 +26,7 @@ class ItemKind(Enum):
 
 @dataclass
 class CachedResponse:
-    """Eén ruw antwoord van een bron, precies zoals het binnenkwam."""
+    """One raw response from a source, exactly as it came in."""
     adapter: str
     body: bytes | None
     content_type: str | None
@@ -52,7 +52,7 @@ class CachedResponse:
 
 @dataclass
 class ContentItem:
-    """Eén chapter of record uit de content-repo."""
+    """One chapter or record from the content repo."""
     body: str
     frontmatter: dict
     id: str
@@ -71,7 +71,7 @@ class Coordinates:
 
 @dataclass
 class ImageInfo:
-    """Een afbeelding uit een bron. Het bestand zelf staat in de cache onder download_url."""
+    """An image from a source. The file itself is in the cache under download_url."""
     credit: str | None
     download_url: str
     license: str | None
@@ -80,10 +80,10 @@ class ImageInfo:
 
 @dataclass
 class SourceData:
-    """Wat een adapter uit een bron haalt om te tonen.
+    """What an adapter extracts from a source for display.
 
-    fields bevat alle velden die de adapter kan vullen, met de namen uit pipeline/fields.toml.
-    Welke daarvan getoond worden, hangt af van het contenttype van het record.
+    fields holds all fields the adapter can fill, with the names from pipeline/fields.toml.
+    Which of them are shown depends on the content type of the record.
     """
     coordinates: Coordinates | None = None
     description: str | None = None
@@ -92,7 +92,7 @@ class SourceData:
     label: str | None = None
 
 class Report:
-    """Verzamelt waarschuwingen voor de samenvatting aan het eind."""
+    """Collects warnings for the summary at the end."""
     def __init__(self):
         self.warnings: list[str] = []
 

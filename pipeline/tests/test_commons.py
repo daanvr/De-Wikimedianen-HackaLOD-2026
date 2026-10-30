@@ -20,7 +20,7 @@ KOR_FILE = "UvA-Artis 300.005 - Siboga - bovenkomen van de kor.jpg"
 WIDTH = 1600
 
 class FakeCache:
-    """Cache in het geheugen: URL naar JSON-antwoord."""
+    """In-memory cache: URL to JSON response."""
     def __init__(self, responses: dict[str, object]):
         self.responses = responses
 
@@ -47,7 +47,7 @@ class FakeCache:
         return Path("/media") / str(abs(hash(url)))
 
 class FakeFetcher:
-    """Fetcher die antwoorden uit een dict geeft en bijhoudt wat er gevraagd is."""
+    """Fetcher that serves responses from a dict and records what was requested."""
     def __init__(self, responses: dict[str, object]):
         self.downloads: list[tuple[str, str]] = []
         self.requests: list[tuple[str, str]] = []

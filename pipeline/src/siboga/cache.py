@@ -1,4 +1,4 @@
-"""Lokale cache: ruwe antwoorden in één SQLite-bestand, gedownloade bestanden in een map."""
+"""Local cache: raw responses in one SQLite file, downloaded files in a directory."""
 from pathlib import Path, PurePosixPath
 from urllib.parse import unquote, urlsplit
 import hashlib
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS response (
 )
 """
 
-# Een goed antwoord (2xx) wordt nooit vervangen door een mislukte poging.
+# A good response (2xx) is never replaced by a failed attempt.
 _UPSERT = """
 INSERT INTO response (url, adapter, fetched_at, status, content_type, body)
 VALUES (?, ?, ?, ?, ?, ?)
@@ -32,11 +32,11 @@ WHERE excluded.status BETWEEN 200 AND 299
     OR response.status NOT BETWEEN 200 AND 299
 """
 
-# Iets als .jpg, .tiff of .mp3: een letter gevolgd door één tot vier letters of cijfers.
+# Something like .jpg, .tiff or .mp3: a letter followed by one to four letters or digits.
 _SUFFIX_PATTERN = re.compile(r"^\.[a-z][a-z0-9]{1,4}$")
 
 class Cache:
-    """Bewaart alles wat van buiten komt, zodat de site ook zonder internet te bouwen is."""
+    """Stores everything that comes from outside, so the site can also be built without internet."""
     def __init__(
         self,
         db_path: Path,
@@ -96,7 +96,7 @@ class Cache:
         self._connection.commit()
 
 def _suffix(url: str) -> str:
-    """De extensie van het pad in de URL, in kleine letters, of "" als die er niet als een extensie uitziet."""
+    """The extension of the URL path, in lowercase, or "" if it does not look like an extension."""
     path = unquote(urlsplit(url).path)
     suffix = PurePosixPath(path).suffix.lower()
     return suffix if _SUFFIX_PATTERN.match(suffix) else ""

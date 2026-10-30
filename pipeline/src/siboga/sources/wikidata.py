@@ -1,4 +1,4 @@
-"""Adapter voor items op Wikidata, via de volledige entity-JSON."""
+"""Adapter for items on Wikidata, through the full entity JSON."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from siboga.fetcher import Fetcher
 
 API_URL = "https://www.wikidata.org/w/api.php"
-# Veld naar property; van een datum telt alleen het eerste statement.
+# Field to property; for a date only the first statement counts.
 DATE_FIELDS = {
     "birth_date": "P569",
     "created": "P571",
@@ -30,7 +30,7 @@ DATE_FIELDS = {
 DESCRIPTION_LANGUAGES = ("nl", "en")
 EARTH = "http://www.wikidata.org/entity/Q2"
 ENTITY_URL = re.compile(r"https?://(www\.)?wikidata\.org/(wiki|entity)/(Q\d+)(?!\w)")
-# Veld naar properties die naar een item verwijzen; getoond wordt het label van dat item.
+# Field to properties that refer to an item; the label of that item is shown.
 ITEM_FIELDS = {
     "author": ("P50",),
     "birth_place": ("P19",),
@@ -50,7 +50,7 @@ ITEM_FIELDS = {
 LABEL_CHUNK_SIZE = 50
 LABEL_LANGUAGES = ("nl", "en", "mul")
 QID = re.compile(r"Q\d+")
-# Veld naar properties met een gewone tekst als waarde.
+# Field to properties with plain text as value.
 STRING_FIELDS = {
     "author": ("P2093",),
     "scientific_name": ("P225",)
@@ -107,7 +107,7 @@ def entity_url(qid: str) -> str:
     return f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json"
 
 def labels_urls(qids: list[str]) -> list[str]:
-    """API-URL's voor de labels van items, gesorteerd en per 50; altijd dezelfde bij dezelfde invoer."""
+    """API URLs for the labels of items, sorted and in batches of 50; always the same for the same input."""
     ordered = sorted(set(qids), key = lambda qid: int(qid[1:]))
     urls = []
     for start in range(0, len(ordered), LABEL_CHUNK_SIZE):
@@ -122,12 +122,12 @@ def labels_urls(qids: list[str]) -> list[str]:
     return urls
 
 def _add(values: list[str], value: str | None) -> None:
-    """Voegt een waarde toe als die niet leeg is en er nog niet in staat."""
+    """Adds a value if it is not empty and not already present."""
     if value and value.strip() and value.strip() not in values:
         values.append(value.strip())
 
 def _best_statements(entity: dict, prop: str) -> list[dict]:
-    """Statements met een waarde: alleen de preferred als die er zijn, nooit deprecated."""
+    """Statements with a value: only the preferred ones if there are any, never deprecated."""
     statements = [
         statement for statement in entity.get("claims", {}).get(prop, [])
         if statement.get("rank") != "deprecated"
@@ -145,7 +145,7 @@ def _coordinates(value: dict | None) -> Coordinates | None:
         return None
 
 def _entity(data: dict | list | None, qid: str) -> dict | None:
-    """De entity uit het antwoord; bij een redirect staat die onder een ander Q-nummer."""
+    """The entity from the response; after a redirect it is under a different Q number."""
     if not isinstance(data, dict):
         return None
     entities = data.get("entities") or {}
@@ -156,7 +156,7 @@ def _entity(data: dict | list | None, qid: str) -> dict | None:
     return None
 
 def _fields(entity: dict, labels: dict[str, str]) -> dict[str, list[str]]:
-    """Alle velden die deze entity kan vullen, met de namen uit fields.toml."""
+    """All fields this entity can fill, with the names from fields.toml."""
     fields: dict[str, list[str]] = {}
     for key, prop in DATE_FIELDS.items():
         _add(fields.setdefault(key, []), _time(_first_value(entity, prop)))
@@ -193,7 +193,7 @@ def _qid(uri: str) -> str:
     return match.group(3)
 
 def _read_labels(qids: list[str], cache: Cache) -> dict[str, str]:
-    """Labels van items uit de cache, als Q-nummer naar label; items zonder label ontbreken."""
+    """Labels of items from the cache, as Q number to label; items without a label are omitted."""
     labels = {}
     for url in labels_urls(qids):
         data = cache.get_json(url)
@@ -211,7 +211,7 @@ def _read_labels(qids: list[str], cache: Cache) -> dict[str, str]:
     return labels
 
 def _referenced_ids(entity: dict) -> list[str]:
-    """Alle items waar de velden naar verwijzen; daarvan zijn de labels nodig."""
+    """All items the fields refer to; their labels are needed."""
     return [qid for props in ITEM_FIELDS.values() for prop in props for qid in _item_ids(entity, prop)]
 
 def _text(values: dict | None, languages: tuple[str, ...]) -> str | None:
@@ -222,7 +222,7 @@ def _text(values: dict | None, languages: tuple[str, ...]) -> str | None:
     return None
 
 def _time(value: dict | None) -> str | None:
-    """Wikidata-tijd als ISO-string, zo precies als de precisie toelaat."""
+    """Wikidata time as an ISO string, as precise as the precision allows."""
     if not isinstance(value, dict):
         return None
     match = TIME_VALUE.match(str(value.get("time", "")))
@@ -238,5 +238,5 @@ def _time(value: dict | None) -> str | None:
     return text
 
 def _values(entity: dict, prop: str) -> list[object]:
-    """De waarden van de beste statements, in volgorde."""
+    """The values of the best statements, in order."""
     return [statement["mainsnak"].get("datavalue", {}).get("value") for statement in _best_statements(entity, prop)]

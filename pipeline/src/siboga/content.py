@@ -1,4 +1,4 @@
-"""Leest de content-repo (chapters, records, pages en i18n) en zet Obsidian-markdown om in gewone markdown."""
+"""Reads the content repo (chapters, records, pages and i18n) and converts Obsidian markdown to plain markdown."""
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -24,8 +24,8 @@ _KINDS = {
 }
 _LINK_TITLE = re.compile(r"\s+(?:\"[^\"]*\"|'[^']*')$")
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-# Eén scan over de tekst. Codeblokken en inline code komen als eerste aan de beurt,
-# zodat links en commentaar daarbinnen onaangeroerd blijven.
+# A single scan over the text. Code blocks and inline code are matched first,
+# so links and comments inside them stay untouched.
 _TOKEN = re.compile(
     r"(?P<fence>^[ \t]*(?P<fence_mark>`{3,}|~{3,})[^`\n]*\n.*?(?:^[ \t]*(?P=fence_mark)[ \t]*$|\Z))"
     r"|(?P<code>(?<!`)(?P<ticks>`+)(?!`)[^\n]*?(?<!`)(?P=ticks)(?!`))"
@@ -49,7 +49,7 @@ class LinkIndex:
 
 @dataclass
 class _BodyConverter:
-    """Zet één body om; verzamelt onderweg bijlagen en links."""
+    """Converts one body; collects attachments and links along the way."""
     index: LinkIndex
     item: ContentItem
     report: Report
@@ -191,7 +191,7 @@ def description(item: ContentItem) -> str | None:
     return str(value).strip() or None
 
 def page_title(item: ContentItem, report: Report) -> str:
-    """De titel van een page komt uit `title`; zonder titel de bestandsnaam."""
+    """A page's title comes from `title`; without a title, the file name is used."""
     value = item.frontmatter.get("title")
     if value is None or not str(value).strip():
         report.warn("page zonder title, de bestandsnaam wordt de titel", item.path)
@@ -209,7 +209,7 @@ def read_content(content_path: Path, report: Report) -> list[ContentItem]:
     return sorted(items, key = lambda item: (item.kind.value, item.id))
 
 def read_messages(content_path: Path, report: Report) -> dict[str, str]:
-    """Alle berichten uit bestanden met `type: i18n`: elke sleutel in de frontmatter behalve `type`."""
+    """All messages from files with `type: i18n`: every key in the frontmatter except `type`."""
     messages = {}
     for path in _walk_files(content_path):
         if path.suffix.lower() != ".md":
@@ -251,7 +251,7 @@ def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text).strip("-") or "item"
 
 def _deduplicate_ids(items: list[ContentItem], report: Report) -> None:
-    """Geeft dubbele ids binnen één soort een achtervoegsel -2, -3, ... (in volgorde van pad)."""
+    """Gives duplicate ids within one kind a suffix -2, -3, ... (in path order)."""
     taken = {(item.kind, item.id) for item in items}
     seen = set()
     for item in sorted(items, key = lambda item: item.path.as_posix()):
@@ -285,7 +285,7 @@ def _last_part(path: str) -> str:
     return path.rsplit("/", 1)[-1].strip()
 
 def _location_target(value: object) -> str | None:
-    # Zonder aanhalingstekens maakt YAML van [[X]] een geneste lijst.
+    # Without quotes, YAML turns [[X]] into a nested list.
     while isinstance(value, list):
         value = value[0] if value else None
     if not isinstance(value, str):
@@ -299,7 +299,7 @@ def _parse(
     content_path: Path,
     report: Report | None = None
 ) -> tuple[dict, str, Path] | None:
-    """Frontmatter, body en relatief pad van een markdownbestand. Zonder report geen waarschuwingen."""
+    """Frontmatter, body and relative path of a markdown file. Without a report, no warnings."""
     relative = path.relative_to(content_path)
     try:
         text = path.read_text(encoding = "utf-8")
@@ -357,7 +357,7 @@ def _strip_link_title(target: str) -> str:
     return _LINK_TITLE.sub("", target)
 
 def _walk_files(content_path: Path) -> list[Path]:
-    """Alle bestanden onder content_path, zonder verborgen mappen en bestanden, gesorteerd."""
+    """All files under content_path, excluding hidden directories and files, sorted."""
     files = []
     for directory, directories, filenames in content_path.walk():
         directories[:] = [name for name in directories if not name.startswith(".")]

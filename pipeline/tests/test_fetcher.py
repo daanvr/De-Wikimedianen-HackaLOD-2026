@@ -21,7 +21,7 @@ def cache(tmp_path: Path):
 
 @pytest.fixture
 def sleeps(monkeypatch: pytest.MonkeyPatch) -> list[float]:
-    """Vangt time.sleep af, zodat herpogingen de tests niet vertragen."""
+    """Intercepts time.sleep so retries don't slow down the tests."""
     calls: list[float] = []
     monkeypatch.setattr("siboga.fetcher.time.sleep", calls.append)
     return calls

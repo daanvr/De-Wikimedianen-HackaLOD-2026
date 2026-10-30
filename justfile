@@ -1,31 +1,31 @@
 _default:
     @just --list
 
-# Python-afhankelijkheden van de pipeline installeren
+# Install the Python dependencies of the pipeline
 setup:
     cd pipeline && uv sync
 
-# Content-repo ophalen of bijwerken
+# Clone or update the content repo
 content:
     if [ -d content/.git ]; then git -C content pull; else git clone https://github.com/hay/siboga-content content; fi
 
-# Bronnen ophalen naar de cache (internet nodig)
+# Fetch sources into the cache (needs internet)
 fetch:
     cd pipeline && uv run siboga fetch
 
-# Frontend data bouwen uit content en cache (zonder internet)
+# Build the frontend data from content and cache (no internet)
 build-data:
     cd pipeline && uv run siboga build
 
-# Ophalen, bouwen en controleren
+# Fetch, build and check
 data:
     cd pipeline && uv run siboga all && uv run siboga check
 
-# Frontend data controleren
+# Check the frontend data
 check:
     cd pipeline && uv run siboga check
 
-# Pipeline-tests
+# Pipeline tests
 test:
     cd pipeline && uv run pytest
 
