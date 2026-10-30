@@ -1,0 +1,34 @@
+:root {
+    --c-paper: #FBF8F1;
+    --c-plate: #F3EEE2;
+    --c-ink: #1B2433;
+    --c-ink-body: #1F2737;
+    --c-ink-soft: #4A5263;
+    --c-marine: #163A5C;
+    --c-link: #1F5A84;
+    --c-terracotta: #A9512F;
+    --c-terracotta-dark: #8A3F24;
+    --c-terracotta-light: #D88A63;
+    --c-terracotta-soft: #F2DCCD;
+    --c-seaweed: #3F7A5C;
+    --c-rule: #E2DACA;
+    --c-frame: #CFC6B2;
+    --c-handle: #B9AE96;
+    --c-sea: #1F5280;
+    --c-scrim: rgba(12, 32, 52, 0.5);
+
+    --font-family-fallback: Georgia, 'Times New Roman', serif;
+    --font-header: 'Old Standard TT', var(--font-family-fallback);
+    --font-text: 'Newsreader Variable', var(--font-family-fallback);
+
+    --fs-small: 1.4rem;
+    --fs-text: 1.8rem;
+    --fs-kicker: 1.2rem;
+
+    --shadow-float: 0 4px 14px rgba(10, 30, 50, 0.3);
+    --shadow-sheet: 0 -10px 30px rgba(8, 26, 44, 0.32);
+    --shadow-card: 0 18px 44px rgba(8, 26, 44, 0.45);
+
+    --gutter: 2.4rem;
+    --sheet-width: 46rem;
+}

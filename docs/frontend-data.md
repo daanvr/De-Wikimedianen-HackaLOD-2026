@@ -9,7 +9,7 @@ frontend/public/data/      ← niet in git
 └── media/                 ← alle plaatjes, ook die van Wikimedia Commons
 ```
 
-Een met de hand gemaakte versie komt in `frontend/fixtures/siboga.example.json`, zodat je zonder pipeline aan de frontend kunt werken. Die is er nog niet, net als de frontend zelf.
+Een met de hand gemaakte versie komt in `frontend/fixtures/siboga.example.json`, zodat je zonder pipeline aan de frontend kunt werken. Die is er nog niet.
 
 ## URL's
 Elke page, chapter en record krijgt een eigen URL. Het id is een slug van de bestandsnaam.

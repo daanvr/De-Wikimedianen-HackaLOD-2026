@@ -6,5 +6,7 @@ pipeline/.venv/
 pipeline/cache/
 pipeline/config.toml
 frontend/public/data/
+frontend/node_modules/
+frontend/dist/
 __pycache__/
 .pytest_cache/

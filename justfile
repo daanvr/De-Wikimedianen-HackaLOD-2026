@@ -29,5 +29,17 @@ check:
 test:
     cd pipeline && uv run pytest
 
+# Install the frontend dependencies
+frontend:
+    cd frontend && npm install
+
+# Run the frontend on http://localhost:5173
+dev:
+    cd frontend && npm run dev
+
+# Build the static site into frontend/dist/
+build:
+    cd frontend && npm run build
+
 deploy:
     rsync -avzL --delete site/* siboga:/var/www/siboga.nl/htdocs/

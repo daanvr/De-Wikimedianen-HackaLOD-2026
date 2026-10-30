@@ -1,0 +1,231 @@
+<script setup>
+    import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
+    import { useRoute } from 'vue-router';
+    import ElIcon from '@/components/el-icon.vue';
+    import ElMapButton from '@/components/el-map-button.vue';
+
+    const store = inject('store');
+    const t = inject('t');
+    const route = useRoute();
+
+    const props = defineProps({
+        mode : {
+            type : String,
+            default : 'story'
+        },
+        floating : {
+            type : Boolean,
+            default : true
+        }
+    });
+
+    const isOpen = ref(false);
+
+    const storyTarget = computed(() => {
+        const last = store.readChapters.at(-1) ?? store.chapters[0]?.id;
+
+        return last ? `/chapters/${last}` : '/';
+    });
+
+    const items = computed(() => {
+        const modeItem = props.mode === 'explore'
+            ? {
+                to : storyTarget.value,
+                icon : 'chapter',
+                label : t('story_mode'),
+                accent : true
+            }
+            : {
+                to : '/map',
+                icon : 'explore',
+                label : t('explore_mode'),
+                accent : true
+            };
+
+        return [
+            {
+                to : '/chapters',
+                icon : 'list',
+                label : t('chapters'),
+                accent : false
+            },
+            {
+                to : '/library',
+                icon : 'book',
+                label : t('library'),
+                accent : false
+            },
+            modeItem
+        ];
+    });
+
+    function close() {
+        isOpen.value = false;
+    }
+
+    function onKeydown(event) {
+        if (event.key === 'Escape') {
+            close();
+        }
+    }
+
+    function toggle() {
+        isOpen.value = !isOpen.value;
+    }
+
+    watch(isOpen, (open) => {
+        if (open) {
+            window.addEventListener('keydown', onKeydown);
+        } else {
+            window.removeEventListener('keydown', onKeydown);
+        }
+    });
+
+    watch(() => route.fullPath, close);
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('keydown', onKeydown);
+    });
+</script>
+
+<template>
+    <div
+        class="el-menu"
+        v-bind:is-open="isOpen ? '' : null">
+        <div
+            v-if="isOpen"
+            class="el-menu__scrim"
+            v-on:click="close()"></div>
+
+        <el-map-button
+            v-bind:icon="isOpen ? 'close' : 'menu'"
+            v-bind:label="isOpen ? t('menu_close') : t('menu_open')"
+            v-bind:floating="floating"
+            v-bind:aria-expanded="isOpen ? 'true' : 'false'"
+            variant="terracotta"
+            v-on:click="toggle()" />
+
+        <nav
+            v-if="isOpen"
+            class="el-menu__panel"
+            v-bind:aria-label="t('menu_open')">
+            <router-link
+                v-for="item in items"
+                v-bind:key="item.to"
+                class="el-menu__item"
+                v-bind:to="item.to"
+                v-bind:is-accent="item.accent ? '' : null">
+                <span class="el-menu__tile">
+                    <el-icon
+                        v-bind:name="item.icon"
+                        v-bind:size="22" />
+                </span>
+                {{ item.label }}
+            </router-link>
+
+            <div class="el-menu__rule"></div>
+
+            <router-link
+                class="el-menu__item"
+                to="/pages/about">
+                <span class="el-menu__tile">
+                    <el-icon
+                        name="info"
+                        v-bind:size="22" />
+                </span>
+                {{ t('about_site') }}
+            </router-link>
+        </nav>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+    .el-menu {
+        position: relative;
+        pointer-events: auto;
+        z-index: 30;
+
+        &[is-open] {
+            z-index: 60;
+        }
+
+        :deep(.el-map-button) {
+            position: relative;
+        }
+    }
+
+    .el-menu__scrim {
+        position: fixed;
+        inset: 0;
+        background: var(--c-scrim);
+        animation: fade-in 0.15s ease;
+    }
+
+    .el-menu__panel {
+        position: absolute;
+        top: calc(100% + 1.2rem);
+        right: 0;
+        width: 27rem;
+        background: var(--c-paper);
+        border-radius: 10px;
+        padding: 0.8rem 0;
+        box-shadow: var(--shadow-card);
+        animation: drop-in 0.18s ease;
+    }
+
+    .el-menu__item {
+        display: flex;
+        align-items: center;
+        gap: 1.4rem;
+        min-height: 5.8rem;
+        padding: 0 1.8rem;
+        text-decoration: none;
+        color: var(--c-ink);
+        font-size: 1.9rem;
+
+        &:hover {
+            background: var(--c-plate);
+            color: var(--c-ink);
+        }
+
+        &.router-link-active {
+            font-weight: 600;
+        }
+
+        &[is-accent] .el-menu__tile {
+            background: var(--c-terracotta-soft);
+            color: var(--c-terracotta);
+        }
+    }
+
+    .el-menu__tile {
+        width: 4rem;
+        height: 4rem;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: var(--c-plate);
+        color: var(--c-marine);
+    }
+
+    .el-menu__rule {
+        height: 1px;
+        margin: 0.6rem 1.8rem;
+        background: var(--c-rule);
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+    }
+
+    @keyframes drop-in {
+        from {
+            opacity: 0;
+            transform: translateY(-0.6rem);
+        }
+    }
+</style>

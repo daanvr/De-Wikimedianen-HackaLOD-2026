@@ -6,6 +6,9 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 ## Besloten
 | Beslissing                                                                                                           | Waar                                                |
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| MapLibre GL JS voor de kaart in plaats van Leaflet: vectorkaart met vloeiend zoomen, eigen stijl, geen kaarttegels van buiten | [frontend.md](frontend.md#kaart) |
+| Kaartlagen (diepte, land, route, stations) staan als GeoJSON in `frontend/public/map/`, in git | [frontend.md](frontend.md#structuur) |
+| Standaardteksten van de site in `frontend/src/services/messages.js`; berichten uit de content-repo gaan voor | [frontend.md](frontend.md#teksten-i18n) |
 | Bij elke waarde in de frontend data staat uit welke bron die komt (`sources`, `labelSource`, `source` per veld, enz.) | [frontend-data.md](frontend-data.md) |
 | De Wikidata-adapter volgt een vaste lijst identifiers (nu alleen P1006, de NTA) precies één stap; die bron vult alleen aan wat Wikidata leeg laat | [pipeline.md](pipeline.md#gekoppelde-bronnen-via-wikidata) |
 | Het contenttype bepaalt welke velden een record toont, niet de bron; vastgelegd in `pipeline/fields.toml`            | [pipeline.md](pipeline.md#velden-per-contenttype)   |
@@ -32,9 +35,8 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 | Voorbeeld-JSON in `frontend/fixtures/`                                                                               | [frontend-data.md](frontend-data.md)                |
 | De frontend krijgt één JSON-bestand plus losse bestanden                                                             | [frontend-data.md](frontend-data.md)                |
 | Router met volledige paden, geen hashes                                                                              | [frontend.md](frontend.md#routes)                   |
-| Leaflet voor de kaart                                                                                                | [frontend.md](frontend.md)                          |
 | Store via `provide`/`inject`                                                                                         | [frontend.md](frontend.md)                          |
-| Live bronnen, zoals kaarttegels, haalt de frontend zelf op                                                           | [frontend.md](frontend.md)                          |
+| Live bronnen haalt de frontend zelf op                                                           | [frontend.md](frontend.md)                          |
 | Vue 3, JavaScript (geen TypeScript), SCSS; vertrekpunt is Hays template vue3-pinia                                   | [frontend.md](frontend.md)                          |
 | Pipeline in Python, met uv                                                                                           | [pipeline.md](pipeline.md)                          |
 | Statische website, geen eigen backend                                                                                | [architectuur.md](architectuur.md)                  |

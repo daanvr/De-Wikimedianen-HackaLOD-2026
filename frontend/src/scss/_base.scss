@@ -1,0 +1,37 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background: var(--c-sea);
+    color: var(--c-ink);
+    font-family: var(--font-text);
+    font-size: var(--fs-text);
+    line-height: 1.5;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-header);
+}
+
+a {
+    color: var(--c-link);
+
+    &:hover {
+        color: var(--c-marine);
+    }
+}
+
+button,
+input {
+    font: inherit;
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 3px solid var(--c-terracotta-light);
+    outline-offset: 2px;
+}
