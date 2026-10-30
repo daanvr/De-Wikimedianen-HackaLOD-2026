@@ -82,6 +82,12 @@ export const DEFAULT_MESSAGES = {
     plugin_unavailable : 'Deze weergave kon niet worden geladen.',
     record_source : 'Bekijk de bron',
     record_sources : 'Bronnen',
+    share : 'Delen',
+    share_copied : 'Gekopieerd',
+    share_copy : 'Kopieer',
+    share_link : 'Link naar deze pagina',
+    share_qr : 'QR-code met de link naar deze pagina',
+    share_title : 'Deel deze pagina',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',
     to_boat : 'Terug naar de boot',
     to_start : 'Terug naar het begin'

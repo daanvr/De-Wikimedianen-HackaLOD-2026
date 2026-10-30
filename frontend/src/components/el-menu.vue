@@ -3,11 +3,14 @@
     import { useRoute } from 'vue-router';
     import ElIcon from '@/components/el-icon.vue';
     import ElMapButton from '@/components/el-map-button.vue';
+    import ElShare from '@/components/el-share.vue';
 
     const t = inject('t');
     const route = useRoute();
 
     const isOpen = ref(false);
+    const isShareOpen = ref(false);
+    const shareUrl = computed(() => window.location.origin + route.fullPath);
 
     const items = computed(() => {
         return [
@@ -42,6 +45,11 @@
         if (event.key === 'Escape') {
             close();
         }
+    }
+
+    function share() {
+        close();
+        isShareOpen.value = true;
     }
 
     function toggle() {
@@ -108,7 +116,24 @@
                 </span>
                 {{ t('about_site') }}
             </router-link>
+
+            <button
+                type="button"
+                class="el-menu__item"
+                v-on:click="share()">
+                <span class="el-menu__tile">
+                    <el-icon
+                        name="share"
+                        v-bind:size="22" />
+                </span>
+                {{ t('share') }}
+            </button>
         </nav>
+
+        <el-share
+            v-if="isShareOpen"
+            v-bind:url="shareUrl"
+            v-on:close="isShareOpen = false" />
     </div>
 </template>
 
@@ -150,10 +175,16 @@
         display: flex;
         align-items: center;
         gap: 1.4rem;
+        width: 100%;
         min-height: 5.8rem;
         padding: 0 1.8rem;
+        border: 0;
+        background: none;
+        text-align: left;
         text-decoration: none;
+        cursor: pointer;
         color: var(--c-ink);
+        font-family: inherit;
         font-size: 1.9rem;
 
         &:hover {

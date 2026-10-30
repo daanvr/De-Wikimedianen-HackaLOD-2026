@@ -7,10 +7,12 @@
         arrowLeft : '<path d="M19 12H5M11 6l-6 6 6 6"/>',
         arrowRight : '<path d="M5 12h14M13 6l6 6-6 6"/>',
         book : '<path d="M5 4.5h11a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h11"/><path d="M9 8.5h6M9 11.5h4"/>',
+        check : '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
         chapter : '<path d="M17 20H7a3 3 0 0 1-3-3v-1h10v1a3 3 0 0 0 3 3 3 3 0 0 0 3-3V5a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v11"/><path d="M10 8h6M10 11h4"/>',
         chevronDown : '<path d="M6 9l6 6 6-6"/>',
         chevronRight : '<path d="M9 6l6 6-6 6"/>',
         close : '<path d="M6 6l12 12M18 6L6 18"/>',
+        copy : '<rect x="8.5" y="8.5" width="11" height="11" rx="1"/><path d="M15.5 8.5V5.5a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/>',
         explore : '<circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8"/>',
         external : '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
         fullscreen : '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
@@ -23,6 +25,7 @@
         menu : '<path d="M4.5 7h15M4.5 12h15M4.5 17h15"/>',
         person : '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3.1-6.5 7-6.5s7 2.5 7 6.5"/>',
         search : '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+        share : '<circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><path d="M8.7 10.7l6.6-3.9M8.7 13.3l6.6 3.9"/>',
         specimen : '<path d="M12 12.5a1.2 1.2 0 1 1 1.2 1.2A2.6 2.6 0 0 1 10.6 11a4 4 0 0 1 4-4 5.3 5.3 0 0 1 5.3 5.3 6.7 6.7 0 0 1-6.7 6.7A8 8 0 0 1 5.2 11 9.3 9.3 0 0 1 9 3.6"/>'
     };
 
