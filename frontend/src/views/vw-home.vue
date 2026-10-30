@@ -2,7 +2,7 @@
     import { computed, inject, onMounted } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
-    import ElSeal from '@/components/el-seal.vue';
+    import logoUrl from '@/media/logo.png';
 
     const store = inject('store');
     const t = inject('t');
@@ -25,12 +25,14 @@
 <template>
     <div class="vw-home">
         <article class="card">
-            <div class="intro">
-                <el-seal v-bind:size="60" />
-                <p class="tagline">{{ t('tagline') }}</p>
-            </div>
+            <img
+                class="logo"
+                v-bind:src="logoUrl"
+                alt="Label van de Siboga-Expeditie" />
 
             <h1 class="title">{{ welcome?.title ?? 'De Siboga-Expeditie' }}</h1>
+
+            <p class="tagline">{{ t('tagline') }}</p>
 
             <el-markdown
                 class="text"
@@ -92,10 +94,10 @@
         }
     }
 
-    .intro {
-        display: flex;
-        align-items: center;
-        gap: 1.4rem;
+    .logo {
+        display: block;
+        width: 100%;
+        height: auto;
     }
 
     .tagline {
