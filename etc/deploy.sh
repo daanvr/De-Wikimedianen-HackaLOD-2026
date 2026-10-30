@@ -10,8 +10,23 @@ HTDOCS=/var/www/siboga.nl/htdocs
 STATE_FILE="$STATE_DIR/last-deployed"
 LOCK_FILE="$STATE_DIR/deploy.lock"
 
-# uv lives here, and a non-interactive ssh session doesn't load ~/.profile
-export PATH="$HOME/.local/bin:$PATH"
+# systemd and a non-interactive ssh session don't load ~/.profile or ~/.bashrc,
+# so add uv (~/.local/bin), snaps and Node from nvm, if that is how it was installed
+export PATH="$HOME/.local/bin:$PATH:/snap/bin"
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    set +eu
+    source "$NVM_DIR/nvm.sh"
+    set -eu
+fi
+
+for command in git flock uv npm rsync; do
+    if ! command -v "$command" > /dev/null; then
+        echo "Error: $command not found on PATH ($PATH)" >&2
+        exit 1
+    fi
+done
 
 # Everything lives in a function, so bash has read the whole script before
 # the git reset below can change this file.

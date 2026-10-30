@@ -51,16 +51,26 @@ Een systemd-timer start elke minuut [etc/deploy.sh](../etc/deploy.sh). Dat scrip
 
 Gaat een stap mis, dan blijft de oude site staan en probeert het script het een minuut later opnieuw. Welke commits het laatst zijn uitgerold, staat in `~/siboga/last-deployed`. Twee builds tegelijk kan niet; dan stopt de tweede meteen.
 
-Nieuwe content staat dus binnen een minuut of twee online, plus de tijd die het bouwen kost. Meteen bouwen, zonder op de timer te wachten, doe je vanaf je laptop met `just deploy` (je hebt een SSH-host `siboga` nodig die inlogt als `hay`). Wat er gebeurde, zie je op de server met:
-
-```bash
-sudo journalctl -u siboga-deploy -f
-```
+Nieuwe content staat dus binnen een minuut of twee online, plus de tijd die het bouwen kost. Meteen bouwen, zonder op de timer te wachten, doe je vanaf je laptop met `just deploy` (je hebt een SSH-host `siboga` nodig die inlogt als `hay`). De uitvoer zie je dan meteen in je terminal.
 
 Het script ziet alleen gepushte commits: wat lokaal op de server in `app/` of `app/content/` verandert, gooit het weg.
 
+### Logs
+Alles wat het script via de timer uitvoert, komt in het journal van systemd, onder de naam `siboga-deploy`. Een apart logbestand is er niet.
+
+```bash
+sudo journalctl -u siboga-deploy -f              # live meekijken
+sudo journalctl -u siboga-deploy -n 100          # de laatste 100 regels
+sudo journalctl -u siboga-deploy --since today   # alles van vandaag
+systemctl list-timers siboga-deploy.timer        # wanneer draait hij weer?
+systemctl status siboga-deploy                   # hoe ging de laatste keer?
+cat ~/siboga/last-deployed                       # welke commits staan online?
+```
+
+Zonder nieuwe commits stopt het script meteen en zegt het niets. Je ziet dan elke minuut alleen dat systemd de service start en afsluit.
+
 ## Server inrichten
-Eenmalig, op de Ubuntu-server. Nodig: git, rsync en Node.js met npm (`sudo apt install git rsync nodejs npm`, of Node via [NodeSource](https://github.com/nodesource/distributions) als de versie van Ubuntu te oud is voor Vite).
+Eenmalig, op de Ubuntu-server. Nodig: git, rsync en Node.js met npm (`sudo apt install git rsync nodejs npm`, of Node via [NodeSource](https://github.com/nodesource/distributions) als de versie van Ubuntu te oud is voor Vite). Staat Node via [nvm](https://github.com/nvm-sh/nvm), dan laadt het script nvm zelf. systemd leest `~/.bashrc` namelijk niet.
 
 Alles draait als gebruiker `hay`, vanuit `~/siboga/`. Die gebruiker moet de htdocs bezitten:
 
