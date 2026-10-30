@@ -41,13 +41,12 @@
         const moves = previous && store.map.mode === 'story'
             && (previous.lon !== position.lon || previous.lat !== position.lat);
 
-        // Opened at a mention, the text is open in full: switching states would reset its scroll
+        // The sheet keeps its size while the boat sails. Opened at a mention, the
+        // text is open in full: switching states later would reset its scroll.
         let nextSheet = sheetState.value === 'peek' ? 'half' : sheetState.value;
 
         if (mention.value) {
             nextSheet = 'full';
-        } else if (moves) {
-            nextSheet = 'peek';
         }
 
         clearTimeout(travelTimer);
@@ -70,10 +69,6 @@
         if (moves) {
             travelTimer = setTimeout(() => {
                 isTravelling.value = false;
-
-                if (sheetState.value === 'peek') {
-                    sheetState.value = 'half';
-                }
             }, TRAVEL_MS + 200);
         }
 
