@@ -6,6 +6,8 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 ## Besloten
 | Beslissing                                                                                                           | Waar                                                |
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Bij elke waarde in de frontend data staat uit welke bron die komt (`sources`, `labelSource`, `source` per veld, enz.) | [frontend-data.md](frontend-data.md) |
+| De Wikidata-adapter volgt een vaste lijst identifiers (nu alleen P1006, de NTA) precies één stap; die bron vult alleen aan wat Wikidata leeg laat | [pipeline.md](pipeline.md#gekoppelde-bronnen-via-wikidata) |
 | Het contenttype bepaalt welke velden een record toont, niet de bron; vastgelegd in `pipeline/fields.toml`            | [pipeline.md](pipeline.md#velden-per-contenttype)   |
 | Nieuw type `page` (map `pages/`): vaste pagina's met `title` en gewone markdown, URL `/pages/<id>`                   | [content-repo.md](content-repo.md#types)            |
 | Nieuw type `i18n` (map `etc/`): alle tekst van de site zelf komt uit berichten, ook al is de site alleen Nederlands  | [content-repo.md](content-repo.md#types)            |

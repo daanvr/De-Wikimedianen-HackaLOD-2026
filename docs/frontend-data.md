@@ -64,38 +64,62 @@ Sleutels in camelCase.
             "title": "Anna Weber",
             "contentType": "person",
             "label": "Anna Weber-van Bosse",
+            "labelSource": "wikidata",
             "description": "Nederlandse algoloog (1852-1942)",
+            "descriptionSource": "wikidata",
             "uri": "https://www.wikidata.org/wiki/Q1940785",
             "source": "wikidata",
+            "sources": [
+                {
+                    "name": "wikidata",
+                    "uri": "https://www.wikidata.org/wiki/Q1940785"
+                },
+                {
+                    "name": "nta",
+                    "uri": "http://data.bibliotheken.nl/id/thes/p072591218"
+                }
+            ],
             "body": null,
             "image": {
                 "src": "media/anna-weber.jpg",
                 "credit": "University of Amsterdam, Artis Library",
                 "license": "Public domain",
                 "licenseUrl": null,
-                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anna_Antoinette_Weber-van_Bosse.jpg"
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anna_Antoinette_Weber-van_Bosse.jpg",
+                "source": "wikidata"
             },
             "coordinates": null,
+            "coordinatesSource": null,
             "fields": [
                 {
                     "key": "birth_date",
                     "type": "date",
-                    "values": ["1852-03-27"]
+                    "values": ["1852-03-27"],
+                    "source": "wikidata"
                 },
                 {
                     "key": "birth_place",
                     "type": "text",
-                    "values": ["Amsterdam"]
+                    "values": ["Amsterdam"],
+                    "source": "wikidata"
                 },
                 {
                     "key": "death_date",
                     "type": "date",
-                    "values": ["1942-10-29"]
+                    "values": ["1942-10-29"],
+                    "source": "wikidata"
                 },
                 {
                     "key": "occupation",
                     "type": "text",
-                    "values": ["bioloog", "botanicus", "algenkundige"]
+                    "values": ["bioloog", "botanicus", "algenkundige"],
+                    "source": "wikidata"
+                },
+                {
+                    "key": "work",
+                    "type": "text",
+                    "values": ["Een jaar aan boord H.M. Siboga", "Liste des algues du Siboga"],
+                    "source": "nta"
                 }
             ],
             "links": [],
@@ -107,7 +131,8 @@ Sleutels in camelCase.
 
 - `messages` zijn de teksten van de site zelf, uit `type: i18n` in de content-repo. De frontend gebruikt ze voor alle tekst in de HTML.
 - Pages en records staan in een object met het id als sleutel. Chapters staan in een lijst, gesorteerd op `number` (niet op `location`).
-- `title` is bij chapters en records de bestandsnaam, bij pages het veld `title`. `label` is de naam volgens de bron. `description` komt uit `description_nl`, anders uit de bron. `source` is de naam van de adapter.
+- `title` is bij chapters en records de bestandsnaam, bij pages het veld `title`. `label` is de naam volgens de bron. `description` komt uit `description_nl`, anders uit de bron. `source` is de naam van de adapter van `uri`.
+- **Elke waarde zegt waar hij vandaan komt.** `sources` zijn alle bronnen waar het record data uit haalt, met naam en URI; de eerste is altijd `uri` zelf, daarna komen [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata) zoals de NTA. `labelSource`, `descriptionSource`, `coordinatesSource`, `image.source` en `source` bij elk veld noemen de bron van die ene waarde, met een `name` uit `sources`. `descriptionSource` is `content` als de beschrijving uit `description_nl` komt. Zonder waarde is de bron `null`. Een record waarvan de bron niets opleverde, heeft een lege `sources`.
 - `links` zijn de refs waar de tekst naar verwijst, `backlinks` de items die naar dit item verwijzen.
 - Teksten zijn Nederlands; er zijn nog geen velden per taal.
 - Velden zonder waarde staan er met `null` (of een lege lijst), zodat de frontend nooit hoeft te raden.
@@ -119,6 +144,7 @@ Sleutels in camelCase.
 - `key`: de naam van het veld, bijvoorbeeld `birth_date` of `scientific_name`. Het label op de site is het bericht `field_<key>` uit `messages`.
 - `type`: `date` (altijd `YYYY`, `YYYY-MM` of `YYYY-MM-DD`) of `text`.
 - `values`: altijd een lijst, ook bij één waarde; een persoon kan meer beroepen hebben.
+- `source`: de naam van de bron van dit veld, uit `sources` van het record. Alle waarden van één veld komen uit dezelfde bron: een gekoppelde bron vult alleen velden aan die nog leeg zijn.
 
 ## Tekst en links
 `body` is markdown; de frontend zet die om in HTML. Wel zet de pipeline de Obsidian-schrijfwijzen om in gewone markdown, zodat elke markdown-parser ermee overweg kan:

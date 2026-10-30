@@ -7,7 +7,7 @@ import re
 
 from loguru import logger
 
-from siboga.models import Coordinates, SourceData
+from siboga.models import Coordinates, SourceData, SourceRef
 from siboga.sources.base import WIKIMEDIA_RATE_LIMIT, SourceAdapter
 from siboga.sources.commons import fetch_image, read_image
 
@@ -48,6 +48,10 @@ ITEM_FIELDS = {
     "taxon_rank": ("P105",)
 }
 LABEL_CHUNK_SIZE = 50
+# Property to URI template: external identifiers that are followed exactly one hop, to the linked adapters.
+LINKED_SOURCES = {
+    "P1006": "http://data.bibliotheken.nl/id/thes/p{}"
+}
 LABEL_LANGUAGES = ("nl", "en", "mul")
 QID = re.compile(r"Q\d+")
 # Field to properties with plain text as value.
@@ -62,8 +66,13 @@ class WikidataAdapter(SourceAdapter):
     name = "wikidata"
     rate_limit = WIKIMEDIA_RATE_LIMIT
 
-    def __init__(self, image_width: int):
+    def __init__(
+        self,
+        image_width: int,
+        linked_adapters: list[SourceAdapter] | None = None
+    ):
         self.image_width = image_width
+        self.linked_adapters = linked_adapters or []
 
     def fetch(
         self,
@@ -80,6 +89,12 @@ class WikidataAdapter(SourceAdapter):
         image = _first_value(entity, "P18")
         if isinstance(image, str):
             fetch_image(image, self.image_width, fetcher, self.name)
+        for adapter, linked_uri in self._linked(entity):
+            try:
+                adapter.fetch(linked_uri, fetcher)
+            except Exception as error:
+                # A broken linked source must not stop the Wikidata item itself.
+                logger.warning(f"Fetching linked {adapter.name} source failed for {qid}: {error!r}")
 
     def matches(self, uri: str) -> bool:
         return ENTITY_URL.match(uri) is not None
@@ -96,13 +111,35 @@ class WikidataAdapter(SourceAdapter):
             return None
         labels = _read_labels(_referenced_ids(entity), cache)
         image = _first_value(entity, "P18")
-        return SourceData(
+        source = SourceData(
             coordinates = _coordinates(_first_value(entity, "P625")),
             description = _text(entity.get("descriptions"), DESCRIPTION_LANGUAGES),
             fields = _fields(entity, labels),
             image = read_image(image, self.image_width, cache) if isinstance(image, str) else None,
             label = _text(entity.get("labels"), LABEL_LANGUAGES)
         )
+        for adapter, linked_uri in self._linked(entity):
+            try:
+                linked = adapter.normalize(linked_uri, cache)
+            except Exception as error:
+                logger.warning(f"Normalizing linked {adapter.name} source failed for {qid}: {error!r}")
+                continue
+            if linked is not None:
+                source.fill_from(linked, SourceRef(name = adapter.name, uri = linked_uri))
+        return source
+
+    def _linked(self, entity: dict) -> list[tuple[SourceAdapter, str]]:
+        """The linked sources of this entity that have an adapter, in the order of LINKED_SOURCES."""
+        linked = []
+        for prop, template in LINKED_SOURCES.items():
+            for value in _values(entity, prop):
+                if not isinstance(value, str) or not value.strip():
+                    continue
+                uri = template.format(value.strip())
+                adapter = next((adapter for adapter in self.linked_adapters if adapter.matches(uri)), None)
+                if adapter is not None:
+                    linked.append((adapter, uri))
+        return linked
 
 def entity_url(qid: str) -> str:
     return f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json"

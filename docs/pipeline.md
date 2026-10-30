@@ -54,7 +54,7 @@ class SourceAdapter:
 
 - `fetch` haalt via de fetcher alles op wat nodig is, inclusief plaatjes. Alleen in de stap `fetch`.
 - `matches` zegt of de adapter bij een URI hoort.
-- `rate_limit` zegt hoe beleefd de fetcher de bron benadert: de pauze tussen verzoeken aan dezelfde host, het aantal herpogingen bij een netwerkfout, 429 of 5xx, en hoe lang hij dan wacht. Stuurt de server een `Retry-After` mee (in seconden of als datum), dan wacht de fetcher zo lang, tot hoogstens een minuut. Anders wacht hij bij een 429 een vaste tijd en bij de rest steeds twee keer zo lang. `wikidata` en `commons` gebruiken `WIKIMEDIA_RATE_LIMIT`: één verzoek per seconde en vijf herpogingen. De andere adapters houden de standaard: 0,2 seconde en drie herpogingen.
+- `rate_limit` zegt hoe beleefd de fetcher de bron benadert: de pauze tussen verzoeken aan dezelfde host, het aantal herpogingen bij een netwerkfout, 429 of 5xx, en hoe lang hij dan wacht. Stuurt de server een `Retry-After` mee (in seconden of als datum), dan wacht de fetcher zo lang, tot hoogstens een minuut. Anders wacht hij bij een 429 een vaste tijd en bij de rest steeds twee keer zo lang. `wikidata` en `commons` gebruiken `WIKIMEDIA_RATE_LIMIT`: één verzoek per seconde en vijf herpogingen. `nta` wacht ook een seconde tussen verzoeken. De andere adapters houden de standaard: 0,2 seconde en drie herpogingen.
 - `normalize` leest uitsluitend uit de cache en geeft label, beschrijving, afbeelding (met bronvermelding en licentie), coördinaten en **alle velden die de bron kan vullen** terug. Alleen in de stap `build`.
 
 | Adapter             | URI's                                               | Wat hij ophaalt                                                                  |
@@ -63,8 +63,22 @@ class SourceAdapter:
 | `commons`           | `commons.wikimedia.org/wiki/File:…` en `/entity/M…` | De imageinfo met metadata en licentie, en het plaatje op 1600 px                 |
 | `gbif`              | `gbif.org/taxon/…` en `gbif.org/species/…`          | Het taxon via ChecklistBank of de GBIF-API; een plaatje alleen met licentie      |
 | `archief_amsterdam` | `archief.amsterdam/detail/…`                        | Het record als JSON-LD via `id.archief.amsterdam`; een scan alleen met licentie  |
+| `nta`               | `data.bibliotheken.nl/id/thes/p…`                   | De persoon als JSON-LD, met de titels van de werken in hetzelfde antwoord        |
 
 Een adapter hoeft geen Linked Data te lezen: elke bron met een API kan er een krijgen. Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
+
+### Gekoppelde bronnen via Wikidata
+Een record heeft één `uri`, maar een Wikidata-item kan naar andere bronnen verwijzen. De Wikidata-adapter volgt een vaste lijst van zulke identifiers, `LINKED_SOURCES` in [wikidata.py](../pipeline/src/siboga/sources/wikidata.py):
+
+| Property | Bron | Adapter |
+| -------- | ---- | ------- |
+| `P1006`  | NTA (Nederlandse Thesaurus van Auteursnamen, KB) | `nta` |
+
+- Precies één stap ver: alleen de Wikidata-adapter volgt links, de gekoppelde adapter haalt alleen zijn eigen record op en volgt zelf niets. Zo kan het nooit uitdijen.
+- Alleen de beste statements tellen, net als bij de velden: staat er een *preferred* ID, dan alleen dat.
+- `normalize` vult met de gekoppelde bron alleen aan wat Wikidata leeg laat (`SourceData.fill_from`). Wikidata wint altijd, dus de NTA levert vooral `alternate_name` en `work`. `fill_from` houdt bij welke bron wat invulde, zodat in de frontend data bij elke waarde de bron staat; zie [frontend-data.md](frontend-data.md#sibogajson).
+- Een kapotte of ontbrekende gekoppelde bron geeft een waarschuwing in de log; het Wikidata-item komt er gewoon in.
+- Een bron erbij is een regel in `LINKED_SOURCES` plus een adapter die je in `build_registry` aan de Wikidata-adapter meegeeft.
 
 ## Velden per contenttype
 De adapter bepaalt wat er uit een bron te halen is; het contenttype van het record bepaalt wat er getoond wordt. Een Wikidata-item over een persoon en een Wikidata-item over een soort gaan door dezelfde adapter, maar tonen andere velden.

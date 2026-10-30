@@ -30,6 +30,8 @@ from siboga.fields import FieldCatalog, load_fields
 from siboga.models import ContentItem, ImageInfo, ItemKind, Report, SourceData
 from siboga.sources import Registry, build_registry
 
+# The source of a value that an editor wrote in the frontmatter, such as description_nl.
+CONTENT_SOURCE = "content"
 SCHEMA_VERSION = 2
 
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
@@ -51,11 +53,17 @@ class ImageOut(OutputModel):
     license: str
     license_url: str | None
     source_url: str | None
+    source: str
 
 class FieldOut(OutputModel):
     key: str
     type: str
     values: list[str]
+    source: str
+
+class SourceOut(OutputModel):
+    name: str
+    uri: str
 
 class PageOut(OutputModel):
     ref: str
@@ -81,12 +89,16 @@ class RecordOut(OutputModel):
     title: str
     content_type: str | None
     label: str | None
+    label_source: str | None
     description: str | None
+    description_source: str | None
     uri: str | None
     source: str | None
+    sources: list[SourceOut]
     body: str | None
     image: ImageOut | None
     coordinates: CoordinatesOut | None
+    coordinates_source: str | None
     fields: list[FieldOut]
     links: list[str]
     backlinks: list[str]
@@ -211,6 +223,7 @@ def _build_chapter(
 
 def _build_fields(
     source: SourceData,
+    own_source: str | None,
     profile: list[str],
     catalog: FieldCatalog,
     item: ContentItem,
@@ -226,7 +239,12 @@ def _build_fields(
             else:
                 report.warn(f"invalid value for {key}: {value!r}", item.path)
         if values:
-            fields.append(FieldOut(key = key, type = catalog.types[key].value, values = values))
+            fields.append(FieldOut(
+                key = key,
+                type = catalog.types[key].value,
+                values = values,
+                source = source.source_of_field(key, own_source)
+            ))
     return fields
 
 def _build_items(
@@ -285,21 +303,34 @@ def _build_record(
         report.warn(f"no adapter for {uri}", item.path)
     elif adapter is not None:
         source = _normalize(adapter, uri, cache, item, report)
+    # Every value says where it came from: the record's own source, a linked one, or the content.
+    own_source = None
+    sources = []
+    if source is not None:
+        own_source = adapter.name
+        sources = [SourceOut(name = adapter.name, uri = uri)]
+        sources += [SourceOut(name = linked.name, uri = linked.uri) for linked in source.linked_sources]
     source = source or SourceData()
     record_type = content_type(item, report)
+    own_description = description(item)
+    image_source = _source_of(source, "image", own_source)
     return RecordOut(
         ref = item.ref,
         id = item.id,
         title = item.title,
         content_type = record_type,
         label = source.label,
-        description = description(item) or source.description,
+        label_source = _source_of(source, "label", own_source),
+        description = own_description or source.description,
+        description_source = CONTENT_SOURCE if own_description else _source_of(source, "description", own_source),
         uri = uri,
         source = adapter.name if adapter else None,
+        sources = sources,
         body = _body_or_none(converted.markdown),
-        image = _copy_image(source.image, item, cache, media_dir, report),
+        image = _copy_image(source.image, image_source, item, cache, media_dir, report),
         coordinates = CoordinatesOut(lat = source.coordinates.lat, lon = source.coordinates.lon) if source.coordinates else None,
-        fields = _build_fields(source, catalog.profiles.get(record_type or "", []), catalog, item, report),
+        coordinates_source = _source_of(source, "coordinates", own_source),
+        fields = _build_fields(source, own_source, catalog.profiles.get(record_type or "", []), catalog, item, report),
         links = converted.links,
         backlinks = []
     )
@@ -344,13 +375,14 @@ def _copy_attachments(
 
 def _copy_image(
     image: ImageInfo | None,
+    image_source: str | None,
     item: ContentItem,
     cache: Cache,
     media_dir: Path,
     report: Report
 ) -> ImageOut | None:
     """Copies the image from the cache to media/. No file, license or credit means no image."""
-    if image is None:
+    if image is None or image_source is None:
         return None
     if not image.license or not image.credit:
         report.warn(f"image skipped: license or credit is missing ({image.source_url or image.download_url})", item.path)
@@ -368,7 +400,8 @@ def _copy_image(
         credit = image.credit,
         license = image.license,
         license_url = image.license_url,
-        source_url = image.source_url
+        source_url = image.source_url,
+        source = image_source
     )
 
 def _media_suffix(
@@ -407,3 +440,13 @@ def _replace_dir(
     if target.exists():
         shutil.rmtree(target)
     staging.rename(target)
+
+def _source_of(
+    source: SourceData,
+    attribute: str,
+    own_source: str | None
+) -> str | None:
+    """The name of the source of an attribute, or None if it has no value."""
+    if not getattr(source, attribute) or own_source is None:
+        return None
+    return source.source_of(attribute, own_source)

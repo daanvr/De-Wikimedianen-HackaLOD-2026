@@ -133,9 +133,13 @@ def test_build_writes_frontend_data(config: Config):
     assert anna["label"] == "Anna Weber-van Bosse"
     assert anna["source"] == "fake"
     assert anna["fields"] == [
-        {"key": "birth_date", "type": "date", "values": ["1852-03-27"]},
-        {"key": "occupation", "type": "text", "values": ["algoloog", "botanicus"]}
+        {"key": "birth_date", "type": "date", "values": ["1852-03-27"], "source": "fake"},
+        {"key": "occupation", "type": "text", "values": ["algoloog", "botanicus"], "source": "fake"}
     ]
+    assert anna["sources"] == [{"name": "fake", "uri": anna["uri"]}]
+    assert anna["labelSource"] == "fake"
+    assert anna["descriptionSource"] == "content"
+    assert anna["image"]["source"] == "fake"
     assert anna["image"]["src"] == "media/anna-weber.jpg"
     assert anna["image"]["license"] == "CC0"
     assert anna["backlinks"] == ["pages/about", "chapters/hoofdstuk-1-vertrek"]
@@ -153,6 +157,9 @@ def test_build_tolerates_bad_content_and_sources(config: Config):
     data = json.loads(run_build(config, report).read_text(encoding = "utf-8"))
     records = data["records"]
     assert records["zonder-bron"]["label"] is None
+    assert records["zonder-bron"]["sources"] == []
+    assert records["zonder-bron"]["labelSource"] is None
+    assert records["haven"]["sources"] == []
     assert records["zonder-licentie"]["image"] is None
     assert records["kapotte-bron"]["source"] == "fake"
     assert records["geen-url"]["uri"] is None

@@ -9,7 +9,7 @@
 # The label of a field on the site comes from i18n, as the message field_<field>, e.g. field_birth_date.
 
 [contenttypes]
-person = ["birth_date", "birth_place", "death_date", "death_place", "occupation", "employer"]
+person = ["birth_date", "birth_place", "death_date", "death_place", "occupation", "employer", "alternate_name", "work"]
 specimen = ["scientific_name", "vernacular_name", "taxon_rank", "family", "order", "parent_taxon"]
 media = ["creator", "created", "date_description", "collection", "archive"]
 item = ["author", "publication_date", "inception", "publisher", "published_in", "collection"]
@@ -18,6 +18,7 @@ expedition = ["start_date", "end_date", "location", "participant"]
 location = ["country", "location"]
 
 [fields]
+alternate_name = "text"
 archive = "text"
 author = "text"
 birth_date = "date"
@@ -46,3 +47,4 @@ scientific_name = "text"
 start_date = "date"
 taxon_rank = "text"
 vernacular_name = "text"
+work = "text"
