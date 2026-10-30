@@ -29,9 +29,11 @@
                 v-bind:src="logoUrl"
                 alt="Label van de Siboga-Expeditie" />
 
-            <h1 class="title">{{ welcome?.title ?? 'De Siboga-Expeditie' }}</h1>
+            <header class="heading">
+                <h1 class="title">{{ welcome?.title ?? 'De Siboga-Expeditie' }}</h1>
 
-            <p class="tagline">{{ t('tagline') }}</p>
+                <p class="tagline">{{ t('tagline') }}</p>
+            </header>
 
             <el-markdown
                 class="text"
@@ -99,7 +101,15 @@
         height: auto;
     }
 
+    // Title and tagline belong together, closer than the gap between the parts of the card
+    .heading {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
     .tagline {
+        margin: 0;
         font-size: 1.7rem;
         font-style: italic;
         line-height: 1.3;
