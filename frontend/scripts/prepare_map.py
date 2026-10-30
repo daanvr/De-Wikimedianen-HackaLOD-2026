@@ -1,9 +1,8 @@
 """Prepare the static map layers for the frontend.
 
-Reads Natural Earth bathymetry shapefiles, Natural Earth land, the route traced
-from the 1904 route map (route_segmenten.geojson) and the stations
-(stations.geojson), clips them to the archipelago, simplifies them and writes
-small GeoJSON files to public/map/.
+Reads Natural Earth bathymetry shapefiles, Natural Earth land and the route
+traced from the 1904 route map (route_segmenten.geojson), clips them to the
+archipelago, simplifies them and writes small GeoJSON files to public/map/.
 
 Usage:
     uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-data-dir> <land-geojson> <output-dir>
@@ -26,16 +25,6 @@ BATHYMETRY_LAYERS = [
     ("F_5000", 5000),
     ("E_6000", 6000),
     ("D_7000", 7000)
-]
-STATION_KEYS = [
-    "station",
-    "wikidata_uri",
-    "start_date",
-    "end_date",
-    "depth_m",
-    "bottom",
-    "operations",
-    "remarks"
 ]
 
 def clip_and_simplify(geometries: list, tolerance: float):
@@ -101,26 +90,12 @@ def prepare_route(route_dir: Path, output_dir: Path):
         })
     write_geojson(output_dir / "route.geojson", features)
 
-def prepare_stations(route_dir: Path, output_dir: Path):
-    source = json.loads((route_dir / "stations.geojson").read_text())
-    features = []
-    for feature in source["features"]:
-        properties = {key : feature["properties"].get(key) or None for key in STATION_KEYS}
-        features.append({
-            "type" : "Feature",
-            "properties" : properties,
-            "geometry" : feature["geometry"]
-        })
-    features.sort(key = lambda feature: (feature["properties"]["start_date"] or "", feature["properties"]["station"]))
-    write_geojson(output_dir / "stations.geojson", features)
-
 def main():
     natural_earth_dir, route_dir, land_path, output_dir = [Path(arg) for arg in sys.argv[1:5]]
     output_dir.mkdir(parents = True, exist_ok = True)
     prepare_bathymetry(natural_earth_dir, output_dir)
     prepare_land(land_path, output_dir)
     prepare_route(route_dir, output_dir)
-    prepare_stations(route_dir, output_dir)
 
 if __name__ == "__main__":
     main()

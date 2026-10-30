@@ -1,13 +1,12 @@
 <script setup>
     import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRoute } from 'vue-router';
     import ElMap from '@/components/el-map.vue';
     import ElMenu from '@/components/el-menu.vue';
     import { useStore } from '@/store.js';
 
     const store = useStore();
     const route = useRoute();
-    const router = useRouter();
     const t = (key) => store.t(key);
 
     provide('store', store);
@@ -59,15 +58,6 @@
         };
     }
 
-    function selectStation(id) {
-        router.push({
-            path : '/map',
-            query : {
-                station : id
-            }
-        });
-    }
-
     onMounted(() => {
         store.load();
         window.addEventListener('resize', onResize);
@@ -85,9 +75,7 @@
             v-bind:mode="store.map.mode"
             v-bind:focus="store.map.focus"
             v-bind:boat="store.map.boat"
-            v-bind:selected-station="store.map.stationId"
-            v-bind:padding="mapPadding"
-            v-on:select-station="selectStation" />
+            v-bind:padding="mapPadding" />
 
         <div
             v-if="store.loading"

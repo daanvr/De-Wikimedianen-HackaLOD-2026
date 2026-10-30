@@ -20,7 +20,6 @@
     onMounted(() => {
         store.setMap({
             mode : 'story',
-            stationId : null,
             focus : null,
             sheet : 'full'
         });

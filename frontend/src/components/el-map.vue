@@ -119,10 +119,6 @@
             type : Object,
             default : null
         },
-        selectedStation : {
-            type : String,
-            default : null
-        },
         padding : {
             type : Object,
             default : () => ({
@@ -133,8 +129,6 @@
             })
         }
     });
-
-    const emit = defineEmits(['select-station']);
 
     const container = ref(null);
     const isReady = ref(false);
@@ -243,12 +237,6 @@
                     type : 'geojson',
                     data : layers.route ?? empty,
                     attribution : 'Route: Kaart van den Trek v. H.M. Siboga (Weber-van Bosse, 1904)'
-                },
-                stations : {
-                    type : 'geojson',
-                    data : layers.stations ?? empty,
-                    promoteId : 'station',
-                    attribution : 'Stations: Zenodo / Wikidata (CC0)'
                 }
             },
             layers : [
@@ -323,35 +311,6 @@
                         'line-width' : ['interpolate', ['linear'], ['zoom'], 4, 1.4, 9, 2.8],
                         'line-dasharray' : [3, 2]
                     }
-                },
-                {
-                    id : 'stations',
-                    type : 'circle',
-                    source : 'stations',
-                    paint : {
-                        'circle-radius' : [
-                            'interpolate',
-                            ['linear'],
-                            ['zoom'],
-                            4,
-                            ['case', ['boolean', ['feature-state', 'selected'], false], 7, 3],
-                            9,
-                            ['case', ['boolean', ['feature-state', 'selected'], false], 11, 7]
-                        ],
-                        'circle-color' : [
-                            'case',
-                            ['boolean', ['feature-state', 'selected'], false],
-                            '#A9512F',
-                            '#FBF8F1'
-                        ],
-                        'circle-stroke-color' : [
-                            'case',
-                            ['boolean', ['feature-state', 'selected'], false],
-                            '#FBF8F1',
-                            '#C46F48'
-                        ],
-                        'circle-stroke-width' : ['interpolate', ['linear'], ['zoom'], 4, 1.5, 9, 2.5]
-                    }
                 }
             ]
         };
@@ -394,7 +353,7 @@
 
         const layers = toRaw(props.layers);
 
-        for (const key of ['bathymetry', 'land', 'route', 'stations']) {
+        for (const key of ['bathymetry', 'land', 'route']) {
             map.getSource(key)?.setData(toRaw(layers[key]));
         }
     }
@@ -434,37 +393,11 @@
 
         const explore = props.mode === 'explore';
 
-        map.setLayoutProperty('stations', 'visibility', explore ? 'visible' : 'none');
         map.setPaintProperty('route', 'line-opacity', explore ? 0.8 : 1);
-    }
-
-    function updateSelection(current, previous) {
-        if (!map || !isReady.value) {
-            return;
-        }
-
-        if (previous) {
-            map.setFeatureState({
-                source : 'stations',
-                id : previous
-            }, {
-                selected : false
-            });
-        }
-
-        if (current) {
-            map.setFeatureState({
-                source : 'stations',
-                id : current
-            }, {
-                selected : true
-            });
-        }
     }
 
     watch(() => props.layers, setLayerData);
     watch(() => props.mode, updateMode);
-    watch(() => props.selectedStation, updateSelection);
     watch(() => props.boat, updateBoat, {
         deep : true
     });
@@ -501,7 +434,6 @@
             container.value.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
             setLayerData();
             updateMode();
-            updateSelection(props.selectedStation, null);
             updateBoat();
             applyFocus(false);
 
@@ -512,22 +444,6 @@
             for (const label of LAND_LABELS) {
                 createLabel(label, 'land');
             }
-        });
-
-        map.on('click', 'stations', (event) => {
-            const feature = event.features?.[0];
-
-            if (feature) {
-                emit('select-station', feature.properties.station);
-            }
-        });
-
-        map.on('mouseenter', 'stations', () => {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', 'stations', () => {
-            map.getCanvas().style.cursor = '';
         });
     });
 

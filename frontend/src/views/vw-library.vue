@@ -4,7 +4,6 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { mediaUrl } from '@/services/data.js';
-    import { formatDate } from '@/services/format.js';
 
     const TYPE_ORDER = ['person', 'specimen', 'media', 'item', 'article', 'location', 'expedition', 'other'];
     const TYPE_ICONS = {
@@ -15,10 +14,8 @@
         item : 'item',
         article : 'book',
         expedition : 'anchor',
-        other : 'info',
-        station : 'station'
+        other : 'info'
     };
-    const STATION_LIMIT = 60;
 
     const store = inject('store');
     const t = inject('t');
@@ -47,11 +44,7 @@
         ...types.value.map((type) => ({
             id : type,
             label : t('content_type_' + type)
-        })),
-        {
-            id : 'station',
-            label : t('content_type_station')
-        }
+        }))
     ]);
 
     function matches(text) {
@@ -86,37 +79,6 @@
                     type,
                     label : t('content_type_' + type),
                     items
-                });
-            }
-        }
-
-        if (activeFilter.value === 'all' || activeFilter.value === 'station') {
-            const stations = store.stations
-                .filter((feature) => matches([
-                    `${t('station')} ${feature.properties.station}`,
-                    feature.properties.remarks ?? '',
-                    feature.properties.bottom ?? ''
-                ].join(' ')));
-            const limit = activeFilter.value === 'station' || isSearching.value ? stations.length : STATION_LIMIT;
-
-            if (stations.length) {
-                result.push({
-                    type : 'station',
-                    label : t('content_type_station'),
-                    more : Math.max(0, stations.length - limit),
-                    items : stations.slice(0, limit).map((feature) => ({
-                        key : 'station-' + feature.properties.station,
-                        to : {
-                            path : '/map',
-                            query : {
-                                station : feature.properties.station
-                            }
-                        },
-                        name : `${t('station')} ${feature.properties.station}`,
-                        description : [formatDate(feature.properties.start_date), feature.properties.depth_m ? `${feature.properties.depth_m} m` : null].filter(Boolean).join(' · '),
-                        image : null,
-                        isSpecimen : false
-                    }))
                 });
             }
         }
@@ -206,7 +168,7 @@
                         v-bind:name="TYPE_ICONS[group.type] ?? 'info'"
                         v-bind:size="18" />
                     {{ group.label }}
-                    <span class="group__count">{{ group.items.length + (group.more ?? 0) }}</span>
+                    <span class="group__count">{{ group.items.length }}</span>
                 </h2>
 
                 <router-link
@@ -240,14 +202,6 @@
                         name="chevronRight"
                         v-bind:size="18" />
                 </router-link>
-
-                <button
-                    v-if="group.more"
-                    type="button"
-                    class="more"
-                    v-on:click="pick(group.type)">
-                    + {{ group.more }}
-                </button>
             </section>
         </el-sheet>
     </div>
@@ -441,11 +395,5 @@
 
     .row__chevron {
         color: var(--c-link);
-    }
-
-    .more {
-        min-height: 4.4rem;
-        color: var(--c-link);
-        font-size: 1.6rem;
     }
 </style>

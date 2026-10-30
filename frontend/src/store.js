@@ -30,7 +30,6 @@ export const useStore = defineStore('data', {
             map : {
                 mode : 'home',
                 chapterId : null,
-                stationId : null,
                 focus : null,
                 travelling : false
             },
@@ -67,9 +66,7 @@ export const useStore = defineStore('data', {
 
         recordList : (state) => Object.values(state.data?.records ?? {}),
 
-        records : (state) => state.data?.records ?? {},
-
-        stations : (state) => state.mapLayers?.stations?.features ?? []
+        records : (state) => state.data?.records ?? {}
     },
 
     actions : {
@@ -169,10 +166,6 @@ export const useStore = defineStore('data', {
                 ...this.map,
                 ...settings
             };
-        },
-
-        stationById(id) {
-            return this.stations.find((feature) => feature.properties.station === String(id)) ?? null;
         },
 
         t(key) {

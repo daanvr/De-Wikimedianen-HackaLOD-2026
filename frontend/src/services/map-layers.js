@@ -2,8 +2,7 @@
 const LAYER_FILES = {
     bathymetry : '/map/bathymetry.geojson',
     land : '/map/land.geojson',
-    route : '/map/route.geojson',
-    stations : '/map/stations.geojson'
+    route : '/map/route.geojson'
 };
 
 export async function loadMapLayers() {

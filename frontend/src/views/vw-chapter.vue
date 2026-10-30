@@ -45,7 +45,6 @@
 
         store.setMap({
             mode : 'story',
-            stationId : null,
             boat : position,
             focus : {
                 ...position,

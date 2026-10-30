@@ -13,7 +13,7 @@ Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/
 frontend/
 ├── public/
 │   ├── data/            ← frontend data van de pipeline (niet in git)
-│   └── map/             ← kaartlagen: diepte, land, route, stations (wel in git)
+│   └── map/             ← kaartlagen: diepte, land, route (wel in git)
 ├── scripts/
 │   └── prepare_map.py   ← maakt public/map/ uit de bronbestanden
 └── src/
@@ -39,8 +39,8 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 | `/records/:id`  | `vw-record.vue`   | Record met plaatje, velden, bron en "Genoemd in"             |
 | `/pages/:id`    | `vw-page.vue`     | Vaste pagina, zoals `/pages/about`                           |
 | `/plugins/:id`  | `vw-plugin.vue`   | Plugin schermvullend; `?argument=` gaat naar de plugin       |
-| `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype en stations   |
-| `/map`          | `vw-map.vue`      | Ontdekmodus: kaart met stations en knoppen naar de plugins met `showInExplore`; `?station=117` opent een station |
+| `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype               |
+| `/map`          | `vw-map.vue`      | Ontdekmodus: de kaart met knoppen naar de plugins met `showInExplore` |
 
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 
