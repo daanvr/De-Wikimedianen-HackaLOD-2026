@@ -73,7 +73,7 @@ class WikidataAdapter(SourceAdapter):
         qid = _qid(uri)
         entity = _entity(fetcher.get_json(entity_url(qid), self.name), qid)
         if entity is None:
-            logger.warning(f"Geen entity van Wikidata voor {qid}")
+            logger.warning(f"No entity from Wikidata for {qid}")
             return
         for url in labels_urls(_referenced_ids(entity)):
             fetcher.get_json(url, self.name)
@@ -92,7 +92,7 @@ class WikidataAdapter(SourceAdapter):
         qid = _qid(uri)
         entity = _entity(cache.get_json(entity_url(qid)), qid)
         if entity is None:
-            logger.warning(f"Geen entity van Wikidata in de cache voor {qid}")
+            logger.warning(f"No entity from Wikidata in the cache for {qid}")
             return None
         labels = _read_labels(_referenced_ids(entity), cache)
         image = _first_value(entity, "P18")
@@ -190,7 +190,7 @@ def _item_ids(entity: dict, prop: str) -> list[str]:
 def _qid(uri: str) -> str:
     match = ENTITY_URL.match(uri)
     if match is None:
-        raise ValueError(f"Geen Wikidata-URI: {uri}")
+        raise ValueError(f"Not a Wikidata URI: {uri}")
     return match.group(3)
 
 def _read_labels(qids: list[str], cache: Cache) -> dict[str, str]:
@@ -199,7 +199,7 @@ def _read_labels(qids: list[str], cache: Cache) -> dict[str, str]:
     for url in labels_urls(qids):
         data = cache.get_json(url)
         if not isinstance(data, dict):
-            logger.warning(f"Geen labels van Wikidata in de cache voor {url}")
+            logger.warning(f"No labels from Wikidata in the cache for {url}")
             continue
         for qid, entity in (data.get("entities") or {}).items():
             label = _text(entity.get("labels"), LABEL_LANGUAGES) if isinstance(entity, dict) else None

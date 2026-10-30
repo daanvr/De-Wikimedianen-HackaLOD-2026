@@ -52,7 +52,7 @@ class CommonsAdapter(SourceAdapter):
         data = cache.get_json(self._url(uri))
         info = _imageinfo(data)
         if info is None:
-            logger.warning(f"Geen imageinfo van Commons in de cache voor {uri}")
+            logger.warning(f"No imageinfo from Commons in the cache for {uri}")
             return None
         # For an M entity the file name is only in the response.
         filename = (_page_filename(data) or uri) if ENTITY_URL.match(uri) else filename_from_url(uri)
@@ -139,7 +139,7 @@ def read_image(
     """Image with attribution and license, from the imageinfo in the cache."""
     info = _imageinfo(cache.get_json(imageinfo_url(filename, width)))
     if info is None:
-        logger.warning(f"Geen imageinfo van Commons in de cache voor {filename}")
+        logger.warning(f"No imageinfo from Commons in the cache for {filename}")
         return None
     return _image(info, filename)
 
@@ -187,11 +187,11 @@ def _fetch_download(
     """Fetches the imageinfo at url and downloads the image; name is only for the log messages."""
     info = _imageinfo(fetcher.get_json(url, adapter))
     if info is None:
-        logger.warning(f"Geen imageinfo van Commons voor {name}")
+        logger.warning(f"No imageinfo from Commons for {name}")
         return
     download_url = info.get("thumburl") or info.get("url")
     if not download_url:
-        logger.warning(f"Geen download-URL op Commons voor {name}")
+        logger.warning(f"No download URL on Commons for {name}")
         return
     fetcher.download(download_url, adapter)
 
@@ -213,7 +213,7 @@ def _image(info: dict, name: str) -> ImageInfo | None:
     """Image with attribution and license from one imageinfo; name is only for the log message."""
     download_url = info.get("thumburl") or info.get("url")
     if not download_url:
-        logger.warning(f"Geen download-URL op Commons voor {name}")
+        logger.warning(f"No download URL on Commons for {name}")
         return None
     metadata = info.get("extmetadata") or {}
     return ImageInfo(

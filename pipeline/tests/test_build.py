@@ -140,7 +140,7 @@ def test_build_writes_frontend_data(config: Config):
     assert anna["image"]["license"] == "CC0"
     assert anna["backlinks"] == ["pages/about", "chapters/hoofdstuk-1-vertrek"]
     messages = "\n".join(report.warnings)
-    assert "ongeldige waarde voor death_date" in messages
+    assert "invalid value for death_date" in messages
     assert "field_occupation" in messages
     assert "field_birth_date," not in messages
     assert (config.output_path / "media" / "anna-weber.jpg").read_bytes() == b"\xff\xd8\xff"
@@ -158,14 +158,14 @@ def test_build_tolerates_bad_content_and_sources(config: Config):
     assert records["geen-url"]["uri"] is None
     assert records["haven"]["source"] is None
     messages = "\n".join(report.warnings)
-    for fragment in ["Bestaat niet", "kapotte bron", "licentie", "geen adapter", "draai eerst fetch"]:
+    for fragment in ["Bestaat niet", "kapotte bron", "licentie", "no adapter", "run fetch first"]:
         assert fragment in messages
 
 def test_build_without_cached_image_skips_image(config: Config):
     report = Report()
     data = json.loads(run_build(config, report).read_text(encoding = "utf-8"))
     assert data["records"]["anna-weber"]["image"] is None
-    assert any("niet in de cache" in warning for warning in report.warnings)
+    assert any("not in the cache" in warning for warning in report.warnings)
 
 def test_build_replaces_previous_output(config: Config):
     stale = config.output_path / "media" / "oud.jpg"

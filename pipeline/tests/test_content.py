@@ -299,7 +299,7 @@ def test_pages(tmp_path: Path):
     assert items["pages/about"].kind == ItemKind.PAGE
     assert page_title(items["pages/about"], report) == "Over deze website"
     assert page_title(items["pages/zonder-titel"], report) == "zonder titel"
-    assert any("page zonder title" in warning for warning in report.warnings)
+    assert any("page without title" in warning for warning in report.warnings)
     converted = convert_body(items["pages/about"], build_link_index(list(items.values()), vault), report)
     assert converted.markdown.strip() == "Tekst over [Anna Weber](/records/anna-weber)."
 
@@ -312,8 +312,8 @@ def test_read_messages(tmp_path: Path):
     report = Report()
     assert read_messages(vault, report) == {"about_site": "Over de site", "start_bn": "START EXPEDITIE"}
     warnings = "\n".join(report.warnings)
-    assert "leeg bericht: leeg" in warnings
-    assert "about_site staat er al" in warnings
+    assert "empty message: leeg" in warnings
+    assert "about_site already exists" in warnings
     items_report = Report()
     assert [item.ref for item in read_content(vault, items_report)] == ["records/gewoon"]
     assert items_report.warnings == []

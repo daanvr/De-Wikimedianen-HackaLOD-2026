@@ -60,15 +60,15 @@ class Fetcher:
             response.body = None
             self.cache.put(response)
             self.stats["downloaded"] += 1
-            logger.debug(f"Gedownload: {url} -> {path.name}")
+            logger.debug(f"Downloaded: {url} -> {path.name}")
             return path
         response.body = None
         self.cache.put(response)
         self.stats["failed"] += 1
         if path.is_file():
-            logger.warning(f"Download mislukt (status {response.status}), oude kopie blijft: {url}")
+            logger.warning(f"Download failed (status {response.status}), keeping old copy: {url}")
             return path
-        logger.warning(f"Download mislukt (status {response.status}): {url}")
+        logger.warning(f"Download failed (status {response.status}): {url}")
         return None
 
     def get(
@@ -87,13 +87,13 @@ class Fetcher:
         self.cache.put(response)
         if response.is_ok():
             self.stats["fetched"] += 1
-            logger.debug(f"Opgehaald: {url}")
+            logger.debug(f"Fetched: {url}")
             return response
         self.stats["failed"] += 1
         if has_good_copy:
-            logger.warning(f"Ophalen mislukt (status {response.status}), oude kopie van {cached.fetched_at} gebruikt: {url}")
+            logger.warning(f"Fetch failed (status {response.status}), using old copy from {cached.fetched_at}: {url}")
             return cached
-        logger.warning(f"Ophalen mislukt (status {response.status}): {url}")
+        logger.warning(f"Fetch failed (status {response.status}): {url}")
         return response
 
     def get_json(
@@ -135,14 +135,14 @@ class Fetcher:
                 )
             except httpx.TransportError as error:
                 if is_last:
-                    logger.debug(f"Netwerkfout bij {url}: {error!r}")
+                    logger.debug(f"Network error for {url}: {error!r}")
                     return _failure(url, adapter)
                 wait = limit.backoff(attempt)
-                logger.warning(f"Netwerkfout bij {url} ({error!r}), nieuwe poging over {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
+                logger.warning(f"Network error for {url} ({error!r}), retrying in {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
                 time.sleep(wait)
                 continue
             except (httpx.HTTPError, httpx.InvalidURL) as error:
-                logger.debug(f"Fout bij {url}: {error!r}")
+                logger.debug(f"Error for {url}: {error!r}")
                 return _failure(url, adapter)
             if response.status_code in limit.retry_statuses and not is_last:
                 wait = limit.retry_delay(
@@ -150,8 +150,8 @@ class Fetcher:
                     _retry_after(response.headers.get("retry-after")),
                     attempt
                 )
-                reason = "Rate limited" if response.status_code == 429 else f"Status {response.status_code}"
-                logger.warning(f"{reason} bij {url}, nieuwe poging over {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
+                reason = "Rate limited" if response.status_code == 429 else f"Got status {response.status_code}"
+                logger.warning(f"{reason} on {url}, retrying in {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
                 time.sleep(wait)
                 continue
             return CachedResponse(

@@ -60,7 +60,7 @@ class _BodyConverter:
         name = slugify(path.stem) + path.suffix.lower()
         existing = self.attachments.setdefault(name, path)
         if existing != path:
-            self.report.warn(f"twee bijlagen krijgen dezelfde naam {name}: {existing.name} en {path.name}", self.item.path)
+            self.report.warn(f"two attachments get the same name {name}: {existing.name} and {path.name}", self.item.path)
         return f"media/{name}"
 
     def _link(self, ref: str) -> None:
@@ -79,7 +79,7 @@ class _BodyConverter:
             if ref:
                 self._link(ref)
                 return f"[{label}](/{ref})"
-            self.report.warn(f"link naar onbekende pagina ({target}), wordt gewone tekst", self.item.path)
+            self.report.warn(f"link to unknown page ({target}), becomes plain text", self.item.path)
             return label
         attachment = self.index.attachments.get(_key(_last_part(page)))
         if attachment:
@@ -98,7 +98,7 @@ class _BodyConverter:
             if attachment:
                 return f"![]({self._attachment(attachment)})"
             if not ref and _EXTENSION.search(name):
-                self.report.warn(f"bijlage bestaat niet: ![[{target}]], weggelaten", self.item.path)
+                self.report.warn(f"attachment does not exist: ![[{target}]], left out", self.item.path)
                 return ""
         label = alias or _default_label(target)
         if ref:
@@ -107,7 +107,7 @@ class _BodyConverter:
         if attachment:
             return f"[{label}]({self._attachment(attachment)})"
         if page:
-            self.report.warn(f"link naar onbekende pagina [[{target}]], wordt gewone tekst", self.item.path)
+            self.report.warn(f"link to unknown page [[{target}]], becomes plain text", self.item.path)
         return label
 
     def replace(self, match: re.Match) -> str:
@@ -136,21 +136,21 @@ def chapter_location(
 ) -> str | None:
     target = _location_target(item.frontmatter.get("location"))
     if not target:
-        report.warn("chapter zonder location (verplicht)", item.path)
+        report.warn("chapter without location (required)", item.path)
         return None
     ref = resolve_link(target, index)
     if ref is None:
-        report.warn(f"location verwijst naar onbekende pagina: {target}", item.path)
+        report.warn(f"location refers to unknown page: {target}", item.path)
         return None
     if not ref.startswith(f"{ItemKind.RECORD.value}/"):
-        report.warn(f"location verwijst niet naar een record: {target}", item.path)
+        report.warn(f"location does not refer to a record: {target}", item.path)
         return None
     return ref
 
 def chapter_number(item: ContentItem, report: Report) -> int | None:
     value = item.frontmatter.get("chapter")
     if value is None or value == "":
-        report.warn("chapter zonder volgnummer", item.path)
+        report.warn("chapter without number", item.path)
         return None
     if isinstance(value, int) and not isinstance(value, bool):
         return value
@@ -158,17 +158,17 @@ def chapter_number(item: ContentItem, report: Report) -> int | None:
         return int(value)
     if isinstance(value, str) and re.fullmatch(r"[0-9]+", value.strip()):
         return int(value.strip())
-    report.warn(f"ongeldig volgnummer: {value!r}", item.path)
+    report.warn(f"invalid number: {value!r}", item.path)
     return None
 
 def content_type(item: ContentItem, report: Report) -> str | None:
     value = item.frontmatter.get("contenttype")
     text = "" if value is None else str(value).strip()
     if not text:
-        report.warn("geen contenttype", item.path)
+        report.warn("no content type", item.path)
         return None
     if text not in _CONTENT_TYPES:
-        report.warn(f"onbekend contenttype: {text}", item.path)
+        report.warn(f"unknown content type: {text}", item.path)
     return text
 
 def convert_body(
@@ -194,7 +194,7 @@ def page_title(item: ContentItem, report: Report) -> str:
     """A page's title comes from `title`; without a title, the file name is used."""
     value = item.frontmatter.get("title")
     if value is None or not str(value).strip():
-        report.warn("page zonder title, de bestandsnaam wordt de titel", item.path)
+        report.warn("page without title, the filename becomes the title", item.path)
         return item.title
     return str(value).strip()
 
@@ -222,20 +222,20 @@ def read_messages(content_path: Path, report: Report) -> dict[str, str]:
             if key == "type":
                 continue
             if value is None or not str(value).strip():
-                report.warn(f"leeg bericht: {key}", relative)
+                report.warn(f"empty message: {key}", relative)
                 continue
             if key in messages:
-                report.warn(f"bericht {key} staat er al, wordt overschreven", relative)
+                report.warn(f"message {key} already exists, will be overwritten", relative)
             messages[str(key)] = str(value).strip()
     return messages
 
 def record_uri(item: ContentItem, report: Report) -> str | None:
     value = item.frontmatter.get("uri")
     if value is None or value == "":
-        report.warn("record zonder uri", item.path)
+        report.warn("record without uri", item.path)
         return None
     if not isinstance(value, str) or not _is_http_url(value.strip()):
-        report.warn(f"uri is geen http(s)-URL: {value!r}", item.path)
+        report.warn(f"uri is not an http(s) URL: {value!r}", item.path)
         return None
     return value.strip()
 
@@ -260,7 +260,7 @@ def _deduplicate_ids(items: list[ContentItem], report: Report) -> None:
             while (item.kind, f"{item.id}-{number}") in taken:
                 number += 1
             new_id = f"{item.id}-{number}"
-            report.warn(f"id {item.id} bestaat al bij {item.kind.value}, wordt {new_id}", item.path)
+            report.warn(f"id {item.id} already exists for {item.kind.value}, becomes {new_id}", item.path)
             item.id = new_id
             taken.add((item.kind, new_id))
         seen.add((item.kind, item.id))
@@ -305,17 +305,17 @@ def _parse(
         text = path.read_text(encoding = "utf-8")
     except (OSError, UnicodeDecodeError) as error:
         if report:
-            report.warn(f"bestand niet te lezen, overgeslagen ({error})", relative)
+            report.warn(f"file can't be read, skipped ({error})", relative)
         return None
     match = _FRONTMATTER.match(text)
     if not match:
-        logger.debug(f"{relative}: geen frontmatter, overgeslagen")
+        logger.debug(f"{relative}: no frontmatter, skipped")
         return None
     try:
         frontmatter = yaml.safe_load(match.group(1))
     except yaml.YAMLError as error:
         if report:
-            report.warn(f"ongeldige YAML in frontmatter, overgeslagen ({' '.join(str(error).split())})", relative)
+            report.warn(f"invalid YAML in frontmatter, skipped ({' '.join(str(error).split())})", relative)
         return None
     if not isinstance(frontmatter, dict):
         return None
@@ -331,14 +331,14 @@ def _read_item(
         return None
     frontmatter, body, relative = parsed
     if frontmatter.get("type") in (None, ""):
-        logger.debug(f"{relative}: geen type, overgeslagen")
+        logger.debug(f"{relative}: no type, skipped")
         return None
     type_name = str(frontmatter["type"]).strip().lower()
     if type_name == _I18N_TYPE:
         return None
     kind = _KINDS.get(type_name)
     if kind is None:
-        report.warn(f"onbekend type: {frontmatter['type']!r}, overgeslagen", relative)
+        report.warn(f"unknown type: {frontmatter['type']!r}, skipped", relative)
         return None
     title = unicodedata.normalize("NFC", path.stem)
     return ContentItem(

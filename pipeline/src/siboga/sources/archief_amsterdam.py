@@ -53,7 +53,7 @@ class ArchiefAmsterdamAdapter(SourceAdapter):
         record_iri = _record_iri(uri)
         graph = _graph(fetcher.get_json(record_iri, self.name, headers = ACCEPT_JSON_LD))
         if record_iri not in graph:
-            logger.warning(f"Geen record in de JSON-LD van het Stadsarchief voor {uri}")
+            logger.warning(f"No record in the Stadsarchief JSON-LD for {uri}")
             return
         for person_iri in _person_iris(graph, record_iri):
             fetcher.get(person_iri, self.name, headers = ACCEPT_JSON_LD)
@@ -73,7 +73,7 @@ class ArchiefAmsterdamAdapter(SourceAdapter):
         graph = _graph(cache.get_json(record_iri))
         record = graph.get(record_iri)
         if record is None:
-            logger.warning(f"Geen record van het Stadsarchief in de cache voor {uri}")
+            logger.warning(f"No Stadsarchief record in the cache for {uri}")
             return None
         return SourceData(
             description = _description(graph, record_iri, cache),
@@ -186,7 +186,7 @@ def _image(
         for prop in LICENSE_PROPERTIES:
             license_info = license_info or license_name(_ref(node, prop) or _literal(node, prop))
     if license_info is None:
-        logger.debug(f"Geen licentie bij de scans van {uri}; geen plaatje")
+        logger.debug(f"No license for the scans of {uri}; no image")
         return None
     context = graph.get(f"{ID_BASE}resources/records/{uuid}/context", {})
     assets = context.get(f"{MEMORIX}hasDigitalDocument") or []
@@ -248,7 +248,7 @@ def _person_iris(graph: dict, record_iri: str) -> list[str]:
 def _record_iri(uri: str) -> str:
     match = RECORD_URL.match(uri)
     if match is None:
-        raise ValueError(f"Geen URI van het Stadsarchief Amsterdam: {uri}")
+        raise ValueError(f"Not a Stadsarchief Amsterdam URI: {uri}")
     return f"{ID_BASE}{match.group(3).lower()}"
 
 def _record_title(graph: dict, iri: str | None) -> str | None:

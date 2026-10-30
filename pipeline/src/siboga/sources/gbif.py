@@ -91,14 +91,14 @@ class GbifAdapter(SourceAdapter):
         urls = self._source_urls(uri)
         data = cache.get_json(urls[0])
         if not isinstance(data, dict):
-            logger.warning(f"Geen GBIF-gegevens in de cache voor {uri}")
+            logger.warning(f"No GBIF data in the cache for {uri}")
             return None
         if TAXON_URL.match(uri):
             taxon = _col_taxon(data)
         else:
             taxon = _gbif_taxon(data, cache.get_json(urls[1]))
         if taxon is None:
-            logger.warning(f"Onbruikbaar GBIF-antwoord voor {uri}")
+            logger.warning(f"Unusable GBIF response for {uri}")
             return None
         return SourceData(
             description = _description(taxon),
@@ -256,7 +256,7 @@ def _pick_image(
 def _species_key(uri: str) -> str:
     match = SPECIES_URL.match(uri)
     if match is None:
-        raise ValueError(f"Geen GBIF-URI: {uri}")
+        raise ValueError(f"Not a GBIF URI: {uri}")
     return match.group(2)
 
 def _values(*values: str | None) -> list[str]:

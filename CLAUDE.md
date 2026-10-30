@@ -33,7 +33,7 @@ De twee repo's worden op een andere manier gelezen, en de markdown volgt dat.
 - NEVER have a trailing newline at the end of files, so that the very last line of a file is a newline.
 - Use exactly ONE empty line between sections of code (functions, classes, blocks), NEVER two consecutive empty lines (so not PEP 8 style double blank lines between top-level definitions)
 - Put methods in classes in alphabetical order
-- Code comments and docstrings are ALWAYS in English, in every language and file type (Python, JavaScript, Vue, SCSS, TOML, justfile). Markdown files may be in Dutch.
+- Code comments, docstrings, log messages, warnings and error messages are ALWAYS in English, in every language and file type (Python, JavaScript, Vue, SCSS, TOML, justfile). Markdown files may be in Dutch.
 ## Markdown
 - **No blank line after headings** — text starts on the very next line after a `#` heading
 ## JavaScript

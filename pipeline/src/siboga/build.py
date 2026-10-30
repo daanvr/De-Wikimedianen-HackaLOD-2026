@@ -108,30 +108,30 @@ def check_output(output_path: Path) -> list[str]:
     """Checks the frontend data against the contract. Returns a list of problems."""
     json_path = output_path / "siboga.json"
     if not json_path.exists():
-        return [f"{json_path} bestaat niet"]
+        return [f"{json_path} does not exist"]
     data = FrontendData.model_validate_json(json_path.read_text(encoding = "utf-8"))
     problems = []
     if data.meta.schema_version != SCHEMA_VERSION:
-        problems.append(f"schemaVersion is {data.meta.schema_version}, verwacht {SCHEMA_VERSION}")
+        problems.append(f"schemaVersion is {data.meta.schema_version}, expected {SCHEMA_VERSION}")
     items = {item.ref: item for item in [*data.pages.values(), *data.chapters, *data.records.values()]}
     for key, item in [*data.pages.items(), *data.records.items()]:
         if key != item.id:
-            problems.append(f"{item.ref}: sleutel {key} is niet het id")
+            problems.append(f"{item.ref}: key {key} is not the id")
     for item in items.values():
         refs = [*item.links, *item.backlinks]
         if isinstance(item, ChapterOut) and item.location:
             refs.append(item.location)
         for ref in refs:
             if ref not in items:
-                problems.append(f"{item.ref}: verwijst naar onbekende ref {ref}")
+                problems.append(f"{item.ref}: refers to unknown ref {ref}")
         for target in MARKDOWN_LINK.findall(item.body or ""):
             if target.startswith("/") and target[1:] not in items:
-                problems.append(f"{item.ref}: link in body naar onbekende pagina {target}")
+                problems.append(f"{item.ref}: link in body to unknown page {target}")
             elif target.startswith("media/") and not (output_path / target).exists():
-                problems.append(f"{item.ref}: mediabestand {target} ontbreekt")
+                problems.append(f"{item.ref}: media file {target} is missing")
         image = getattr(item, "image", None)
         if image is not None and not (output_path / image.src).exists():
-            problems.append(f"{item.ref}: plaatje {image.src} ontbreekt")
+            problems.append(f"{item.ref}: image {image.src} is missing")
     return problems
 
 def run_build(
@@ -175,7 +175,7 @@ def run_build(
     )
     _replace_dir(staging, config.output_path)
     media_count = len(list((config.output_path / "media").iterdir()))
-    logger.info(f"build klaar: {len(pages)} pages, {len(chapters)} chapters, {len(records)} records, {len(messages)} berichten, {media_count} mediabestanden in {config.output_path}")
+    logger.info(f"build done: {len(pages)} pages, {len(chapters)} chapters, {len(records)} records, {len(messages)} messages, {media_count} media files in {config.output_path}")
     return config.output_path / "siboga.json"
 
 def _add_backlinks(items: list[PageOut | ChapterOut | RecordOut]) -> None:
@@ -224,7 +224,7 @@ def _build_fields(
             if catalog.is_valid(key, value):
                 values.append(value)
             else:
-                report.warn(f"ongeldige waarde voor {key}: {value!r}", item.path)
+                report.warn(f"invalid value for {key}: {value!r}", item.path)
         if values:
             fields.append(FieldOut(key = key, type = catalog.types[key].value, values = values))
     return fields
@@ -282,7 +282,7 @@ def _build_record(
     adapter = registry.adapter_for(uri) if uri else None
     source = None
     if uri and adapter is None:
-        report.warn(f"geen adapter voor {uri}", item.path)
+        report.warn(f"no adapter for {uri}", item.path)
     elif adapter is not None:
         source = _normalize(adapter, uri, cache, item, report)
     source = source or SourceData()
@@ -313,7 +313,7 @@ def _check_field_messages(
     used = sorted({key for profile in catalog.profiles.values() for key in profile})
     missing = [f"field_{key}" for key in used if f"field_{key}" not in messages]
     if missing:
-        report.warn(f"i18n mist berichten voor veldnamen: {', '.join(missing)}")
+        report.warn(f"i18n is missing messages for field names: {', '.join(missing)}")
 
 def _content_commit(content_path: Path) -> str | None:
     try:
@@ -340,7 +340,7 @@ def _copy_attachments(
         try:
             shutil.copyfile(source, target)
         except OSError as error:
-            report.warn(f"bijlage {source.name} niet gekopieerd: {error}", item.path)
+            report.warn(f"attachment {source.name} not copied: {error}", item.path)
 
 def _copy_image(
     image: ImageInfo | None,
@@ -353,15 +353,15 @@ def _copy_image(
     if image is None:
         return None
     if not image.license or not image.credit:
-        report.warn(f"plaatje overgeslagen: licentie of bronvermelding ontbreekt ({image.source_url or image.download_url})", item.path)
+        report.warn(f"image skipped: license or credit is missing ({image.source_url or image.download_url})", item.path)
         return None
     if not cache.has_media(image.download_url):
-        report.warn(f"plaatje staat niet in de cache, draai eerst fetch ({image.download_url})", item.path)
+        report.warn(f"image is not in the cache, run fetch first ({image.download_url})", item.path)
         return None
     cached_file = cache.media_path(image.download_url)
     name = f"{item.id}{_media_suffix(cached_file, image.download_url, cache)}"
     if (media_dir / name).exists():
-        report.warn(f"mediabestand {name} bestaat al en wordt overschreven", item.path)
+        report.warn(f"media file {name} already exists and will be overwritten", item.path)
     shutil.copyfile(cached_file, media_dir / name)
     return ImageOut(
         src = f"media/{name}",
@@ -393,10 +393,10 @@ def _normalize(
         source = adapter.normalize(uri, cache)
     except Exception as error:
         # One broken source must not stop the rest of the build.
-        report.warn(f"normaliseren mislukt ({adapter.name}): {error!r}", item.path)
+        report.warn(f"normalizing failed ({adapter.name}): {error!r}", item.path)
         return None
     if source is None:
-        report.warn(f"geen gegevens van {adapter.name} in de cache, draai eerst fetch ({uri})", item.path)
+        report.warn(f"no data from {adapter.name} in the cache, run fetch first ({uri})", item.path)
     return source
 
 def _replace_dir(

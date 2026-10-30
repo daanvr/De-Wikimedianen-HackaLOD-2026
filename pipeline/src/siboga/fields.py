@@ -31,5 +31,5 @@ def load_fields(path: Path = PIPELINE_DIR / "fields.toml") -> FieldCatalog:
     for content_type, keys in profiles.items():
         unknown = [key for key in keys if key not in types]
         if unknown:
-            raise ValueError(f"{path}: contenttype {content_type} gebruikt onbekende velden {unknown}")
+            raise ValueError(f"{path}: content type {content_type} uses unknown fields {unknown}")
     return FieldCatalog(profiles = profiles, types = types)
