@@ -20,7 +20,6 @@
 
     // The home screen has its own buttons; every other view shows the menu in the same place
     const showMenu = computed(() => !store.loading && !store.error && route.name !== 'home');
-    const menuMode = computed(() => store.map.mode === 'explore' ? 'explore' : 'story');
 
     // Keep the focus point of the map in the part of the screen not covered by panels
     const mapPadding = computed(() => {
@@ -113,7 +112,7 @@
         <div
             v-if="showMenu"
             class="app__menu">
-            <el-menu v-bind:mode="menuMode" />
+            <el-menu />
         </div>
     </main>
 </template>

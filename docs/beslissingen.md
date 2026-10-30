@@ -8,6 +8,8 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | Nieuw type `plugin` (map `plugins/`): interactieve onderdelen, schermvullend vanuit de ontdekmodus of inline met `[[IIIF#argument]]` | [content-repo.md](content-repo.md#plugins) |
 | De IIIF-plugin laadt live van de IIIF-server (deep zoom). Een bewuste uitzondering op "alles lokaal": valt de server uit, dan toont de plugin een melding en werkt de rest door | [frontend.md](frontend.md#plugins) |
+| Het menu heeft geen wissel tussen verhaal- en ontdekmodus meer: er is een vaste link naar de ontdekmodus, en je komt in de verhaalmodus via Hoofdstukken | [frontend.md](frontend.md#routes) |
+| Boven en onder elk hoofdstuk dezelfde navigatie: vorig hoofdstuk, alle hoofdstukken, volgend hoofdstuk | [frontend.md](frontend.md#routes) |
 | De ontdekmodus toont geen knop "Alle stations" meer; de stations staan nog wel in de bibliotheek | [frontend.md](frontend.md#routes) |
 | MapLibre GL JS voor de kaart in plaats van Leaflet: vectorkaart met vloeiend zoomen, eigen stijl, geen kaarttegels van buiten | [frontend.md](frontend.md#kaart) |
 | Kaartlagen (diepte, land, route, stations) staan als GeoJSON in `frontend/public/map/`, in git | [frontend.md](frontend.md#structuur) |

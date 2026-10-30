@@ -1,7 +1,7 @@
 <script setup>
     import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
-    import ElIcon from '@/components/el-icon.vue';
+    import ElChapterNav from '@/components/el-chapter-nav.vue';
     import ElMapButton from '@/components/el-map-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
     import ElSheet from '@/components/el-sheet.vue';
@@ -119,29 +119,10 @@
         <el-sheet
             ref="sheet"
             v-model:state="sheetState">
-            <nav
-                v-if="previousChapter || nextChapter"
-                class="chapter-nav">
-                <router-link
-                    v-if="previousChapter"
-                    class="back-link"
-                    v-bind:to="`/chapters/${previousChapter.id}`">
-                    <el-icon
-                        name="arrowLeft"
-                        v-bind:size="18" />
-                    {{ t('chapter_previous') }}
-                </router-link>
-
-                <router-link
-                    v-if="nextChapter"
-                    class="back-link chapter-nav__next"
-                    v-bind:to="`/chapters/${nextChapter.id}`">
-                    {{ t('chapter_next') }} {{ toRoman(nextChapter.number ?? index + 2) }}
-                    <el-icon
-                        name="arrowRight"
-                        v-bind:size="18" />
-                </router-link>
-            </nav>
+            <el-chapter-nav
+                class="top-nav"
+                v-bind:previous="previousChapter"
+                v-bind:next="nextChapter" />
 
             <header class="header">
                 <div class="kicker kicker-row">
@@ -183,45 +164,9 @@
                 </svg>
             </div>
 
-            <router-link
-                v-if="nextChapter"
-                class="button button--primary button--block"
-                v-bind:to="`/chapters/${nextChapter.id}`">
-                {{ t('chapter_next') }} {{ toRoman(nextChapter.number ?? index + 2) }}
-                <el-icon
-                    name="arrowRight"
-                    v-bind:size="18" />
-            </router-link>
-
-            <router-link
-                v-else
-                class="button button--primary button--block"
-                to="/chapters">
-                {{ t('chapters_last') }}
-                <el-icon
-                    name="list"
-                    v-bind:size="18" />
-            </router-link>
-
-            <router-link
-                v-if="previousChapter"
-                class="back-link previous"
-                v-bind:to="`/chapters/${previousChapter.id}`">
-                <el-icon
-                    name="arrowLeft"
-                    v-bind:size="18" />
-                {{ t('chapter_previous') }}
-            </router-link>
-
-            <router-link
-                v-if="nextChapter"
-                class="back-link all-chapters"
-                to="/chapters">
-                <el-icon
-                    name="list"
-                    v-bind:size="18" />
-                {{ t('chapters_last') }}
-            </router-link>
+            <el-chapter-nav
+                v-bind:previous="previousChapter"
+                v-bind:next="nextChapter" />
         </el-sheet>
     </div>
 </template>
@@ -280,15 +225,8 @@
         }
     }
 
-    .chapter-nav {
-        display: flex;
-        align-items: center;
-        gap: 1.2rem;
+    .top-nav {
         margin-bottom: 1.2rem;
-    }
-
-    .chapter-nav__next {
-        margin-left: auto;
     }
 
     .header {
@@ -333,11 +271,6 @@
         background: var(--c-terracotta);
         transform-origin: left;
         animation: travel 2.6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
-    }
-
-    .previous,
-    .all-chapters {
-        margin-top: 1.2rem;
     }
 
     @keyframes travel {

@@ -4,60 +4,33 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElMapButton from '@/components/el-map-button.vue';
 
-    const store = inject('store');
     const t = inject('t');
     const route = useRoute();
 
-    const props = defineProps({
-        mode : {
-            type : String,
-            default : 'story'
-        }
-    });
-
     const isOpen = ref(false);
 
-    const storyTarget = computed(() => {
-        const last = store.readChapters.at(-1) ?? store.chapters[0]?.id;
-
-        return last ? `/chapters/${last}` : '/';
-    });
-
     const items = computed(() => {
-        const modeItem = props.mode === 'explore'
-            ? {
-                to : storyTarget.value,
-                icon : 'chapter',
-                label : t('story_mode'),
-                accent : true
-            }
-            : {
-                to : '/map',
-                icon : 'explore',
-                label : t('explore_mode'),
-                accent : true
-            };
-
         return [
             {
                 to : '/',
                 icon : 'home',
-                label : t('menu_home'),
-                accent : false
+                label : t('menu_home')
             },
             {
                 to : '/chapters',
                 icon : 'list',
-                label : t('chapters'),
-                accent : false
+                label : t('chapters')
             },
             {
                 to : '/library',
                 icon : 'book',
-                label : t('library'),
-                accent : false
+                label : t('library')
             },
-            modeItem
+            {
+                to : '/map',
+                icon : 'explore',
+                label : t('explore_mode')
+            }
         ];
     });
 
@@ -114,8 +87,7 @@
                 v-for="item in items"
                 v-bind:key="item.to"
                 class="el-menu__item"
-                v-bind:to="item.to"
-                v-bind:is-accent="item.accent ? '' : null">
+                v-bind:to="item.to">
                 <span class="el-menu__tile">
                     <el-icon
                         v-bind:name="item.icon"
@@ -191,11 +163,6 @@
 
         &.router-link-active {
             font-weight: 600;
-        }
-
-        &[is-accent] .el-menu__tile {
-            background: var(--c-terracotta-soft);
-            color: var(--c-terracotta);
         }
     }
 
