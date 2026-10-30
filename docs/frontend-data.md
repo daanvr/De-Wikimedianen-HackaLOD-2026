@@ -57,7 +57,8 @@ Sleutels in camelCase.
 }
 ```
 
-- Chapters staan in een lijst, gesorteerd op `number`. Records staan in een object met het id als sleutel.
+- Chapters staan in een lijst, gesorteerd op `number` (niet op `location`). Records staan in een object met het id als sleutel.
+- Teksten zijn Nederlands; er zijn nog geen velden per taal.
 - Velden zonder waarde staan er met `null`, zodat de frontend nooit hoeft te raden.
 - `image.credit` en `image.license` zijn verplicht als er een plaatje is.
 

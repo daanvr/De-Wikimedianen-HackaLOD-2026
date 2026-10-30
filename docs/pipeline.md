@@ -46,7 +46,7 @@ class SourceAdapter:
 - `matches` zegt of de adapter bij een URI hoort.
 - `normalize` haalt uit het ruwe antwoord wat we tonen: label, beschrijving, afbeelding, coördinaten, datums (bij `build`).
 
-De eerste adapter is Wikidata (`Special:EntityData/Q….json`). Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
+De eerste adapter is Wikidata (`Special:EntityData/Q….json`). Een adapter hoeft geen Linked Data te lezen: elke bron met een API die bijvoorbeeld JSON teruggeeft kan er een krijgen, ook Delpher en het Stadsarchief Amsterdam. De rest van de pipeline ziet alleen wat `normalize` teruggeeft. Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
 
 ## Cache
 Eén SQLite-bestand in `pipeline/cache/` (niet in git), met de ruwe antwoorden:

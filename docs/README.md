@@ -28,7 +28,7 @@ Codeconventies staan in [CLAUDE.md](../CLAUDE.md). Het inhoudelijke overzicht va
 | Code-repo     | Deze repo: alle techniek                                                                                    |
 | Chapter       | Een verhaal: tekst met links naar records, andere chapters en externe pagina's                              |
 | Record        | Een persoon, voorwerp, plek, foto enzovoort, met één verwijzing naar Linked Data elders                     |
-| Bron          | De Linked Data waar een record naar verwijst, bijvoorbeeld Wikidata                                         |
+| Bron          | Waar een record naar verwijst: Linked Data zoals Wikidata, of een andere API                                |
 | Cache         | SQLite-database met de opgehaalde bronnen; alleen voor de pipeline                                          |
 | Frontend data | `siboga.json` plus `media/`: het enige wat de frontend van de pipeline ziet                                 |
 | Ref           | Verwijzing naar een item, zoals `records/anna-weber`. Met een `/` ervoor is het de URL                      |

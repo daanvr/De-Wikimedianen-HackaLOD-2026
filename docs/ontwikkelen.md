@@ -52,3 +52,6 @@ location / {
     try_files $uri $uri/ /index.html;
 }
 ```
+
+## Automatisch bouwen
+Een cronjob kijkt regelmatig of er nieuwe commits in de content-repo staan. Zo ja, dan haalt hij de content-repo op, draait `just data` en zet de nieuwe site op de server. Hoe en waar die cronjob precies draait, werken we uit als we de server inrichten.

@@ -6,7 +6,7 @@ Een statische Vue 3-app in `frontend/` die de [frontend data](frontend-data.md) 
 ## Stack
 Vertrekpunt is Hays template [vue3-pinia](https://github.com/hay/templates/tree/master/vue3-pinia): Vue 3 met `<script setup>`, Vite, Pinia, SCSS met `valenski`, JavaScript zonder TypeScript. Daarbij komen `vue-router`, een markdown-parser en Leaflet voor de kaart.
 
-Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/app.vue`. Op Linux werkt dat niet. Gebruik overal `app.vue`. DIT MAG JE AANPASSEN.
+Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/app.vue`. Op macOS gaat dat goed, maar op Linux maakt het bestandssysteem onderscheid tussen hoofdletters en kleine letters, en vindt de import het bestand niet. Hernoem het bij het overnemen van de template daarom naar `app.vue`. Dat past ook bij de kebab-case van de andere bestanden. Gebruik in bestandsnamen en imports altijd kleine letters, zodat de build op elk systeem werkt.
 
 ## Structuur
 ```
@@ -37,4 +37,4 @@ Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via d
 - Views halen data uit de store, componenten krijgen hun data via props.
 
 ## Live bronnen
-Elke live bron, zoals de kaarttegels, is één module in `services/`. Valt hij uit, dan werkt de rest van de site door.
+Elke live bron, zoals de kaarttegels, is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. Welke live bronnen er naast de kaarttegels komen, is nog niet bepaald.
