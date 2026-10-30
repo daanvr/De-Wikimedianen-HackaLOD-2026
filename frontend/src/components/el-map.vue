@@ -229,8 +229,7 @@
             sources : {
                 bathymetry : {
                     type : 'geojson',
-                    data : layers.bathymetry ?? empty,
-                    attribution : 'Diepte en land: Natural Earth'
+                    data : layers.bathymetry ?? empty
                 },
                 land : {
                     type : 'geojson',
@@ -241,13 +240,11 @@
                     tiles : [HISTORIC_MAP_TILES],
                     tileSize : 256,
                     bounds : HISTORIC_MAP_BOUNDS,
-                    maxzoom : 10,
-                    attribution : 'Historische kaart: Stadsarchief Amsterdam, gegeorefereerd met <a href="https://allmaps.org">Allmaps</a>'
+                    maxzoom : 10
                 },
                 route : {
                     type : 'geojson',
-                    data : layers.route ?? empty,
-                    attribution : 'Route: Kaart van den Trek v. H.M. Siboga (Weber-van Bosse, 1904)'
+                    data : layers.route ?? empty
                 }
             },
             layers : [
@@ -444,9 +441,8 @@
             dragRotate : false,
             pitchWithRotate : false,
             touchPitch : false,
-            attributionControl : {
-                compact : true
-            }
+            // The credits for the map layers are on the about page
+            attributionControl : false
         });
 
         map.touchZoomRotate.disableRotation();
@@ -457,8 +453,6 @@
 
         map.on('load', () => {
             isReady.value = true;
-            // Start with the attribution folded in; the (i) button opens it
-            container.value.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
             setLayerData();
             updateMode();
             updateBoat();
@@ -524,11 +518,6 @@
         :deep(.map-boat) {
             pointer-events: none;
             filter: drop-shadow(0 2px 3px rgba(8, 26, 44, 0.35));
-        }
-
-        :deep(.maplibregl-ctrl-attrib) {
-            font-family: var(--font-text);
-            font-size: 1.1rem;
         }
     }
 </style>
