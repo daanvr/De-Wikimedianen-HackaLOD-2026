@@ -16,7 +16,7 @@ from siboga.config import Config
 from siboga.content import (
     LinkIndex,
     build_link_index,
-    chapter_location,
+    chapter_coordinates,
     chapter_number,
     content_type,
     convert_body,
@@ -29,12 +29,12 @@ from siboga.content import (
     show_in_explore
 )
 from siboga.fields import FieldCatalog, load_fields
-from siboga.models import ContentItem, ImageInfo, ItemKind, Report, SourceData
+from siboga.models import ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
 from siboga.sources import Registry, build_registry
 
 # The source of a value that an editor wrote in the frontmatter, such as description_nl.
 CONTENT_SOURCE = "content"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
 
@@ -90,7 +90,7 @@ class ChapterOut(OutputModel):
     id: str
     title: str
     number: int | None
-    location: str | None
+    coordinates: CoordinatesOut | None
     body: str | None
     links: list[str]
     backlinks: list[str]
@@ -143,10 +143,7 @@ def check_output(output_path: Path) -> list[str]:
         if key != item.id:
             problems.append(f"{item.ref}: key {key} is not the id")
     for item in items.values():
-        refs = [*item.links, *item.backlinks]
-        if isinstance(item, ChapterOut) and item.location:
-            refs.append(item.location)
-        for ref in refs:
+        for ref in [*item.links, *item.backlinks]:
             if ref not in items:
                 problems.append(f"{item.ref}: refers to unknown ref {ref}")
         for target in MARKDOWN_LINK.findall(item.body or ""):
@@ -230,7 +227,7 @@ def _build_chapter(
         id = item.id,
         title = item.title,
         number = chapter_number(item, report),
-        location = chapter_location(item, index, report),
+        coordinates = _coordinates_out(chapter_coordinates(item, report)),
         body = _body_or_none(converted.markdown),
         links = converted.links,
         backlinks = []
@@ -365,7 +362,7 @@ def _build_record(
         sources = sources,
         body = _body_or_none(converted.markdown),
         image = _copy_image(source.image, image_source, item, cache, media_dir, report),
-        coordinates = CoordinatesOut(lat = source.coordinates.lat, lon = source.coordinates.lon) if source.coordinates else None,
+        coordinates = _coordinates_out(source.coordinates),
         coordinates_source = _source_of(source, "coordinates", own_source),
         fields = _build_fields(source, own_source, catalog.profiles.get(record_type or "", []), catalog, item, report),
         links = converted.links,
@@ -382,6 +379,11 @@ def _check_field_messages(
     missing = [f"field_{key}" for key in used if f"field_{key}" not in messages]
     if missing:
         report.warn(f"i18n is missing messages for field names: {', '.join(missing)}")
+
+def _coordinates_out(coordinates: Coordinates | None) -> CoordinatesOut | None:
+    if coordinates is None:
+        return None
+    return CoordinatesOut(lat = coordinates.lat, lon = coordinates.lon)
 
 def _content_commit(content_path: Path) -> str | None:
     try:

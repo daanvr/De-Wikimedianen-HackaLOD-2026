@@ -47,7 +47,7 @@ Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via d
 ## Kaart
 Eén kaart (`el-map.vue`) blijft staan onder alle views, zodat de boot van hoofdstuk naar hoofdstuk kan varen. Views zetten de kaartstand in de store (`store.setMap()`); `app.vue` geeft die als props door. De onderlaag is eigen werk, met vlakke dieptebanden uit `public/map/`, die lokaal staan. Daarop ligt als hoofdlaag de "Kaart van den Trek v. H.M. Siboga 1899-1900" (Stadsarchief Amsterdam), gegeorefereerd met [Allmaps](https://allmaps.org) en live geladen als rastertegels van `allmaps.xyz`. Valt Allmaps uit, dan blijft de eigen onderlaag zichtbaar. Zee- en landnamen zijn HTML-labels, zodat er geen glyph-server nodig is; op de historische kaart staan ze niet, want die heeft zijn eigen namen.
 
-De boot staat op de coördinaten van het record in `location` van een hoofdstuk. Heeft dat record geen coördinaten, dan ligt de boot bij Soerabaja, waar de reis begon.
+De boot staat op `coordinates` van een hoofdstuk, uit `location` in de content-repo. Heeft een hoofdstuk geen coördinaten, dan ligt de boot bij Soerabaja, waar de reis begon.
 
 ## Data en store
 - `app.vue` laadt `data/siboga.json` één keer en controleert `meta.schemaVersion`.

@@ -8,7 +8,7 @@ import unicodedata
 from loguru import logger
 import yaml
 
-from siboga.models import ContentItem, ContentType, ItemKind, Report
+from siboga.models import ContentItem, ContentType, Coordinates, ItemKind, Report
 
 _CONTENT_TYPES = {content_type.value for content_type in ContentType}
 _EXTENSION = re.compile(r"\.[A-Za-z0-9]{1,5}$")
@@ -25,6 +25,11 @@ _KINDS = {
     "record": ItemKind.RECORD
 }
 _LINK_TITLE = re.compile(r"\s+(?:\"[^\"]*\"|'[^']*')$")
+# The extent of the map layers (LAYER_BOUNDS in frontend/src/components/el-map.vue).
+_MAP_BOUNDS = {
+    "lat": (-16.0, 10.0),
+    "lon": (104.0, 142.0)
+}
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _TRUE_VALUES = {"true", "yes", "1"}
 # A single scan over the text. Code blocks and inline code are matched first,
@@ -37,7 +42,6 @@ _TOKEN = re.compile(
     r"|(?P<mdlink>(?P<image>!?)\[(?P<label>[^\[\]\n]*)\]\((?P<target>(?:[^()\n]|\([^()\n]*\))*)\))",
     re.DOTALL | re.MULTILINE
 )
-_WIKILINK = re.compile(r"\[\[([^\[\]\n]+?)\]\]")
 
 @dataclass
 class ConvertedBody:
@@ -146,23 +150,25 @@ def build_link_index(items: list[ContentItem], content_path: Path) -> LinkIndex:
         refs.setdefault(_key(item.title), item.ref)
     return LinkIndex(attachments = attachments, refs = refs)
 
-def chapter_location(
-    item: ContentItem,
-    index: LinkIndex,
-    report: Report
-) -> str | None:
-    target = _location_target(item.frontmatter.get("location"))
-    if not target:
+def chapter_coordinates(item: ContentItem, report: Report) -> Coordinates | None:
+    """`location` as "lat, lon", the order in which map sites copy coordinates."""
+    value = item.frontmatter.get("location")
+    if value is None or value == "":
         report.warn("chapter without location (required)", item.path)
         return None
-    ref = resolve_link(target, index)
-    if ref is None:
-        report.warn(f"location refers to unknown page: {target}", item.path)
+    parts = value if isinstance(value, list) else str(value).split(",")
+    try:
+        lat, lon = (float(str(part).strip()) for part in parts)
+    except ValueError:
+        report.warn(f"location is not \"lat, lon\": {value!r}", item.path)
         return None
-    if not ref.startswith(f"{ItemKind.RECORD.value}/"):
-        report.warn(f"location does not refer to a record: {target}", item.path)
-        return None
-    return ref
+    if _on_map(lat, lon):
+        return Coordinates(lat = lat, lon = lon)
+    if _on_map(lon, lat):
+        report.warn(f"location {value!r} is outside the map; latitude and longitude are probably swapped", item.path)
+    else:
+        report.warn(f"location {value!r} is outside the map", item.path)
+    return None
 
 def chapter_number(item: ContentItem, report: Report) -> int | None:
     value = item.frontmatter.get("chapter")
@@ -320,15 +326,8 @@ def _key(text: str) -> str:
 def _last_part(path: str) -> str:
     return path.rsplit("/", 1)[-1].strip()
 
-def _location_target(value: object) -> str | None:
-    # Without quotes, YAML turns [[X]] into a nested list.
-    while isinstance(value, list):
-        value = value[0] if value else None
-    if not isinstance(value, str):
-        return None
-    match = _WIKILINK.search(value)
-    text = match.group(1) if match else value
-    return text.replace("\\|", "|").partition("|")[0].strip() or None
+def _on_map(lat: float, lon: float) -> bool:
+    return _MAP_BOUNDS["lat"][0] <= lat <= _MAP_BOUNDS["lat"][1] and _MAP_BOUNDS["lon"][0] <= lon <= _MAP_BOUNDS["lon"][1]
 
 def _parse(
     path: Path,

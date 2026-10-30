@@ -32,12 +32,12 @@ contenttype: person
 ---
 type: chapter
 chapter: "1"
-location: "[[Haven Jakarta]]"
+location: -6.12, 106.81
 ---
 ```
 
 - `chapter`: volgnummer.
-- `location`: verplicht, een wikilink naar een record. Alleen voor de plek op de kaart; de volgorde komt uit `chapter`.
+- `location`: verplicht, de plek van de boot op de kaart als `breedtegraad, lengtegraad`. Dat is de volgorde waarin Google Maps en OpenStreetMap coördinaten kopiëren (rechtsklik op de kaart). Alleen voor de kaart; de volgorde van de hoofdstukken komt uit `chapter`. Ligt de plek buiten de kaart, dan waarschuwt de pipeline; vaak zijn de twee getallen dan omgedraaid. Zonder bruikbare `location` ligt de boot bij Soerabaja.
 
 ```yaml
 ---

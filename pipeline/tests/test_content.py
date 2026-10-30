@@ -4,7 +4,7 @@ import pytest
 
 from siboga.content import (
     build_link_index,
-    chapter_location,
+    chapter_coordinates,
     chapter_number,
     content_type,
     convert_body,
@@ -18,7 +18,7 @@ from siboga.content import (
     show_in_explore,
     slugify
 )
-from siboga.models import ContentItem, ItemKind, Report
+from siboga.models import ContentItem, Coordinates, ItemKind, Report
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "content"
 REAL_CONTENT_PATH = Path(__file__).resolve().parents[2] / "content"
@@ -62,24 +62,30 @@ def test_build_link_index(index):
     assert index.attachments["foto van anna.png"] == (FIXTURE_PATH / "bijlagen" / "Foto van Anna.png").resolve()
     assert not any(name.endswith(".md") for name in index.attachments)
 
-def test_chapter_location(items, index):
+def test_chapter_coordinates(items):
     chapters = _by_ref(items)
     report = Report()
-    assert chapter_location(chapters["chapters/hoofdstuk-1-vertrek-uit-amsterdam"], index, report) == "records/haven-jakarta"
+    assert chapter_coordinates(chapters["chapters/hoofdstuk-1-vertrek-uit-amsterdam"], report) == Coordinates(lat = -6.12, lon = 106.81)
     assert report.warnings == []
-    assert chapter_location(chapters["chapters/hoofdstuk-2-zonder-plek"], index, report) is None
+    assert chapter_coordinates(chapters["chapters/hoofdstuk-2-zonder-plek"], report) is None
     assert len(report.warnings) == 1
     assert "location" in report.warnings[0]
 
-def test_chapter_location_variants(index):
+def test_chapter_coordinates_variants():
     report = Report()
-    # Without quotes, YAML turns it into a nested list.
-    assert chapter_location(_item({"location": [["Haven Jakarta"]]}), index, report) == "records/haven-jakarta"
-    assert chapter_location(_item({"location": "[[haven jakarta|de haven]]"}), index, report) == "records/haven-jakarta"
+    assert chapter_coordinates(_item({"location": " -6.12 ,106.81 "}), report) == Coordinates(lat = -6.12, lon = 106.81)
+    # Written as a YAML list.
+    assert chapter_coordinates(_item({"location": [-8, 115.5]}), report) == Coordinates(lat = -8.0, lon = 115.5)
     assert report.warnings == []
-    assert chapter_location(_item({"location": "[[Batavia]]"}), index, report) is None
-    assert chapter_location(_item({"location": "[[Hoofdstuk 2 - Zonder plek]]"}), index, report) is None
-    assert len(report.warnings) == 2
+    assert chapter_coordinates(_item({"location": "[[Haven Jakarta]]"}), report) is None
+    assert chapter_coordinates(_item({"location": "Q546796"}), report) is None
+    assert chapter_coordinates(_item({"location": "-6.12, 106.81, 3"}), report) is None
+    assert "lat, lon" in report.warnings[-1]
+    assert chapter_coordinates(_item({"location": "106.81, -6.12"}), report) is None
+    assert "swapped" in report.warnings[-1]
+    assert chapter_coordinates(_item({"location": "52.37, 4.9"}), report) is None
+    assert report.warnings[-1].endswith("is outside the map")
+    assert len(report.warnings) == 5
 
 def test_chapter_number(items):
     chapters = _by_ref(items)
@@ -239,7 +245,7 @@ def test_real_content_smoke():
     for item in items:
         convert_body(item, index, report)
         if item.kind == ItemKind.CHAPTER:
-            chapter_location(item, index, report)
+            chapter_coordinates(item, report)
             chapter_number(item, report)
         else:
             content_type(item, report)

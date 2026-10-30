@@ -80,12 +80,10 @@ export const useStore = defineStore('data', {
         },
 
         chapterPosition(chapter) {
-            const record = chapter?.location ? this.itemByRef(chapter.location) : null;
-
-            if (record?.coordinates) {
+            if (chapter?.coordinates) {
                 return {
-                    lon : record.coordinates.lon,
-                    lat : record.coordinates.lat
+                    lon : chapter.coordinates.lon,
+                    lat : chapter.coordinates.lat
                 };
             }
 

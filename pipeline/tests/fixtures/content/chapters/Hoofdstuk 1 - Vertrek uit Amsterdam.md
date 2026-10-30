@@ -1,7 +1,7 @@
 ---
 type: chapter
 chapter: "1"
-location: "[[Haven Jakarta]]"
+location: -6.12, 106.81
 ---
 [[Anna Weber]] was aan boord van de [[Hr.Ms. Siboga|Siboga]]. %%nog uitzoeken%%
 Er is een [[Weberolegra weberi|vlinder]] naar haar vernoemd.

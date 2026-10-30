@@ -27,7 +27,7 @@ Sleutels in camelCase.
 ```json
 {
     "meta": {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "generatedAt": "2026-10-30T14:31:28+00:00",
         "contentCommit": "c48b2e9",
         "warnings": 6
@@ -64,7 +64,10 @@ Sleutels in camelCase.
             "id": "hoofdstuk-1-de-siboga-vertrekt-uit-amsterdam",
             "title": "Hoofdstuk 1 - de Siboga vertrekt uit Amsterdam",
             "number": 1,
-            "location": "records/haven-jakarta",
+            "coordinates": {
+                "lat": -6.12,
+                "lon": 106.81
+            },
             "body": "[Anna Weber](/records/anna-weber) was aan boord van de Siboga. ...",
             "links": ["records/anna-weber", "records/weberolegra-weberi"],
             "backlinks": []
@@ -143,7 +146,7 @@ Sleutels in camelCase.
 ```
 
 - `messages` zijn de teksten van de site zelf, uit `type: i18n` in de content-repo. De frontend gebruikt ze voor alle tekst in de HTML.
-- Pages, plugins en records staan in een object met het id als sleutel. Het id van een plugin komt uit `id` in de frontmatter, niet uit de bestandsnaam. Chapters staan in een lijst, gesorteerd op `number` (niet op `location`).
+- Pages, plugins en records staan in een object met het id als sleutel. Het id van een plugin komt uit `id` in de frontmatter, niet uit de bestandsnaam. Chapters staan in een lijst, gesorteerd op `number`. `coordinates` van een chapter komt uit `location` in de frontmatter, en is `null` als die ontbreekt of niet klopt.
 - `title` is bij chapters en records de bestandsnaam, bij pages het veld `title`. `label` is de naam volgens de bron. `description` komt uit `description_nl`, anders uit de bron. `source` is de naam van de adapter van `uri`.
 - **Elke waarde zegt waar hij vandaan komt.** `sources` zijn alle bronnen waar het record data uit haalt, met naam en URI; de eerste is altijd `uri` zelf, daarna komen [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata) zoals de NTA. `labelSource`, `descriptionSource`, `coordinatesSource`, `image.source` en `source` bij elk veld noemen de bron van die ene waarde, met een `name` uit `sources`. `descriptionSource` is `content` als de beschrijving uit `description_nl` komt. Zonder waarde is de bron `null`. Een record waarvan de bron niets opleverde, heeft een lege `sources`.
 - `links` zijn de refs waar de tekst naar verwijst, `backlinks` de items die naar dit item verwijzen.
@@ -167,4 +170,4 @@ Sleutels in camelCase.
 - een link naar iets wat niet bestaat wordt gewone tekst, met een waarschuwing.
 
 ## Wijzigen
-Pas bij een wijziging dit document, de Pydantic-modellen in `pipeline/src/siboga/build.py` en de voorbeeld-JSON samen aan. `uv run siboga check` controleert de uitvoer tegen die modellen. Breekt het de frontend, dan gaat `schemaVersion` omhoog; dat is nu 2, omdat `dates` vervangen is door `fields` en `messages` en `pages` erbij kwamen.
+Pas bij een wijziging dit document, de Pydantic-modellen in `pipeline/src/siboga/build.py` en de voorbeeld-JSON samen aan. `uv run siboga check` controleert de uitvoer tegen die modellen. Breekt het de frontend, dan gaat `schemaVersion` omhoog; dat is nu 3, omdat `location` van een chapter (een ref) vervangen is door `coordinates`.

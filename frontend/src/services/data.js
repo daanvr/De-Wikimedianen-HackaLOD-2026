@@ -1,7 +1,7 @@
 // Loads the frontend data written by the pipeline (siboga.json + media/).
 export const DATA_URL = '/data/siboga.json';
 export const MEDIA_BASE = '/data/';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export async function loadFrontendData() {
     const response = await fetch(DATA_URL);
