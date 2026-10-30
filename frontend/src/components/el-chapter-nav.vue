@@ -47,7 +47,16 @@
                 name="arrowRight"
                 v-bind:size="18" />
         </router-link>
-        <span v-else></span>
+
+        <router-link
+            v-else
+            class="back-link link link--next"
+            to="/pages/about">
+            {{ t('about_site') }}
+            <el-icon
+                name="info"
+                v-bind:size="18" />
+        </router-link>
     </nav>
 </template>
 
