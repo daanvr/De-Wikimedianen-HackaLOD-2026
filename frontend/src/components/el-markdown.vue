@@ -1,5 +1,5 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
     import ElPlugin from '@/components/el-plugin.vue';
     import { renderSegments } from '@/services/markdown.js';
@@ -18,10 +18,49 @@
         dropCap : {
             type : Boolean,
             default : false
+        },
+        // An internal href ("/records/anna-weber"): its first link is highlighted and scrolled to
+        highlight : {
+            type : String,
+            default : null
         }
     });
 
+    // Waits for the sheet to finish opening, so the link ends up where we scrolled to
+    const SCROLL_DELAY_MS = 400;
+
+    const root = ref(null);
     const segments = computed(() => renderSegments(props.body, props.lookupKind));
+
+    let scrollTimer = null;
+
+    function highlightLink() {
+        clearTimeout(scrollTimer);
+
+        if (!root.value) {
+            return;
+        }
+
+        for (const link of root.value.querySelectorAll('a[is-highlighted]')) {
+            link.removeAttribute('is-highlighted');
+        }
+
+        const link = props.highlight
+            ? [...root.value.querySelectorAll('a[data-internal]')].find((item) => item.getAttribute('href') === props.highlight)
+            : null;
+
+        if (!link) {
+            return;
+        }
+
+        link.setAttribute('is-highlighted', '');
+        scrollTimer = setTimeout(() => {
+            link.scrollIntoView({
+                behavior : 'smooth',
+                block : 'center'
+            });
+        }, SCROLL_DELAY_MS);
+    }
 
     function onClick(event) {
         const link = event.target.closest('a[data-internal]');
@@ -33,10 +72,21 @@
         event.preventDefault();
         router.push(link.getAttribute('href'));
     }
+
+    watch([segments, () => props.highlight], highlightLink, {
+        flush : 'post'
+    });
+
+    onMounted(highlightLink);
+
+    onBeforeUnmount(() => {
+        clearTimeout(scrollTimer);
+    });
 </script>
 
 <template>
     <div
+        ref="root"
         class="el-markdown"
         v-bind:has-drop-cap="dropCap ? '' : null"
         v-on:click="onClick">
@@ -148,6 +198,14 @@
             display: none;
         }
 
+        :deep(a[is-highlighted]) {
+            padding: 0 0.3rem;
+            border-radius: 3px;
+            background: var(--c-terracotta-soft);
+            box-shadow: 0 0 0 2px var(--c-terracotta-soft);
+            animation: highlight 2.4s ease;
+        }
+
         &[has-drop-cap] > .segment:first-child :deep(> p:first-child::first-letter) {
             float: left;
             font-family: var(--font-header);
@@ -156,6 +214,14 @@
             line-height: 5rem;
             padding: 0.4rem 0.8rem 0 0;
             color: var(--c-marine);
+        }
+    }
+
+    @keyframes highlight {
+        0%,
+        40% {
+            background: var(--c-terracotta-light);
+            box-shadow: 0 0 0 4px var(--c-terracotta-light);
         }
     }
 </style>

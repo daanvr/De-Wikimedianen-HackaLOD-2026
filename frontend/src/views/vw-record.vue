@@ -32,6 +32,7 @@
     const router = useRouter();
 
     const record = computed(() => store.records[route.params.id] ?? null);
+    const mention = computed(() => route.query.mention ? `/${route.query.mention}` : null);
     const type = computed(() => record.value?.contentType ?? 'other');
     const name = computed(() => record.value?.label || record.value?.title || '');
     const sourceName = computed(() => SOURCE_NAMES[record.value?.source] ?? record.value?.source ?? '');
@@ -63,7 +64,13 @@
 
         return {
             ref,
-            to : '/' + ref,
+            // The page opens at the first place where it names this record
+            to : {
+                path : '/' + ref,
+                query : {
+                    mention : record.value.ref
+                }
+            },
             kicker : isChapter ? `${t('chapter')} ${toRoman(item.number)}` : t('content_type_single_' + (item.contentType ?? 'other')),
             title : isChapter ? chapterHeading(item) : (item.label || item.title)
         };
@@ -152,7 +159,8 @@
             <el-markdown
                 v-if="record.body"
                 v-bind:body="record.body"
-                v-bind:lookup-kind="store.kindForHref" />
+                v-bind:lookup-kind="store.kindForHref"
+                v-bind:highlight="mention" />
 
             <el-fields v-bind:fields="record.fields" />
 

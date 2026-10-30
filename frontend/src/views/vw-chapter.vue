@@ -28,6 +28,7 @@
     const numeral = computed(() => toRoman(chapter.value?.number ?? index.value + 1));
     const heading = computed(() => chapter.value ? chapterHeading(chapter.value) : '');
     const kicker = computed(() => chapter.value?.kicker ?? null);
+    const mention = computed(() => route.query.mention ? `/${route.query.mention}` : null);
 
     function enterChapter() {
         if (!chapter.value) {
@@ -40,6 +41,15 @@
         const moves = previous && store.map.mode === 'story'
             && (previous.lon !== position.lon || previous.lat !== position.lat);
 
+        // Opened at a mention, the text is open in full: switching states would reset its scroll
+        let nextSheet = sheetState.value === 'peek' ? 'half' : sheetState.value;
+
+        if (mention.value) {
+            nextSheet = 'full';
+        } else if (moves) {
+            nextSheet = 'peek';
+        }
+
         clearTimeout(travelTimer);
         sheet.value?.scrollToTop();
 
@@ -51,19 +61,20 @@
                 zoom : CHAPTER_ZOOM,
                 fly : moves
             },
-            sheet : moves ? 'peek' : sheetState.value
+            sheet : nextSheet
         });
 
+        sheetState.value = nextSheet;
+        isTravelling.value = Boolean(moves);
+
         if (moves) {
-            isTravelling.value = true;
-            sheetState.value = 'peek';
             travelTimer = setTimeout(() => {
                 isTravelling.value = false;
-                sheetState.value = 'half';
+
+                if (sheetState.value === 'peek') {
+                    sheetState.value = 'half';
+                }
             }, TRAVEL_MS + 200);
-        } else {
-            isTravelling.value = false;
-            sheetState.value = sheetState.value === 'peek' ? 'half' : sheetState.value;
         }
 
         store.markChapterRead(chapter.value.id);
@@ -83,7 +94,7 @@
         });
     }
 
-    watch(() => route.params.id, enterChapter, {
+    watch(() => [route.params.id, route.query.mention], enterChapter, {
         immediate : true
     });
 
@@ -148,6 +159,7 @@
             <el-markdown
                 v-bind:body="chapter.body"
                 v-bind:lookup-kind="store.kindForHref"
+                v-bind:highlight="mention"
                 drop-cap />
 
             <div

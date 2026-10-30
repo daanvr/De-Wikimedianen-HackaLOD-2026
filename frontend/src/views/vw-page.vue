@@ -12,6 +12,7 @@
     const router = useRouter();
 
     const page = computed(() => store.pages[route.params.id] ?? null);
+    const mention = computed(() => route.query.mention ? `/${route.query.mention}` : null);
     const body = computed(() => fillBuildInfo(page.value?.body, store.meta, t));
 
     function goBack() {
@@ -57,7 +58,8 @@
 
             <el-markdown
                 v-bind:body="body"
-                v-bind:lookup-kind="store.kindForHref" />
+                v-bind:lookup-kind="store.kindForHref"
+                v-bind:highlight="mention" />
         </el-sheet>
     </div>
 </template>
