@@ -8,6 +8,9 @@ Technische documentatie van de website De Siboga Expeditie, en het startpunt voo
 - Alles staat lokaal. Valt een externe dienst uit, dan kunnen we nog presenteren.
 - Elke chapter en elk record heeft een eigen URL. De interne links uit de content wijzen daarheen.
 
+## Deployment
+Uiteindelijke website draait op Ubuntu 26.04 met nginx en Python via uv. Verder is alles statisch.
+
 ## Documenten
 | Document                             | Inhoud                                              |
 | ------------------------------------ | --------------------------------------------------- |
