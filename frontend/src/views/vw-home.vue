@@ -104,13 +104,15 @@
         font-style: italic;
         line-height: 1.3;
         color: var(--c-ink-soft);
+        text-align: center;
     }
 
     .title {
         font-weight: 700;
-        font-size: 3.8rem;
+        font-size: 3.5rem;
         line-height: 1.02;
         color: var(--c-marine);
+        text-align: center;
     }
 
     .text {
