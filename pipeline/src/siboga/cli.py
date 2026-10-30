@@ -67,7 +67,7 @@ def run_fetch(
     fetcher = Fetcher(
         cache,
         config.user_agent,
-        delay_seconds = config.delay_seconds,
+        rate_limits = registry.rate_limits(),
         max_age_days = config.max_age_days,
         refresh = refresh,
         timeout_seconds = config.timeout_seconds

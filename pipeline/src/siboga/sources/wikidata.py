@@ -8,7 +8,7 @@ import re
 from loguru import logger
 
 from siboga.models import Coordinates, SourceData
-from siboga.sources.base import SourceAdapter
+from siboga.sources.base import WIKIMEDIA_RATE_LIMIT, SourceAdapter
 from siboga.sources.commons import fetch_image, read_image
 
 if TYPE_CHECKING:
@@ -60,6 +60,7 @@ VERNACULAR_LANGUAGE = "nl"
 
 class WikidataAdapter(SourceAdapter):
     name = "wikidata"
+    rate_limit = WIKIMEDIA_RATE_LIMIT
 
     def __init__(self, image_width: int):
         self.image_width = image_width

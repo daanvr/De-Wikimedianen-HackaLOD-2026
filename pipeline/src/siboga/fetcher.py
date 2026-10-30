@@ -1,5 +1,6 @@
 """Fetches URLs through the cache: politely, with retries, and without ever losing a good copy."""
 from datetime import UTC, datetime, timedelta
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 import os
@@ -11,11 +12,9 @@ import httpx
 
 from siboga.cache import Cache
 from siboga.models import CachedResponse
+from siboga.sources.base import RateLimit
 
-# Wait time before the first and the second retry.
-_BACKOFF_SECONDS = (1.0, 3.0)
-_MAX_RETRY_AFTER_SECONDS = 10.0
-_RETRY_STATUSES = {429, 500, 502, 503, 504}
+DEFAULT_RATE_LIMIT = RateLimit()
 
 class Fetcher:
     """Makes all HTTP requests for the pipeline and writes every response to the cache."""
@@ -23,15 +22,15 @@ class Fetcher:
         self,
         cache: Cache,
         user_agent: str,
-        delay_seconds: float = 0.2,
+        rate_limits: dict[str, RateLimit] | None = None,
         max_age_days: int = 30,
         refresh: bool = False,
         timeout_seconds: float = 30.0,
         client: httpx.Client | None = None
     ):
         self.cache = cache
-        self.delay_seconds = delay_seconds
         self.max_age_days = max_age_days
+        self.rate_limits = rate_limits or {}
         self.refresh = refresh
         self.stats: dict[str, int] = {
             "cached": 0,
@@ -121,11 +120,12 @@ class Fetcher:
         adapter: str,
         headers: dict[str, str] | None = None
     ) -> CachedResponse:
-        """One GET with at most two retries. Status 0 means a network error."""
+        """One GET with retries following the adapter's rate limit. Status 0 means a network error."""
+        limit = self.rate_limits.get(adapter, DEFAULT_RATE_LIMIT)
         request_headers = {**(headers or {}), "User-Agent": self.user_agent}
-        for attempt in range(len(_BACKOFF_SECONDS) + 1):
-            is_last = attempt == len(_BACKOFF_SECONDS)
-            self._wait(url)
+        for attempt in range(limit.max_retries + 1):
+            is_last = attempt == limit.max_retries
+            self._wait(url, limit.min_interval_seconds)
             try:
                 response = self._client.get(
                     url,
@@ -134,17 +134,25 @@ class Fetcher:
                     timeout = self.timeout_seconds
                 )
             except httpx.TransportError as error:
-                logger.debug(f"Netwerkfout bij {url}: {error!r}")
                 if is_last:
+                    logger.debug(f"Netwerkfout bij {url}: {error!r}")
                     return _failure(url, adapter)
-                time.sleep(_BACKOFF_SECONDS[attempt])
+                wait = limit.backoff(attempt)
+                logger.warning(f"Netwerkfout bij {url} ({error!r}), nieuwe poging over {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
+                time.sleep(wait)
                 continue
             except (httpx.HTTPError, httpx.InvalidURL) as error:
                 logger.debug(f"Fout bij {url}: {error!r}")
                 return _failure(url, adapter)
-            if response.status_code in _RETRY_STATUSES and not is_last:
-                logger.debug(f"Status {response.status_code} bij {url}, nieuwe poging")
-                time.sleep(_retry_delay(response, _BACKOFF_SECONDS[attempt]))
+            if response.status_code in limit.retry_statuses and not is_last:
+                wait = limit.retry_delay(
+                    response.status_code,
+                    _retry_after(response.headers.get("retry-after")),
+                    attempt
+                )
+                reason = "Rate limited" if response.status_code == 429 else f"Status {response.status_code}"
+                logger.warning(f"{reason} bij {url}, nieuwe poging over {wait:.1f}s ({attempt + 1}/{limit.max_retries})")
+                time.sleep(wait)
                 continue
             return CachedResponse(
                 adapter = adapter,
@@ -156,12 +164,12 @@ class Fetcher:
             )
         return _failure(url, adapter)
 
-    def _wait(self, url: str) -> None:
-        """Waits until at least delay_seconds have passed since the previous request to the same host."""
+    def _wait(self, url: str, interval_seconds: float) -> None:
+        """Waits until at least interval_seconds have passed since the previous request to the same host."""
         host = urlsplit(url).netloc
         last = self._last_request.get(host)
         if last is not None:
-            remaining = self.delay_seconds - (time.monotonic() - last)
+            remaining = interval_seconds - (time.monotonic() - last)
             if remaining > 0:
                 time.sleep(remaining)
         self._last_request[host] = time.monotonic()
@@ -192,10 +200,18 @@ def _failure(url: str, adapter: str) -> CachedResponse:
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec = "seconds")
 
-def _retry_delay(response: httpx.Response, default: float) -> float:
-    """Retry-After in seconds if the server sends it, never longer than the maximum."""
+def _retry_after(value: str | None) -> float | None:
+    """Retry-After in seconds; the header is either a number of seconds or an HTTP date."""
+    if not value:
+        return None
     try:
-        seconds = float(response.headers.get("retry-after", default))
+        return max(float(value), 0.0)
     except ValueError:
-        seconds = default
-    return max(0.0, min(seconds, _MAX_RETRY_AFTER_SECONDS))
+        pass
+    try:
+        target = parsedate_to_datetime(value)
+    except (TypeError, ValueError):
+        return None
+    if target.tzinfo is None:
+        target = target.replace(tzinfo = UTC)
+    return max((target - datetime.now(UTC)).total_seconds(), 0.0)

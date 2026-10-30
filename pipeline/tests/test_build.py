@@ -82,7 +82,6 @@ def config(tmp_path: Path) -> Config:
     return Config(
         cache_path = tmp_path / "cache" / "siboga.sqlite",
         content_path = vault,
-        delay_seconds = 0,
         image_width = 100,
         max_age_days = 30,
         media_path = tmp_path / "cache" / "media",

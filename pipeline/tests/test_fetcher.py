@@ -1,14 +1,18 @@
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from email.utils import format_datetime
 from pathlib import Path
 import time
 
 from siboga.cache import Cache
 from siboga.fetcher import Fetcher
 from siboga.models import CachedResponse
+from siboga.sources.base import RateLimit
 import httpx
 import pytest
 
+# No pause between requests, so the tests stay fast.
+FAST = RateLimit(min_interval_seconds = 0.0)
 IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
 URL = "https://www.wikidata.org/wiki/Special:EntityData/Q1940785.json"
 USER_AGENT = "SibogaTest/0.1 (test)"
@@ -29,13 +33,13 @@ def sleeps(monkeypatch: pytest.MonkeyPatch) -> list[float]:
 def _fetcher(
     cache: Cache,
     handler: Callable[[httpx.Request], httpx.Response],
-    delay_seconds: float = 0.0,
+    rate_limit: RateLimit = FAST,
     refresh: bool = False
 ) -> Fetcher:
     return Fetcher(
         cache,
         USER_AGENT,
-        delay_seconds = delay_seconds,
+        rate_limits = {name: rate_limit for name in ("commons", "test", "wikidata")},
         refresh = refresh,
         client = httpx.Client(transport = httpx.MockTransport(handler))
     )
@@ -140,8 +144,60 @@ def test_retry_after_is_capped(cache: Cache, sleeps: list[float]):
     fetcher = _fetcher(cache, handler)
     response = fetcher.get(URL, "wikidata")
     assert response.status == 429
-    assert max(sleeps) <= 10.0
+    assert len(sleeps) == FAST.max_retries
+    assert max(sleeps) == FAST.max_backoff_seconds
     assert fetcher.stats["failed"] == 1
+
+def test_retry_after_as_http_date(cache: Cache, sleeps: list[float]):
+    calls: list[int] = []
+    retry_at = format_datetime(datetime.now(UTC) + timedelta(seconds = 30), usegmt = True)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        if len(calls) == 1:
+            return httpx.Response(429, headers = {"Retry-After": retry_at})
+        return httpx.Response(200, json = {"ok": 1})
+
+    fetcher = _fetcher(cache, handler)
+    assert fetcher.get_json(URL, "wikidata") == {"ok": 1}
+    assert 25.0 < sleeps[0] <= 30.0
+
+def test_429_without_retry_after_waits_default(cache: Cache, sleeps: list[float]):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429)
+
+    fetcher = _fetcher(cache, handler)
+    assert fetcher.get(URL, "wikidata").status == 429
+    assert sleeps == [FAST.retry_after_seconds] * FAST.max_retries
+
+def test_5xx_backs_off_exponentially(cache: Cache, sleeps: list[float]):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(502)
+
+    fetcher = _fetcher(cache, handler)
+    assert fetcher.get(URL, "wikidata").status == 502
+    for attempt, wait in enumerate(sleeps):
+        full = FAST.backoff_base_seconds * 2 ** attempt
+        assert 0.8 * full <= wait <= full
+
+def test_rate_limit_per_adapter(cache: Cache, sleeps: list[float]):
+    calls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request.url.host)
+        return httpx.Response(503)
+
+    fetcher = Fetcher(
+        cache,
+        USER_AGENT,
+        rate_limits = {"strict": RateLimit(max_retries = 1, min_interval_seconds = 0.0)},
+        client = httpx.Client(transport = httpx.MockTransport(handler))
+    )
+    fetcher.get("https://a.example/1", "strict")
+    assert len(calls) == 2
+    calls.clear()
+    fetcher.get("https://b.example/1", "unknown")
+    assert len(calls) == RateLimit().max_retries + 1
 
 def test_no_retry_on_404(cache: Cache, sleeps: list[float]):
     calls: list[int] = []
@@ -166,7 +222,7 @@ def test_network_error_without_copy_returns_status_0(cache: Cache, sleeps: list[
     response = fetcher.get(URL, "wikidata")
     assert response.status == 0
     assert response.json() is None
-    assert len(calls) == 3
+    assert len(calls) == FAST.max_retries + 1
     assert cache.get(URL).status == 0
     assert fetcher.get_json(URL, "wikidata") is None
 
@@ -235,7 +291,7 @@ def test_delay_between_requests_to_same_host(cache: Cache):
         times.setdefault(request.url.host, []).append(time.monotonic())
         return httpx.Response(200, json = {})
 
-    fetcher = _fetcher(cache, handler, delay_seconds = 0.05)
+    fetcher = _fetcher(cache, handler, rate_limit = RateLimit(min_interval_seconds = 0.05))
     fetcher.get("https://a.example/1", "test")
     fetcher.get("https://b.example/1", "test")
     fetcher.get("https://a.example/2", "test")

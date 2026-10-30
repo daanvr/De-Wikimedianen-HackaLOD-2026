@@ -11,7 +11,7 @@ import re
 from loguru import logger
 
 from siboga.models import ImageInfo, SourceData
-from siboga.sources.base import SourceAdapter
+from siboga.sources.base import WIKIMEDIA_RATE_LIMIT, SourceAdapter
 
 if TYPE_CHECKING:
     from siboga.cache import Cache
@@ -29,6 +29,7 @@ VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
 
 class CommonsAdapter(SourceAdapter):
     name = "commons"
+    rate_limit = WIKIMEDIA_RATE_LIMIT
 
     def __init__(self, image_width: int):
         self.image_width = image_width

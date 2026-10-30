@@ -9,7 +9,6 @@ REPO_ROOT = PIPELINE_DIR.parent
 class Config:
     cache_path: Path
     content_path: Path
-    delay_seconds: float
     image_width: int
     max_age_days: int
     media_path: Path
@@ -26,7 +25,6 @@ def load_config(
     return Config(
         cache_path = _resolve(repo_root, values["cache"]["path"]),
         content_path = _resolve(repo_root, values["content"]["path"]),
-        delay_seconds = float(values["http"]["delay_seconds"]),
         image_width = int(values["media"]["image_width"]),
         max_age_days = int(values["cache"]["max_age_days"]),
         media_path = _resolve(repo_root, values["cache"]["media_path"]),

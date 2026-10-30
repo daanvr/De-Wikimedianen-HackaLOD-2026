@@ -1,7 +1,7 @@
 """Source adapters and the registry that picks the right adapter for a URI."""
 from siboga.config import Config
 from siboga.sources.archief_amsterdam import ArchiefAmsterdamAdapter
-from siboga.sources.base import SourceAdapter
+from siboga.sources.base import RateLimit, SourceAdapter
 from siboga.sources.commons import CommonsAdapter
 from siboga.sources.gbif import GbifAdapter
 from siboga.sources.wikidata import WikidataAdapter
@@ -15,6 +15,9 @@ class Registry:
             if adapter.matches(uri):
                 return adapter
         return None
+
+    def rate_limits(self) -> dict[str, RateLimit]:
+        return {adapter.name: adapter.rate_limit for adapter in self.adapters}
 
 def build_registry(config: Config) -> Registry:
     return Registry([

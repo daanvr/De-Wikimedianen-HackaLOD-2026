@@ -30,7 +30,7 @@ pipeline/src/siboga/
 ├── models.py      ← gedeelde datatypes
 ├── fields.py      ← fields.toml lezen: velden per contenttype
 ├── content.py     ← chapters, records, pages en i18n lezen, wikilinks omzetten
-├── fetcher.py     ← HTTP: User-Agent, pauze per host, retries
+├── fetcher.py     ← HTTP: User-Agent, pauze per host, retries volgens de rate limit van de adapter
 ├── cache.py       ← SQLite en gedownloade bestanden
 ├── sources/       ← één adapter per soort bron
 └── build.py       ← frontend data schrijven en controleren
@@ -40,6 +40,7 @@ pipeline/src/siboga/
 ```python
 class SourceAdapter:
     name: str
+    rate_limit: RateLimit = RateLimit()
 
     def fetch(self, uri: str, fetcher: Fetcher) -> None:
         ...
@@ -53,6 +54,7 @@ class SourceAdapter:
 
 - `fetch` haalt via de fetcher alles op wat nodig is, inclusief plaatjes. Alleen in de stap `fetch`.
 - `matches` zegt of de adapter bij een URI hoort.
+- `rate_limit` zegt hoe beleefd de fetcher de bron benadert: de pauze tussen verzoeken aan dezelfde host, het aantal herpogingen bij een netwerkfout, 429 of 5xx, en hoe lang hij dan wacht. Stuurt de server een `Retry-After` mee (in seconden of als datum), dan wacht de fetcher zo lang, tot hoogstens een minuut. Anders wacht hij bij een 429 een vaste tijd en bij de rest steeds twee keer zo lang. `wikidata` en `commons` gebruiken `WIKIMEDIA_RATE_LIMIT`: één verzoek per seconde en vijf herpogingen. De andere adapters houden de standaard: 0,2 seconde en drie herpogingen.
 - `normalize` leest uitsluitend uit de cache en geeft label, beschrijving, afbeelding (met bronvermelding en licentie), coördinaten en **alle velden die de bron kan vullen** terug. Alleen in de stap `build`.
 
 | Adapter             | URI's                                               | Wat hij ophaalt                                                                  |

@@ -14,7 +14,6 @@ path = "frontend/public/data"
 
 [http]
 user_agent = "SibogaExpeditie/0.1 (https://siboga.nl; team De Wikimedianen, HackaLOD 2026)"
-delay_seconds = 0.2
 timeout_seconds = 30
 
 [media]
