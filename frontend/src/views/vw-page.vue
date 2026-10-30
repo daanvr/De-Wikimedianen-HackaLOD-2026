@@ -1,7 +1,6 @@
 <script setup>
     import { computed, inject, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
-    import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { fillBuildInfo } from '@/services/build-info.js';
@@ -14,14 +13,6 @@
     const page = computed(() => store.pages[route.params.id] ?? null);
     const mention = computed(() => route.query.mention ? `/${route.query.mention}` : null);
     const body = computed(() => fillBuildInfo(page.value?.body, store.meta, t));
-
-    function goBack() {
-        if (window.history.state?.back) {
-            router.back();
-        } else {
-            router.push('/');
-        }
-    }
 
     onMounted(() => {
         if (!page.value) {
@@ -40,19 +31,8 @@
         v-if="page"
         class="vw-page">
         <el-sheet
-            state="full"
-            v-bind:states="['full']">
-            <div class="bar">
-                <button
-                    type="button"
-                    class="back-link"
-                    v-on:click="goBack()">
-                    <el-icon
-                        name="arrowLeft"
-                        v-bind:size="18" />
-                    {{ t('back') }}
-                </button>
-            </div>
+            state="screen">
+            <div class="bar"></div>
 
             <h1 class="title">{{ page.title }}</h1>
 

@@ -1,82 +1,17 @@
 <script setup>
-    import { inject, ref, watch } from 'vue';
+    import { ref } from 'vue';
 
-    const t = inject('t');
-
-    const props = defineProps({
+    defineProps({
+        // peek: folded in (mobile, while the boat sails), half: the lower half (mobile),
+        // screen: the whole screen, also on desktop. On desktop, peek and half are a
+        // panel on the left.
         state : {
             type : String,
             default : 'half'
-        },
-        states : {
-            type : Array,
-            default : () => ['peek', 'half', 'full']
         }
     });
-
-    const emit = defineEmits(['update:state']);
 
     const body = ref(null);
-    const dragOffset = ref(0);
-    const isDragging = ref(false);
-
-    let dragStart = null;
-
-    function cycle() {
-        const index = props.states.indexOf(props.state);
-        const next = index < props.states.length - 1 ? props.states[index + 1] : props.states[0];
-
-        emit('update:state', next);
-    }
-
-    function move(direction) {
-        const index = props.states.indexOf(props.state);
-        const next = props.states[Math.max(0, Math.min(props.states.length - 1, index + direction))];
-
-        if (next !== props.state) {
-            emit('update:state', next);
-        }
-    }
-
-    function onPointerDown(event) {
-        dragStart = event.clientY;
-        isDragging.value = true;
-        event.currentTarget.setPointerCapture(event.pointerId);
-    }
-
-    function onPointerMove(event) {
-        if (dragStart === null) {
-            return;
-        }
-
-        dragOffset.value = event.clientY - dragStart;
-    }
-
-    function onPointerUp() {
-        if (dragStart === null) {
-            return;
-        }
-
-        const offset = dragOffset.value;
-
-        dragStart = null;
-        isDragging.value = false;
-        dragOffset.value = 0;
-
-        if (Math.abs(offset) < 8) {
-            cycle();
-        } else if (offset < -40) {
-            move(1);
-        } else if (offset > 40) {
-            move(-1);
-        }
-    }
-
-    watch(() => props.state, () => {
-        if (props.state !== 'full' && body.value) {
-            body.value.scrollTop = 0;
-        }
-    });
 
     defineExpose({
         scrollPosition : () => body.value?.scrollTop ?? 0,
@@ -92,20 +27,7 @@
 <template>
     <section
         class="el-sheet"
-        v-bind:state="state"
-        v-bind:is-dragging="isDragging ? '' : null"
-        v-bind:style="isDragging ? { transform : `translateY(${dragOffset}px)` } : null">
-        <button
-            type="button"
-            class="el-sheet__handle"
-            v-bind:aria-label="state === 'full' ? t('collapse') : t('expand')"
-            v-on:pointerdown="onPointerDown"
-            v-on:pointermove="onPointerMove"
-            v-on:pointerup="onPointerUp"
-            v-on:pointercancel="onPointerUp">
-            <span class="el-sheet__grip"></span>
-        </button>
-
+        v-bind:state="state">
         <div
             ref="body"
             class="el-sheet__body">
@@ -132,16 +54,8 @@
         transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
         z-index: 20;
 
-        &[state="full"] {
-            top: 4rem;
-        }
-
         &[state="peek"] {
             top: calc(100% - 14rem);
-        }
-
-        &[is-dragging] {
-            transition: none;
         }
 
         @include mixins.respond-from(900px) {
@@ -153,57 +67,41 @@
             border-radius: 12px;
             box-shadow: var(--shadow-card);
 
-            &[state="full"],
-            &[state="half"] {
+            &[state="peek"] {
                 top: 1.6rem;
             }
-
-            &[state="peek"] {
-                top: auto;
-                height: 14rem;
-            }
-
-            &[is-dragging] {
-                transform: none !important;
-            }
         }
-    }
 
-    .el-sheet__handle {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 3.2rem;
-        padding-top: 0.6rem;
-        width: 100%;
-        flex-shrink: 0;
-        touch-action: none;
-        cursor: grab;
-
-        @include mixins.respond-from(900px) {
-            display: none;
+        // After the desktop rules, so the whole screen also wins there
+        &[state="screen"] {
+            inset: 0;
+            width: auto;
+            border-radius: 0;
+            box-shadow: none;
+            transition: none;
         }
-    }
-
-    .el-sheet__grip {
-        width: 4.8rem;
-        height: 4px;
-        border-radius: 2px;
-        background: var(--c-handle);
     }
 
     .el-sheet__body {
         flex: 1;
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding: 0 var(--gutter) 4rem;
+        padding: 1.6rem var(--gutter) 4rem;
 
         @include mixins.respond-from(900px) {
             padding-top: 2rem;
         }
-    }
 
-    .el-sheet[state="peek"] .el-sheet__body {
-        overflow: hidden;
+        // A readable column in the middle of a wide screen
+        [state="screen"] > & {
+            padding-left: max(var(--gutter), calc((100% - 72rem) / 2));
+            padding-right: max(var(--gutter), calc((100% - 72rem) / 2));
+        }
+
+        @include mixins.respond-until(899px) {
+            [state="peek"] > & {
+                overflow: hidden;
+            }
+        }
     }
 </style>

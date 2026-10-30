@@ -127,19 +127,8 @@
     <div class="vw-library">
         <el-sheet
             ref="sheet"
-            state="full"
-            v-bind:states="['full']">
-            <div class="bar">
-                <button
-                    type="button"
-                    class="back-link"
-                    v-on:click="router.back()">
-                    <el-icon
-                        name="arrowLeft"
-                        v-bind:size="18" />
-                    {{ t('back') }}
-                </button>
-            </div>
+            state="screen">
+            <div class="bar"></div>
 
             <h1 class="title">{{ t('library') }}</h1>
 
@@ -231,6 +220,7 @@
         pointer-events: none;
     }
 
+    // Leaves room for the menu button in the top right corner (see app.vue)
     // Leaves room for the menu button in the top right corner (see app.vue)
     .bar {
         display: flex;

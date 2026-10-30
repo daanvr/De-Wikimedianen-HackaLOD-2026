@@ -27,8 +27,7 @@
 <template>
     <div class="vw-chapters">
         <el-sheet
-            state="full"
-            v-bind:states="['full']">
+            state="screen">
             <div class="bar"></div>
 
             <h1 class="title">{{ t('chapters') }}</h1>

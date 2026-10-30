@@ -76,8 +76,9 @@
         };
     }).filter(Boolean));
 
+    // Back to the library; through the history if we came from there, so it returns to the same spot
     function goBack() {
-        if (window.history.state?.back) {
+        if (window.history.state?.back?.startsWith('/library')) {
             router.back();
         } else {
             router.push('/library');
@@ -115,8 +116,7 @@
         v-if="record"
         class="vw-record">
         <el-sheet
-            state="full"
-            v-bind:states="['full']">
+            state="screen">
             <div class="bar">
                 <button
                     type="button"
@@ -125,7 +125,7 @@
                     <el-icon
                         name="arrowLeft"
                         v-bind:size="18" />
-                    {{ t('back') }}
+                    {{ t('library') }}
                 </button>
             </div>
 

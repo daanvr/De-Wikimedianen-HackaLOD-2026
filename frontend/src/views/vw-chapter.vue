@@ -41,13 +41,9 @@
         const moves = previous && store.map.mode === 'story'
             && (previous.lon !== position.lon || previous.lat !== position.lat);
 
-        // The sheet keeps its size while the boat sails. Opened at a mention, the
-        // text is open in full: switching states later would reset its scroll.
-        let nextSheet = sheetState.value === 'peek' ? 'half' : sheetState.value;
-
-        if (mention.value) {
-            nextSheet = 'full';
-        }
+        // On mobile the sheet folds in while the boat sails, so the voyage can be seen;
+        // not when it opens at a mention, which then has to stay in view
+        const nextSheet = moves && !mention.value ? 'peek' : 'half';
 
         clearTimeout(travelTimer);
         sheet.value?.scrollToTop();
@@ -69,6 +65,7 @@
         if (moves) {
             travelTimer = setTimeout(() => {
                 isTravelling.value = false;
+                sheetState.value = 'half';
             }, TRAVEL_MS + 200);
         }
 
@@ -123,7 +120,7 @@
 
         <el-sheet
             ref="sheet"
-            v-model:state="sheetState">
+            v-bind:state="sheetState">
             <el-chapter-nav
                 class="top-nav"
                 v-bind:previous="previousChapter"
@@ -217,14 +214,6 @@
 
     .vw-chapter[sheet="peek"] .to-boat {
         top: calc(100% - 14rem - 6.4rem);
-
-        @include mixins.respond-from(900px) {
-            top: auto;
-        }
-    }
-
-    .vw-chapter[sheet="full"] .to-boat {
-        top: -8rem;
 
         @include mixins.respond-from(900px) {
             top: auto;
