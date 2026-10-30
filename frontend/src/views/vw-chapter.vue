@@ -4,7 +4,6 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElMapButton from '@/components/el-map-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { chapterHeading, toRoman } from '@/services/format.js';
 
@@ -103,10 +102,6 @@
         v-if="chapter"
         class="vw-chapter"
         v-bind:sheet="sheetState">
-        <div class="top">
-            <el-menu mode="story" />
-        </div>
-
         <p
             v-if="isTravelling"
             class="travel-note">
@@ -200,13 +195,6 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-    }
-
-    .top {
-        position: absolute;
-        top: 1.6rem;
-        right: 1.6rem;
-        z-index: 30;
     }
 
     .travel-note {

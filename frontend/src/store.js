@@ -55,6 +55,8 @@ export const useStore = defineStore('data', {
             };
         },
 
+        meta : (state) => state.data?.meta ?? null,
+
         pages : (state) => state.data?.pages ?? {},
 
         recordList : (state) => Object.values(state.data?.records ?? {}),

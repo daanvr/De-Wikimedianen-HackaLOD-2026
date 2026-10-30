@@ -2,7 +2,6 @@
     import { computed, inject, onMounted, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import ElIcon from '@/components/el-icon.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { mediaUrl } from '@/services/data.js';
     import { formatDate } from '@/services/format.js';
@@ -28,6 +27,10 @@
 
     const query = ref('');
     const filter = ref(route.query.type ?? 'all');
+
+    // A search always looks through everything, whatever the filter
+    const isSearching = computed(() => query.value.trim() !== '');
+    const activeFilter = computed(() => isSearching.value ? 'all' : filter.value);
 
     const types = computed(() => {
         const present = store.contentTypes;
@@ -61,7 +64,7 @@
         const result = [];
 
         for (const type of types.value) {
-            if (filter.value !== 'all' && filter.value !== type) {
+            if (activeFilter.value !== 'all' && activeFilter.value !== type) {
                 continue;
             }
 
@@ -87,14 +90,14 @@
             }
         }
 
-        if (filter.value === 'all' || filter.value === 'station') {
+        if (activeFilter.value === 'all' || activeFilter.value === 'station') {
             const stations = store.stations
                 .filter((feature) => matches([
                     `${t('station')} ${feature.properties.station}`,
                     feature.properties.remarks ?? '',
                     feature.properties.bottom ?? ''
                 ].join(' ')));
-            const limit = filter.value === 'station' ? stations.length : STATION_LIMIT;
+            const limit = activeFilter.value === 'station' || isSearching.value ? stations.length : STATION_LIMIT;
 
             if (stations.length) {
                 result.push({
@@ -123,6 +126,7 @@
 
     function pick(id) {
         filter.value = id;
+        query.value = '';
         router.replace({
             query : id === 'all' ? {} : {
                 type : id
@@ -156,10 +160,6 @@
                         v-bind:size="18" />
                     {{ t('back') }}
                 </button>
-
-                <el-menu
-                    v-bind:mode="store.map.mode === 'explore' ? 'explore' : 'story'"
-                    v-bind:floating="false" />
             </div>
 
             <h1 class="title">{{ t('library') }}</h1>
@@ -184,8 +184,8 @@
                     v-bind:key="chip.id"
                     type="button"
                     class="chip"
-                    v-bind:aria-pressed="filter === chip.id ? 'true' : 'false'"
-                    v-bind:is-active="filter === chip.id ? '' : null"
+                    v-bind:aria-pressed="activeFilter === chip.id ? 'true' : 'false'"
+                    v-bind:is-active="activeFilter === chip.id ? '' : null"
                     v-on:click="pick(chip.id)">
                     {{ chip.label }}
                 </button>
@@ -260,11 +260,11 @@
         pointer-events: none;
     }
 
+    // Leaves room for the menu button in the top right corner (see app.vue)
     .bar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
+        min-height: 4.8rem;
     }
 
     .title {

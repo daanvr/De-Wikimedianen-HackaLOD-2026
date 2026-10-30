@@ -5,7 +5,6 @@
     import ElFigure from '@/components/el-figure.vue';
     import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { chapterHeading, toRoman } from '@/services/format.js';
 
@@ -23,7 +22,8 @@
         wikidata : 'Wikidata',
         commons : 'Wikimedia Commons',
         gbif : 'GBIF',
-        archief_amsterdam : 'Stadsarchief Amsterdam'
+        archief_amsterdam : 'Stadsarchief Amsterdam',
+        nta : 'Nederlandse Thesaurus van Auteursnamen'
     };
 
     const store = inject('store');
@@ -35,6 +35,22 @@
     const type = computed(() => record.value?.contentType ?? 'other');
     const name = computed(() => record.value?.label || record.value?.title || '');
     const sourceName = computed(() => SOURCE_NAMES[record.value?.source] ?? record.value?.source ?? '');
+
+    // Every source the record takes data from; the first one is always uri itself
+    const sources = computed(() => {
+        const list = record.value?.sources?.length
+            ? record.value.sources
+            : [{
+                name : record.value?.source ?? null,
+                uri : record.value?.uri ?? null
+            }];
+
+        return list.filter((source) => source.uri).map((source) => ({
+            uri : source.uri,
+            name : SOURCE_NAMES[source.name] ?? source.name ?? '',
+            display : source.uri.replace(/^https?:\/\//, '').replace(/\/$/, '')
+        }));
+    });
 
     const mentions = computed(() => (record.value?.backlinks ?? []).map((ref) => {
         const item = store.itemByRef(ref);
@@ -104,10 +120,6 @@
                         v-bind:size="18" />
                     {{ t('back') }}
                 </button>
-
-                <el-menu
-                    v-bind:mode="store.map.mode === 'explore' ? 'explore' : 'story'"
-                    v-bind:floating="false" />
             </div>
 
             <div class="type-row">
@@ -157,8 +169,28 @@
                     v-bind:stroke-width="1.8" />
             </a>
 
+            <template v-if="sources.length">
+                <h2 class="section-title">{{ t('record_sources') }}</h2>
+
+                <ul class="sources">
+                    <li
+                        v-for="source in sources"
+                        v-bind:key="source.uri"
+                        class="sources__item">
+                        <span
+                            v-if="source.name"
+                            class="sources__name">{{ source.name }}</span>
+                        <a
+                            class="sources__link"
+                            v-bind:href="source.uri"
+                            target="_blank"
+                            rel="noopener">{{ source.display }}</a>
+                    </li>
+                </ul>
+            </template>
+
             <template v-if="mentions.length">
-                <h2 class="mentions-title">{{ t('mentioned_in') }}</h2>
+                <h2 class="section-title">{{ t('mentioned_in') }}</h2>
 
                 <router-link
                     v-for="mention in mentions"
@@ -185,11 +217,11 @@
         pointer-events: none;
     }
 
+    // Leaves room for the menu button in the top right corner (see app.vue)
     .bar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
+        min-height: 4.8rem;
     }
 
     .type-row {
@@ -241,13 +273,35 @@
         margin-bottom: 1.6rem;
     }
 
-    .mentions-title {
+    .section-title {
         margin: 1.2rem 0 0.6rem;
         font-weight: 400;
         font-size: 1.3rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: #3A4254;
+    }
+
+    .sources {
+        list-style: none;
+        margin-bottom: 1.6rem;
+    }
+
+    .sources__item {
+        display: flex;
+        flex-direction: column;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--c-rule);
+    }
+
+    .sources__name {
+        font-size: 1.6rem;
+        color: var(--c-ink);
+    }
+
+    .sources__link {
+        font-size: 1.4rem;
+        overflow-wrap: anywhere;
     }
 
     .mention {

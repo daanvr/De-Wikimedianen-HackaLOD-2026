@@ -1,7 +1,6 @@
 <script setup>
     import { computed, inject, onMounted } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { chapterHeading, toRoman } from '@/services/format.js';
 
@@ -10,23 +9,13 @@
 
     const lastRead = computed(() => store.readChapters.at(-1) ?? null);
 
-    const items = computed(() => store.chapters.map((chapter, index) => {
-        let state = 'next';
-
-        if (chapter.id === lastRead.value) {
-            state = 'current';
-        } else if (store.readChapters.includes(chapter.id)) {
-            state = 'read';
-        }
-
-        return {
-            id : chapter.id,
-            numeral : toRoman(chapter.number ?? index + 1),
-            heading : chapterHeading(chapter),
-            kicker : chapter.kicker ?? null,
-            state
-        };
-    }));
+    const items = computed(() => store.chapters.map((chapter, index) => ({
+        id : chapter.id,
+        numeral : toRoman(chapter.number ?? index + 1),
+        heading : chapterHeading(chapter),
+        kicker : chapter.kicker ?? null,
+        isRead : store.readChapters.includes(chapter.id)
+    })));
 
     onMounted(() => {
         store.setMap({
@@ -52,14 +41,9 @@
                         v-bind:size="18" />
                     {{ t('back_to_map') }}
                 </router-link>
-
-                <el-menu
-                    mode="story"
-                    v-bind:floating="false" />
             </div>
 
             <h1 class="title">{{ t('chapters') }}</h1>
-            <p class="intro">{{ t('chapters_intro') }}</p>
 
             <ol class="list">
                 <li
@@ -68,17 +52,16 @@
                     <router-link
                         class="item"
                         v-bind:to="`/chapters/${item.id}`"
-                        v-bind:state="item.state">
+                        v-bind:is-read="item.isRead ? '' : null">
                         <span class="badge">{{ item.numeral }}</span>
                         <span class="text">
                             <span class="heading">{{ item.heading }}</span>
                             <span
-                                v-if="item.kicker || item.state !== 'next'"
+                                v-if="item.kicker || item.isRead"
                                 class="meta">
                                 {{ item.kicker }}
-                                <template v-if="item.kicker && item.state !== 'next'"> · </template>
-                                <template v-if="item.state === 'current'">{{ t('chapter_current') }}</template>
-                                <template v-if="item.state === 'read'">{{ t('chapter_read') }}</template>
+                                <template v-if="item.kicker && item.isRead"> · </template>
+                                <template v-if="item.isRead">{{ t('chapter_read') }}</template>
                             </span>
                         </span>
                         <el-icon
@@ -99,27 +82,20 @@
         pointer-events: none;
     }
 
+    // Leaves room for the menu button in the top right corner (see app.vue)
     .bar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
+        min-height: 4.8rem;
     }
 
     .title {
-        margin: 0.8rem 0 0.4rem;
+        margin: 0.8rem 0 1.4rem;
         padding-top: 1.2rem;
         border-top: 1px solid var(--c-ink);
         font-weight: 700;
         font-size: 3.2rem;
         line-height: 1.06;
-    }
-
-    .intro {
-        font-style: italic;
-        font-size: 1.7rem;
-        color: var(--c-ink-soft);
-        margin-bottom: 1.4rem;
     }
 
     .list {
@@ -142,13 +118,7 @@
             background: var(--c-plate);
         }
 
-        &[state="current"] .badge {
-            background: var(--c-terracotta);
-            color: var(--c-paper);
-            border-color: var(--c-terracotta);
-        }
-
-        &[state="read"] .badge {
+        &[is-read] .badge {
             background: var(--c-terracotta-soft);
             color: var(--c-terracotta-dark);
             border-color: var(--c-terracotta-soft);

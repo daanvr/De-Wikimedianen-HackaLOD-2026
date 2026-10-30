@@ -2,7 +2,6 @@
     import { computed, inject, onMounted, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import ElIcon from '@/components/el-icon.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import { formatDate } from '@/services/format.js';
 
     const store = inject('store');
@@ -63,8 +62,6 @@
                 <span class="dataset__label">{{ t('stations_all') }}</span>
                 <span class="dataset__count">{{ store.stations.length }}</span>
             </router-link>
-
-            <el-menu mode="explore" />
         </div>
 
         <article
@@ -132,14 +129,15 @@
         position: absolute;
         top: 1.6rem;
         left: 1.6rem;
-        right: 1.6rem;
+        // Leaves room for the menu button (see app.vue)
+        right: 7.4rem;
         display: flex;
         gap: 1rem;
         z-index: 30;
 
         @include mixins.respond-from(900px) {
             left: auto;
-            width: 40rem;
+            width: 34.2rem;
         }
     }
 

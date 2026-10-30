@@ -1,10 +1,12 @@
 <script setup>
     import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue';
-    import { useRouter } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import ElMap from '@/components/el-map.vue';
+    import ElMenu from '@/components/el-menu.vue';
     import { useStore } from '@/store.js';
 
     const store = useStore();
+    const route = useRoute();
     const router = useRouter();
     const t = (key) => store.t(key);
 
@@ -15,6 +17,10 @@
         width : window.innerWidth,
         height : window.innerHeight
     });
+
+    // The home screen has its own buttons; every other view shows the menu in the same place
+    const showMenu = computed(() => !store.loading && !store.error && route.name !== 'home');
+    const menuMode = computed(() => store.map.mode === 'explore' ? 'explore' : 'story');
 
     // Keep the focus point of the map in the part of the screen not covered by panels
     const mapPadding = computed(() => {
@@ -103,6 +109,12 @@
             v-slot="{ Component }">
             <component v-bind:is="Component" />
         </router-view>
+
+        <div
+            v-if="showMenu"
+            class="app__menu">
+            <el-menu v-bind:mode="menuMode" />
+        </div>
     </main>
 </template>
 
@@ -113,6 +125,13 @@
         position: absolute;
         inset: 0;
         overflow: hidden;
+    }
+
+    .app__menu {
+        position: absolute;
+        top: 1.6rem;
+        right: 1.6rem;
+        z-index: 50;
     }
 
     .app__status {

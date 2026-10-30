@@ -16,6 +16,9 @@
 
     const SHALLOW_COLOR = '#A3D3D2';
     const ARCHIPELAGO_BOUNDS = [[106, -12], [136, 6]];
+    // The extent of the layers in public/map/. The map never shows anything outside
+    // it, so there are no empty bands at the edges of the screen.
+    const LAYER_BOUNDS = [[104, -16], [142, 10]];
     const TRAVEL_MS = 2600;
 
     const SEA_LABELS = [
@@ -476,7 +479,7 @@
             bounds : ARCHIPELAGO_BOUNDS,
             minZoom : 3.2,
             maxZoom : 11,
-            maxBounds : [[92, -24], [152, 18]],
+            maxBounds : LAYER_BOUNDS,
             renderWorldCopies : false,
             dragRotate : false,
             pitchWithRotate : false,

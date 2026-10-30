@@ -3,8 +3,8 @@
     import { useRoute, useRouter } from 'vue-router';
     import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
-    import ElMenu from '@/components/el-menu.vue';
     import ElSheet from '@/components/el-sheet.vue';
+    import { fillBuildInfo } from '@/services/build-info.js';
 
     const store = inject('store');
     const t = inject('t');
@@ -12,6 +12,7 @@
     const router = useRouter();
 
     const page = computed(() => store.pages[route.params.id] ?? null);
+    const body = computed(() => fillBuildInfo(page.value?.body, store.meta, t));
 
     function goBack() {
         if (window.history.state?.back) {
@@ -50,16 +51,12 @@
                         v-bind:size="18" />
                     {{ t('back') }}
                 </button>
-
-                <el-menu
-                    v-bind:mode="store.map.mode === 'explore' ? 'explore' : 'story'"
-                    v-bind:floating="false" />
             </div>
 
             <h1 class="title">{{ page.title }}</h1>
 
             <el-markdown
-                v-bind:body="page.body"
+                v-bind:body="body"
                 v-bind:lookup-kind="store.kindForHref" />
         </el-sheet>
     </div>
@@ -72,11 +69,11 @@
         pointer-events: none;
     }
 
+    // Leaves room for the menu button in the top right corner (see app.vue)
     .bar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
+        min-height: 4.8rem;
     }
 
     .title {

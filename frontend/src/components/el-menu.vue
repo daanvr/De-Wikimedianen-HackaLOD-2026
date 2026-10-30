@@ -12,10 +12,6 @@
         mode : {
             type : String,
             default : 'story'
-        },
-        floating : {
-            type : Boolean,
-            default : true
         }
     });
 
@@ -43,6 +39,12 @@
             };
 
         return [
+            {
+                to : '/',
+                icon : 'home',
+                label : t('menu_home'),
+                accent : false
+            },
             {
                 to : '/chapters',
                 icon : 'list',
@@ -100,7 +102,6 @@
         <el-map-button
             v-bind:icon="isOpen ? 'close' : 'menu'"
             v-bind:label="isOpen ? t('menu_close') : t('menu_open')"
-            v-bind:floating="floating"
             v-bind:aria-expanded="isOpen ? 'true' : 'false'"
             variant="terracotta"
             v-on:click="toggle()" />
