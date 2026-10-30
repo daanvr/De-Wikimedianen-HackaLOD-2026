@@ -6,6 +6,7 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 ## Besloten
 | Beslissing                                                                                                           | Waar                                                |
 | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| De historische "Kaart van den Trek" is de hoofdlaag van de kaart, live van Allmaps. Een bewuste uitzondering op "alles lokaal": valt Allmaps uit, dan blijft de eigen onderlaag met dieptebanden staan | [frontend.md](frontend.md#kaart) |
 | Nieuw type `plugin` (map `plugins/`): interactieve onderdelen, schermvullend vanuit de ontdekmodus of inline met `[[IIIF#argument]]` | [content-repo.md](content-repo.md#plugins) |
 | De IIIF-plugin laadt live van de IIIF-server (deep zoom). Een bewuste uitzondering op "alles lokaal": valt de server uit, dan toont de plugin een melding en werkt de rest door | [frontend.md](frontend.md#plugins) |
 | Het menu heeft geen wissel tussen verhaal- en ontdekmodus meer: er is een vaste link naar de ontdekmodus, en je komt in de verhaalmodus via Hoofdstukken | [frontend.md](frontend.md#routes) |

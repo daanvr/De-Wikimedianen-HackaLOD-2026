@@ -20,6 +20,9 @@
     // it, so there are no empty bands at the edges of the screen.
     const LAYER_BOUNDS = [[104, -16], [142, 10]];
     const TRAVEL_MS = 2600;
+    // Historical map, georeferenced with Allmaps; loaded live, the vector layers stay underneath as a fallback
+    const HISTORIC_MAP_TILES = 'https://allmaps.xyz/images/1fd0accb445d424e/{z}/{x}/{y}@2x.png';
+    const HISTORIC_MAP_BOUNDS = [111.67, -12.29, 135.37, 7.33];
 
     const SEA_LABELS = [
         {
@@ -233,6 +236,14 @@
                     type : 'geojson',
                     data : layers.land ?? empty
                 },
+                historicMap : {
+                    type : 'raster',
+                    tiles : [HISTORIC_MAP_TILES],
+                    tileSize : 256,
+                    bounds : HISTORIC_MAP_BOUNDS,
+                    maxzoom : 10,
+                    attribution : 'Historische kaart: Stadsarchief Amsterdam, gegeorefereerd met <a href="https://allmaps.org">Allmaps</a>'
+                },
                 route : {
                     type : 'geojson',
                     data : layers.route ?? empty,
@@ -282,6 +293,14 @@
                     paint : {
                         'line-color' : '#7C6E52',
                         'line-width' : ['interpolate', ['linear'], ['zoom'], 4, 0.5, 9, 1.2]
+                    }
+                },
+                {
+                    id : 'historic-map',
+                    type : 'raster',
+                    source : 'historicMap',
+                    paint : {
+                        'raster-fade-duration' : 200
                     }
                 },
                 {
@@ -344,6 +363,14 @@
             element,
             anchor : 'center'
         }).setLngLat([label.lon, label.lat]).addTo(map);
+    }
+
+    // The historical map prints its own names, so only label what lies outside it
+    function isOnHistoricMap(label) {
+        const [west, south, east, north] = HISTORIC_MAP_BOUNDS;
+        const margin = 0.5;
+
+        return label.lon > west - margin && label.lon < east + margin && label.lat > south - margin && label.lat < north + margin;
     }
 
     function setLayerData() {
@@ -437,11 +464,11 @@
             updateBoat();
             applyFocus(false);
 
-            for (const label of SEA_LABELS) {
+            for (const label of SEA_LABELS.filter((label) => !isOnHistoricMap(label))) {
                 createLabel(label, 'sea');
             }
 
-            for (const label of LAND_LABELS) {
+            for (const label of LAND_LABELS.filter((label) => !isOnHistoricMap(label))) {
                 createLabel(label, 'land');
             }
         });

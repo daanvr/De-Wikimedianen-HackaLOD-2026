@@ -15,6 +15,8 @@ just dev         # http://localhost:5173
 | `land.geojson`       | Kustlijnen                                              | Natural Earth 10m land, publiek domein                                                                                                                       |
 | `route.geojson`      | De gevaren route, in 146 stukken                        | Getraceerd van de "Kaart van den Trek v. H.M. Siboga 1899-1900" uit Weber-van Bosse (1904), [Commons](https://commons.wikimedia.org/wiki/File:Route_of_the_Siboga_Expedition.jpg), publiek domein |
 
+Daarop ligt de historische kaart als hoofdlaag. Die staat niet in git, maar komt live van Allmaps: `https://allmaps.xyz/images/1fd0accb445d424e/{z}/{x}/{y}@2x.png`, de "Kaart van den Trek v. H.M. Siboga 1899-1900" uit de beeldbank van het [Stadsarchief Amsterdam](https://archief.amsterdam/beeldbank), gegeorefereerd met [Allmaps](https://allmaps.org).
+
 `scripts/prepare_map.py` snijdt de bronbestanden bij tot de archipel en vereenvoudigt ze:
 
 ```bash
