@@ -1,5 +1,7 @@
 # Ontwikkelen
-We beginnen met lokaal ontwikkelen. Uitrollen naar de server komt daarna.
+[Documentatie](README.md) › Ontwikkelen
+
+We beginnen met lokaal ontwikkelen. Uitrollen naar de server komt daarna. Hoe de onderdelen samenhangen, staat in [architectuur.md](architectuur.md).
 
 ## Nodig
 - [uv](https://docs.astral.sh/uv/) voor Python
@@ -33,7 +35,7 @@ Wil je de pipeline naar een andere map met content laten kijken, bijvoorbeeld je
 path = "/pad/naar/de/kluis"
 ```
 
-Werk je alleen aan de frontend, dan kun je `just data` overslaan en `just fixture` gebruiken. Dat zet de voorbeelddata klaar.
+Werk je alleen aan de frontend, dan kun je `just data` overslaan en `just fixture` gebruiken. Dat zet de voorbeelddata klaar (zie [frontend-data.md](frontend-data.md#bestanden)).
 
 ## justfile
 Voorstel voor de `justfile`. Alle commando's draaien vanuit de root van de repo.
@@ -76,6 +78,10 @@ test:
 build:
     cd frontend && npm run build
 
+# Gebouwde site lokaal tonen, zonder internet
+preview: build
+    cd frontend && npx vite preview
+
 # Naar de server
 deploy: build
     rsync -avzL --delete frontend/dist/ siboga:/var/www/siboga.nl/htdocs/
@@ -96,8 +102,28 @@ frontend/dist/
 frontend/public/data/
 ```
 
+## Presenteren zonder internet
+Een belangrijk doel is dat we kunnen presenteren, ook als een externe dienst uitvalt (zie de [principes](architectuur.md#principes)). Vóór een presentatie:
+1. `just data` terwijl er nog internet is. Daarmee staan alle bronnen en plaatjes in de cache en in `frontend/public/data/`.
+2. `just preview`. Dat bouwt de site en toont hem lokaal. Daarvoor is geen internet nodig.
+3. Valt ook de kaartdienst uit, dan schakelt de kaart over op de lokale ondergrond (zie [frontend.md](frontend.md#live-bronnen)).
+
+Houd de cache (`pipeline/cache/`) op meer dan één plek: op de server en op de laptops waarmee we presenteren. Een kopie van die map is genoeg.
+
 ## Server
 - Domein: siboga.nl, met nginx. De configuratie staat in [etc/nginx.conf](../etc/nginx.conf).
 - De site staat op de server in `/var/www/siboga.nl/htdocs/`. `just deploy` zet hem daar neer met rsync. Daarvoor heb je een SSH-host `siboga` nodig in je eigen `~/.ssh/config`.
-- Omdat de router hash-history gebruikt, hoeft er niets aan de nginx-configuratie te veranderen.
-- Later: automatisch opnieuw bouwen en uitrollen als de content-repo verandert. Zie [beslissingen.md](beslissingen.md).
+- De router gebruikt gewone URL's (zie [frontend.md](frontend.md#routes)). Daarvoor moet nginx elke URL die geen bestand is naar `index.html` sturen. Toe te voegen aan het `server`-blok voor poort 443 in `etc/nginx.conf`, zodra de Vue-frontend live gaat:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+- Later: automatisch opnieuw bouwen en uitrollen als de content-repo verandert. Zie [beslissingen.md](beslissingen.md#open-vragen).
+
+## Zie ook
+- [pipeline.md](pipeline.md#commandos): de commando's van de pipeline
+- [frontend.md](frontend.md): de opbouw van de frontend
+- [beslissingen.md](beslissingen.md): wat nog open staat over draaien en uitrollen

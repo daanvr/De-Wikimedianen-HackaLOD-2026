@@ -6,6 +6,8 @@ Deze repo is de code-repo van **De Siboga Expeditie**, de website van team De Wi
 - De frontend leest één JSON-bestand plus losse bestanden (plaatjes, later misschien audio). Dat heet de **frontend data**.
 - De frontend data wordt gemaakt door een Python-pipeline. Die leest de content-repo (Obsidian-markdown met YAML-frontmatter), haalt de Linked Data-bronnen op waar de frontmatter naar verwijst, cachet die in SQLite, en voegt alles samen.
 - De content-repo ([hay/siboga-content](https://github.com/hay/siboga-content)) is de *source of truth* en wordt alleen gelezen. Alle techniek staat in deze repo.
+- De content bestaat uit chapters (verhalen) en records (verwijzingen naar Linked Data elders). Hun onderlinge links worden op de site URL's, zodat ze behouden blijven.
+- Alles wat de site toont, staat lokaal: de pipeline haalt volledige kopieën van de bronnen op en filtert pas daarna. Valt een externe dienst uit, dan moet de site nog werken en kunnen we presenteren.
 - Het is een hackathon: houd het eenvoudig, maar modulair. Er wordt later veel op voortgebouwd.
 
 ## Documentatie eerst

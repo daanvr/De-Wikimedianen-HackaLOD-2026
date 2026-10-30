@@ -1,7 +1,21 @@
 # Content-repo
+[Documentatie](README.md) › Content-repo
+
 De content-repo is [hay/siboga-content](https://github.com/hay/siboga-content): een Obsidian-kluis met markdownbestanden. Het is het redactiesysteem van de site en de *source of truth*. Meerdere mensen schrijven erin.
 
-De code-repo gebruikt de content-repo alleen als bron. De pipeline leest hem en schrijft er nooit in. Alles wat met techniek te maken heeft, staat in de code-repo.
+De code-repo gebruikt de content-repo alleen als bron. De [pipeline](pipeline.md) leest hem en schrijft er nooit in. Alles wat met techniek te maken heeft, staat in de code-repo.
+
+## Twee soorten data: chapters en records
+| Soort | Wat het is | Hoe het eruitziet |
+|---|---|---|
+| **Chapter** | Een verhaal | Vooral tekst, met links: naar records, naar andere chapters, en naar externe pagina's |
+| **Record** | Een verwijzing naar Linked Data elders: een persoon, voorwerp, plek, foto, artikel | Vooral YAML-frontmatter met de bron, en hooguit een beetje markdown eronder |
+
+Records verwijzen naar bronnen op allerlei plekken: Wikidata vooral, maar ook archieven en andere databanken. Voor elke soort bron heeft de pipeline een eigen adapter om de gegevens op te halen (zie [pipeline.md](pipeline.md#bronadapters)).
+
+Chapters en records verwijzen naar elkaar met interne links. Op de site wordt elk item een pagina met een eigen URL, en elke interne link wijst daarheen. Zo blijft dat netwerk van verwijzingen behouden. Zie [frontend-data.md](frontend-data.md#url-structuur).
+
+Over beide soorten komt later meer, en er kunnen soorten bijkomen.
 
 ## Hoe de content binnenkomt
 - Redacteuren schrijven in Obsidian. De community-plugin **Fit** synchroniseert de kluis met GitHub.
@@ -90,3 +104,8 @@ De content wordt door mensen geschreven en is vaak onaf. In de huidige bestanden
 - een lege regel in een lijst.
 
 De pipeline crasht hier niet op. Hij slaat het onderdeel over of toont het als gewone tekst, logt een waarschuwing, en geeft aan het eind een overzicht van alle problemen. Dat overzicht is ook nuttig voor de redactie.
+
+## Zie ook
+- [pipeline.md](pipeline.md): hoe de content en de bronnen gelezen worden
+- [frontend-data.md](frontend-data.md): wat er van chapters, records en links overblijft voor de frontend
+- [CLAUDE.md](../CLAUDE.md#markdown-github-hier-obsidian-in-de-content-repo): het verschil tussen de markdown in de code-repo en in de content-repo
