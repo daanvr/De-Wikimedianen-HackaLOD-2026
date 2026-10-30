@@ -21,7 +21,7 @@ contenttype: person
 ---
 ```
 
-- `uri`: precies één bron. Overige bronnen komen in een apart veld `sources` (nog uit te werken).
+- `uri`: precies één bron. Overige bronnen komen evt in de lopende tekst als externe link maar we doen daar verder niks mee.
 - `description_nl`: optioneel; gaat voor de beschrijving uit de bron.
 - `contenttype`: nu `person`, `item`, `media`, `location`, `article`, `expedition` of `specimen`.
 
@@ -34,7 +34,7 @@ location: "[[Haven Jakarta]]"
 ```
 
 - `chapter`: volgnummer.
-- `location`: optioneel, een wikilink naar een record.
+- `location`: REQUIRED: optioneel, een wikilink naar een record.
 
 ## Obsidian-markdown
 De pipeline moet in elk geval dit herkennen:

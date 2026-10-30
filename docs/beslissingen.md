@@ -40,7 +40,12 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 - Hoe gaan we om met bronnen zonder Linked Data-endpoint, zoals Delpher en het Stadsarchief Amsterdam?
 	- Kijk of er een …
 - Hoe ziet het veld `sources` er precies uit, en doet de pipeline er iets mee?
+	- Het veld sources is niet nodig. Bronnen kunnen op Wikidata komen en eventueel in de lopende tekst als reguliere externe links.
 - Waarvoor gebruiken we `location` bij een chapter: alleen voor de kaart, of ook voor de volgorde?
+	- Location is puur voor locatie op de kaart, niet voor de volgorde
 - Is de site alleen Nederlands? `description_nl` doet vermoeden dat er later meer talen komen.
+	- Voor nu alleen Nederlands. 
 - Welke live bronnen komen er naast de kaarttegels?
+	- NTB
 - Wanneer bouwen we opnieuw, en waar draait de pipeline dan: met de hand, of automatisch bij een wijziging in de content-repo?
+	- Bij elke push naar Git wordt de content repo gedownload en draait build/fetch. Dit kan via een cronjob.

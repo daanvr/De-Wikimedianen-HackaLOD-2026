@@ -33,14 +33,8 @@ De twee repo's worden op een andere manier gelezen, en de markdown volgt dat.
 - NEVER have a trailing newline at the end of files, so that the very last line of a file is a newline.
 - Use exactly ONE empty line between sections of code (functions, classes, blocks), NEVER two consecutive empty lines (so not PEP 8 style double blank lines between top-level definitions)
 - Put methods in classes in alphabetical order
-
 ## Markdown
 - **No blank line after headings** — text starts on the very next line after a `#` heading
-
-## Shell
-- The shell is `zsh`. Unmatched globs are a fatal error, not passed through literally — an unquoted `--include=*.py` aborts the command with `no matches found` before the tool runs. Always quote glob patterns meant for the tool, not the shell: `grep -rn "x" --include="*.py"`, `find -name "*.toml"`. Same for any arg with `*`, `?`, or `[...]`.
-- There is no `timeout` on the PATH. To bound a process: background it, `sleep`, then `kill $!`.
-
 ## JavaScript
 - **Always use semicolons**
 - camelCase for variables/functions, PascalCase for classes
@@ -97,30 +91,6 @@ class UserManager {
     async fetchUser(id) {
         const response = await fetch(`/api/users/${id}`);
         return response.json();
-    }
-}
-```
-
-## PHP
-- camelCase for variables/functions, PascalCase for classes
-- Always use type hints
-- `declare(strict_types=1);` at the top
-### Example
-```php
-<?php
-declare(strict_types=1);
-
-function calculateDiscount(float $price, float $percentage): float {
-    return $price * ($percentage / 100);
-}
-
-class ProductRepository {
-    public function __construct(private PDO $db) {}
-
-    public function findById(int $id): ?Product {
-        $stmt = $this->db->prepare('SELECT * FROM products WHERE id = ?');
-        $stmt->execute([$id]);
-        return $stmt->fetchObject(Product::class) ?: null;
     }
 }
 ```

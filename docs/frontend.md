@@ -6,7 +6,7 @@ Een statische Vue 3-app in `frontend/` die de [frontend data](frontend-data.md) 
 ## Stack
 Vertrekpunt is Hays template [vue3-pinia](https://github.com/hay/templates/tree/master/vue3-pinia): Vue 3 met `<script setup>`, Vite, Pinia, SCSS met `valenski`, JavaScript zonder TypeScript. Daarbij komen `vue-router`, een markdown-parser en Leaflet voor de kaart.
 
-Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/app.vue`. Op Linux werkt dat niet. Gebruik overal `app.vue`.
+Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/app.vue`. Op Linux werkt dat niet. Gebruik overal `app.vue`. DIT MAG JE AANPASSEN.
 
 ## Structuur
 ```
