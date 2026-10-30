@@ -1,6 +1,7 @@
 <script setup>
     import { computed, inject, ref } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
+    import ElLightbox from '@/components/el-lightbox.vue';
     import { mediaUrl } from '@/services/data.js';
 
     const t = inject('t');
@@ -57,24 +58,14 @@
             </template>
         </figcaption>
 
-        <!-- In body, so the lightbox lies above the menu and not in the stacking context of the sheet -->
-        <teleport to="body">
-            <div
-                v-if="isFullscreen"
-                class="lightbox"
-                v-on:click="isFullscreen = false">
-                <img
-                    v-bind:src="src"
-                    v-bind:alt="alt">
-                <button
-                    type="button"
-                    class="lightbox__close"
-                    v-bind:aria-label="t('close')"
-                    v-on:click="isFullscreen = false">
-                    <el-icon name="close" />
-                </button>
-            </div>
-        </teleport>
+        <el-lightbox
+            v-if="isFullscreen"
+            close-on-click
+            v-on:close="isFullscreen = false">
+            <img
+                v-bind:src="src"
+                v-bind:alt="alt">
+        </el-lightbox>
     </figure>
 </template>
 
@@ -121,36 +112,5 @@
         line-height: 1.4;
         font-style: italic;
         color: var(--c-ink-soft);
-    }
-
-    .lightbox {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background: rgba(10, 20, 32, 0.92);
-
-        img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-    }
-
-    .lightbox__close {
-        position: absolute;
-        top: 1.6rem;
-        right: 1.6rem;
-        width: 4.8rem;
-        height: 4.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--c-paper);
-        color: var(--c-marine);
-        border-radius: 4px;
     }
 </style>

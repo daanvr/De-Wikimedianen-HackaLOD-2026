@@ -1,6 +1,7 @@
 <script setup>
-    import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
+    import { computed, inject, ref } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
+    import ElLightbox from '@/components/el-lightbox.vue';
     import { pluginComponent } from '@/plugins/index.js';
 
     const store = inject('store');
@@ -24,28 +25,6 @@
     const isLightboxOpen = ref(false);
     const plugin = computed(() => store.plugins[props.id] ?? null);
     const component = computed(() => pluginComponent(props.id));
-
-    function closeLightbox() {
-        isLightboxOpen.value = false;
-    }
-
-    function onKeydown(event) {
-        if (event.key === 'Escape') {
-            closeLightbox();
-        }
-    }
-
-    watch(isLightboxOpen, (open) => {
-        if (open) {
-            window.addEventListener('keydown', onKeydown);
-        } else {
-            window.removeEventListener('keydown', onKeydown);
-        }
-    });
-
-    onBeforeUnmount(() => {
-        window.removeEventListener('keydown', onKeydown);
-    });
 </script>
 
 <template>
@@ -81,24 +60,15 @@
             </button>
         </div>
 
-        <teleport to="body">
-            <div
-                v-if="isLightboxOpen"
-                class="lightbox">
-                <component
-                    v-bind:is="component"
-                    v-bind:argument="argument"
-                    v-bind:fullscreen="true" />
-
-                <button
-                    type="button"
-                    class="lightbox__close"
-                    v-bind:aria-label="t('close')"
-                    v-on:click="closeLightbox()">
-                    <el-icon name="close" />
-                </button>
-            </div>
-        </teleport>
+        <el-lightbox
+            v-if="isLightboxOpen"
+            fill
+            v-on:close="isLightboxOpen = false">
+            <component
+                v-bind:is="component"
+                v-bind:argument="argument"
+                v-bind:fullscreen="true" />
+        </el-lightbox>
     </div>
 </template>
 
@@ -170,28 +140,6 @@
         background: rgba(251, 248, 241, 0.92);
         color: var(--c-marine);
         border: 1px solid var(--c-marine);
-        border-radius: 4px;
-        z-index: 1;
-    }
-
-    .lightbox {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        background: rgba(10, 20, 32, 0.92);
-    }
-
-    .lightbox__close {
-        position: absolute;
-        top: 1.6rem;
-        right: 1.6rem;
-        width: 4.8rem;
-        height: 4.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--c-paper);
-        color: var(--c-marine);
         border-radius: 4px;
         z-index: 1;
     }

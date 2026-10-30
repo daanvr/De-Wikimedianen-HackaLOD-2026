@@ -12,8 +12,9 @@ function escapeHtml(value) {
 }
 
 // Internal links ("/records/anna-weber") get data-internal and data-kind, so
-// el-markdown can route them and show an icon.
-function createMarked(lookupKind) {
+// el-markdown can route them and show an icon. Images are wrapped in a button
+// (data-zoom) that el-markdown opens fullscreen.
+function createMarked(lookupKind, zoomLabel) {
     const marked = new Marked({
         gfm : true,
         breaks : false
@@ -26,7 +27,9 @@ function createMarked(lookupKind) {
                 const alt = escapeHtml(text || '');
                 const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
 
-                return `<img src="${src}" alt="${alt}"${titleAttr} loading="lazy">`;
+                const label = zoomLabel ? ` aria-label="${escapeHtml(zoomLabel)}"` : '';
+
+                return `<button type="button" class="zoomable" data-zoom${label}><img src="${src}" alt="${alt}"${titleAttr} loading="lazy"></button>`;
             },
             link({ href, title, tokens }) {
                 const text = this.parser.parseInline(tokens);
@@ -71,12 +74,13 @@ function pluginEmbed(token) {
 
 // Renders a body from siboga.json as a list of segments: blocks of HTML
 // ({ type : 'html', html }) and plugins ({ type : 'plugin', id, argument }).
-export function renderSegments(body, lookupKind) {
+// zoomLabel is the accessible name of the button around each image.
+export function renderSegments(body, lookupKind, zoomLabel = null) {
     if (!body) {
         return [];
     }
 
-    const marked = createMarked(lookupKind);
+    const marked = createMarked(lookupKind, zoomLabel);
     const segments = [];
     let tokens = [];
 

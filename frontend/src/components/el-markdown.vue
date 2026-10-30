@@ -1,9 +1,11 @@
 <script setup>
-    import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+    import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
+    import ElLightbox from '@/components/el-lightbox.vue';
     import ElPlugin from '@/components/el-plugin.vue';
     import { renderSegments } from '@/services/markdown.js';
 
+    const t = inject('t');
     const router = useRouter();
 
     const props = defineProps({
@@ -30,7 +32,8 @@
     const SCROLL_DELAY_MS = 400;
 
     const root = ref(null);
-    const segments = computed(() => renderSegments(props.body, props.lookupKind));
+    const zoomedImage = ref(null);
+    const segments = computed(() => renderSegments(props.body, props.lookupKind, t('image_fullscreen')));
 
     let scrollTimer = null;
 
@@ -63,6 +66,18 @@
     }
 
     function onClick(event) {
+        const zoom = event.target.closest('button[data-zoom]');
+
+        if (zoom) {
+            const image = zoom.querySelector('img');
+
+            zoomedImage.value = {
+                src : image.getAttribute('src'),
+                alt : image.getAttribute('alt') ?? ''
+            };
+            return;
+        }
+
         const link = event.target.closest('a[data-internal]');
 
         if (!link || event.metaKey || event.ctrlKey || event.shiftKey) {
@@ -103,6 +118,15 @@
                 class="segment"
                 v-html="segment.html"></div>
         </template>
+
+        <el-lightbox
+            v-if="zoomedImage"
+            close-on-click
+            v-on:close="zoomedImage = null">
+            <img
+                v-bind:src="zoomedImage.src"
+                v-bind:alt="zoomedImage.alt">
+        </el-lightbox>
     </div>
 </template>
 
@@ -110,6 +134,7 @@
     $icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='3.5'/%3E%3Cpath d='M5 20c0-4 3.1-6.5 7-6.5s7 2.5 7 6.5'/%3E%3C/svg%3E");
     $icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
     $icon-specimen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M12 12.5a1.2 1.2 0 1 1 1.2 1.2A2.6 2.6 0 0 1 10.6 11a4 4 0 0 1 4-4 5.3 5.3 0 0 1 5.3 5.3 6.7 6.7 0 0 1-6.7 6.7A8 8 0 0 1 5.2 11 9.3 9.3 0 0 1 9 3.6'/%3E%3C/svg%3E");
+    $icon-fullscreen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23163A5C' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'/%3E%3C/svg%3E");
     $icon-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='14' rx='1'/%3E%3Ccircle cx='9' cy='10' r='1.6'/%3E%3Cpath d='M4 17l5-5 4 4 2.5-2.5L20 18'/%3E%3C/svg%3E");
 
     .el-markdown {
@@ -152,6 +177,34 @@
             border: 1px solid var(--c-frame);
             padding: 0.8rem;
             background: var(--c-plate);
+        }
+
+        :deep(.zoomable) {
+            position: relative;
+            display: block;
+            max-width: 100%;
+            margin: 1.6rem 0;
+            padding: 0;
+            border: 0;
+            background: none;
+            cursor: zoom-in;
+
+            img {
+                margin: 0;
+            }
+
+            // The same fullscreen icon as el-figure, drawn with CSS because the button is plain HTML
+            &::after {
+                content: "";
+                position: absolute;
+                right: 1.6rem;
+                bottom: 1.6rem;
+                width: 4.4rem;
+                height: 4.4rem;
+                border: 1px solid var(--c-marine);
+                border-radius: 4px;
+                background: $icon-fullscreen center / 2rem no-repeat, rgba(251, 248, 241, 0.92);
+            }
         }
 
         :deep(a) {
