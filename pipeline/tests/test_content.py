@@ -360,3 +360,17 @@ def test_convert_plugin_wikilink(tmp_path: Path):
     )
     assert converted.links == ["plugins/iiif"]
     assert report.warnings == []
+
+def test_convert_gallery(index):
+    body = "::: gallery\n![[Foto van Anna.png]]\n*Anna, 1899. [Bron](https://example.org)*\n:::\n"
+    converted, report = _convert(body, index)
+    assert converted.markdown == "::: gallery\n![](media/foto-van-anna.png)\n*Anna, 1899. [Bron](https://example.org)*\n:::\n"
+    assert report.warnings == []
+
+def test_convert_gallery_unclosed(index):
+    converted, report = _convert("::: gallery\n![[Foto van Anna.png]]\n", index)
+    assert len(report.warnings) == 1
+    assert "without a closing" in report.warnings[0]
+    converted, report = _convert("```\n::: gallery\n```\n", index)
+    assert report.warnings == []
+

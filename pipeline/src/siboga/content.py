@@ -13,10 +13,13 @@ from siboga.models import ContentItem, ContentType, Coordinates, ItemKind, Repor
 _CONTENT_TYPES = {content_type.value for content_type in ContentType}
 _EXTENSION = re.compile(r"\.[A-Za-z0-9]{1,5}$")
 _FALSE_VALUES = {"false", "no", "0", ""}
+_FENCE_LINE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 _FRONTMATTER = re.compile(
     r"\A﻿?---[ \t]*\n(.*?)^(?:---|\.\.\.)[ \t]*(?:\n|\Z)",
     re.DOTALL | re.MULTILINE
 )
+_GALLERY_CLOSE = re.compile(r"^:::[ \t]*$")
+_GALLERY_OPEN = re.compile(r"^:::[ \t]*gallery[ \t]*$")
 _I18N_TYPE = "i18n"
 _KINDS = {
     "chapter": ItemKind.CHAPTER,
@@ -201,6 +204,7 @@ def convert_body(
 ) -> ConvertedBody:
     converter = _BodyConverter(index = index, item = item, report = report)
     markdown = _TOKEN.sub(converter.replace, item.body)
+    _check_galleries(markdown, item, report)
     return ConvertedBody(
         attachments = converter.attachments,
         links = converter.links,
@@ -291,6 +295,34 @@ def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text.lower())
     text = "".join(char for char in text if not unicodedata.combining(char))
     return re.sub(r"[^a-z0-9]+", "-", text).strip("-") or "item"
+
+def _check_galleries(
+    markdown: str,
+    item: ContentItem,
+    report: Report
+) -> None:
+    """Warns about a `::: gallery` without its closing `:::`; the frontend then shows the images as plain text."""
+    fence = None
+    is_open = False
+    for line in markdown.splitlines():
+        match = _FENCE_LINE.match(line)
+        if match:
+            mark = match.group(1)
+            if fence is None:
+                fence = mark
+            elif mark[0] == fence[0] and len(mark) >= len(fence):
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        if _GALLERY_OPEN.match(line):
+            if is_open:
+                report.warn("::: gallery inside a gallery that was not closed with :::", item.path)
+            is_open = True
+        elif _GALLERY_CLOSE.match(line) and is_open:
+            is_open = False
+    if is_open:
+        report.warn("::: gallery without a closing :::, shown as plain text", item.path)
 
 def _deduplicate_ids(items: list[ContentItem], report: Report) -> None:
     """Gives duplicate ids within one kind a suffix -2, -3, ... (in path order)."""

@@ -63,6 +63,8 @@ export const DEFAULT_MESSAGES = {
     field_vernacular_name : 'Nederlandse naam',
     field_work : 'Werken',
     filter_all : 'Alles',
+    gallery_next : 'Volgende afbeelding',
+    gallery_previous : 'Vorige afbeelding',
     image_fullscreen : 'Afbeelding schermvullend tonen',
     image_source : 'Bron',
     library : 'Bibliotheek',

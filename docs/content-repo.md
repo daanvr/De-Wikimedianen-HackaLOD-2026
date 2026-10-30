@@ -96,5 +96,31 @@ De pipeline moet in elk geval dit herkennen:
 
 Een wikilink verwijst naar een bestandsnaam, niet naar een pad. Wat de pipeline ermee doet, staat in [frontend-data.md](frontend-data.md#tekst-en-links).
 
+## Plaatjes, bijschriften en galerijen
+Een bijschrift is een regel helemaal in cursief, **direct** onder het plaatje (zonder lege regel ertussen). De tekst tussen `[` en `]` blijft de alt-tekst voor schermlezers; het bijschrift is wat iedereen onder het plaatje ziet. Een bron of licentie hoort in het bijschrift.
+
+```markdown
+![Siboga voor anker](siboga.jpg)
+*Hr.Ms. Siboga, 1898. [Bron](https://...)*
+```
+
+Dat werkt ook met een embed: `![[siboga.jpg]]` met de cursieve regel eronder.
+
+Meer plaatjes in een galerij (een carrousel om doorheen te bladeren) zet je tussen `::: gallery` en `:::`. Elk plaatje met zijn bijschrift is een eigen alinea, dus met een lege regel ertussen:
+
+```markdown
+::: gallery
+![Siboga voor anker](siboga.jpg)
+*Hr.Ms. Siboga, 1898. [Bron](https://...)*
+
+![Bemanning aan dek](bemanning.jpg)
+*De bemanning, 1899. [Bron](https://...)*
+:::
+```
+
+- Zet `::: gallery` en `:::` aan het begin van de regel, niet ingesprongen: ingesprongen regels zijn in markdown een codeblok.
+- Obsidian kent `:::` niet en toont die regels als gewone tekst, met de plaatjes ertussen. Op de site wordt het een galerij.
+- Zonder afsluitende `:::` waarschuwt de pipeline en toont de site de plaatjes los.
+
 ## Onaffe content
 Er staan nu al lege bestanden, `uri`'s die geen URL zijn (`wikidata`), en links naar bestanden die niet bestaan. De pipeline slaat zoiets over, logt een waarschuwing met de bestandsnaam en gaat door.

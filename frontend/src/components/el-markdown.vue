@@ -1,8 +1,10 @@
 <script setup>
     import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
+    import ElGallery from '@/components/el-gallery.vue';
     import ElLightbox from '@/components/el-lightbox.vue';
     import ElPlugin from '@/components/el-plugin.vue';
+    import ElZoomedImage from '@/components/el-zoomed-image.vue';
     import { renderSegments } from '@/services/markdown.js';
 
     const t = inject('t');
@@ -73,7 +75,8 @@
 
             zoomedImage.value = {
                 src : image.getAttribute('src'),
-                alt : image.getAttribute('alt') ?? ''
+                alt : image.getAttribute('alt') ?? '',
+                caption : zoom.closest('figure')?.querySelector('figcaption')?.innerHTML ?? null
             };
             return;
         }
@@ -113,6 +116,10 @@
                 v-bind:id="segment.id"
                 v-bind:argument="segment.argument" />
 
+            <el-gallery
+                v-else-if="segment.type === 'gallery'"
+                v-bind:images="segment.images" />
+
             <div
                 v-else
                 class="segment"
@@ -123,9 +130,10 @@
             v-if="zoomedImage"
             close-on-click
             v-on:close="zoomedImage = null">
-            <img
+            <el-zoomed-image
                 v-bind:src="zoomedImage.src"
-                v-bind:alt="zoomedImage.alt">
+                v-bind:alt="zoomedImage.alt"
+                v-bind:caption="zoomedImage.caption" />
         </el-lightbox>
     </div>
 </template>
@@ -170,7 +178,8 @@
             margin: 0 0 1.6rem 2.2rem;
         }
 
-        :deep(img) {
+        // Only the images in the HTML; a gallery or plugin styles its own
+        .segment :deep(img) {
             display: block;
             max-width: 100%;
             margin: 1.6rem 0;
@@ -179,7 +188,7 @@
             background: var(--c-plate);
         }
 
-        :deep(.zoomable) {
+        .segment :deep(.zoomable) {
             position: relative;
             display: block;
             max-width: 100%;
@@ -204,6 +213,22 @@
                 border: 1px solid var(--c-marine);
                 border-radius: 4px;
                 background: $icon-fullscreen center / 2rem no-repeat, rgba(251, 248, 241, 0.92);
+            }
+        }
+
+        .segment :deep(.figure) {
+            margin: 1.6rem 0;
+
+            .zoomable {
+                margin: 0;
+            }
+
+            figcaption {
+                margin-top: 0.8rem;
+                font-size: 1.4rem;
+                line-height: 1.4;
+                font-style: italic;
+                color: var(--c-ink-soft);
             }
         }
 
