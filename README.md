@@ -5,6 +5,13 @@ Dit is de Github repository van team De Wikimedianen voor hun bijdragen aan de H
 
 Hier kunnen we vertellen wat we gedaan hebben en waarom en hoe het allemaal werkt
 
+| Map | Inhoud |
+|---|---|
+| [`expeditie/`](expeditie/) | Inhoudelijk overzicht: de expeditie, personen, publicaties, collecties |
+| [`voorwerk/`](voorwerk/) | Wat we vóór de hackathon hebben uitgezocht: bronnen, en hoe de datasets gemaakt zijn |
+| [`data/`](data/) | De datasets zelf: stationslijst en opvarendenindex (spreadsheet + CSV) |
+| [`site/`](site/) | De website |
+
 # "Gratis" datavisualisaties, naast onze HackaLOD output
 
 Hier gaat Sandra ook nog links plaatsen naar allerlei andere interfaces die er zijn doordat Wikidata-communityleden deze al gebouwd hebben, zoals Expeditia en Wikidocumentaries en Reasonator en zo.

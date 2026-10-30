@@ -1,0 +1,364 @@
+Station,Date (1899–1900),Startdatum,Einddatum (alleen bij >1 dag),Latitude (original),Longitude E (original),Latitude (decimal),Longitude (decimal),Latitude (extrapolated),Longitude (extrapolated),Depth in M (original),"Depth (m, numeric)",Depth type,Bottom,Operation,Remarks,Mappable,Page (Liste des stations),Derived latitude (bearing),Derived longitude (bearing),Position / coordinate notes,Notes manual check (Sandra)
+1,1899-03-07,1899-03-07,,7°27'.5 S,113°8'.5,-7.4583,113.1417,,,37,37,bottom sounding,"Grey mud with small, broken shells.",Trawl.,"1400 M. distant from reef „Zwaantjesdroogte"", Madura-strait.",yes,3,,,,lat/lon
+2,1899-03-08,1899-03-08,,7°25' S,113°16',-7.4167,113.2667,,,56,56,bottom sounding,Grey mud with some radiolariae.,Trawl.,Madura-strait.,yes,3,,,,lat/lon
+3,1899-03-08/09,1899-03-08,1899-03-09,7°33' S,113°36'.5,-7.55,113.6083,,,67,67,bottom sounding,Mud with very few radiolariae and diatomes.,Hensen quantitative net. From 36 M. to surface.,Madura-strait.,yes,3,,,,lat/lon
+4,1899-03-09,1899-03-09,,7°42' S,114°12'.6,-7.7,114.21,,,9,9,bottom sounding,Coarse sand.,Dredge and shore-exploration.,Anchorage off Djangkar (Java).,yes,3,,,,lat/lon
+5,1899-03-10,1899-03-10,,7°46' S,114°30'.5,-7.7667,114.5083,,,330,330,bottom sounding,Mud.,Deep-sea trawl.,—,yes,3,,,,
+6,1899-03-10,1899-03-10,,7°44'.5 S,114°29',-7.7417,114.4833,,,291,291,bottom sounding,Mud.,—,—,yes,3,,,,
+7,1899-03-11,1899-03-11,,7°55'.5 S,114°26',-7.925,114.4333,,,15 and more,15,bottom sounding,Coral and stones.,Dredge and shore-exploration.,Near reef of Batjulmati (Java).,yes,3,,,,
+8,1899-03-13,1899-03-13,,7°54' S,114°48'.8,-7.9,114.8133,,,720,720,bottom sounding,"Fine, grey mud.",—,—,yes,3,,,,
+9,1899-03-13,1899-03-13,,7°44'.6 S,114°44'.6,-7.7433,114.7433,,,353,353,bottom sounding,"Soft, fine grey mud.",—,—,yes,3,,,,
+10,1899-03-15,1899-03-15,,7°25' S,115°5',-7.4167,115.0833,,,600,600,bottom sounding,Fine grey mud.,—,—,yes,3,,,,
+11,1899-03-15,1899-03-15,,7°16' S,115°12'.5,-7.2667,115.2083,,,234,234,bottom sounding,Coarse sand with broken shells.,—,—,yes,3,,,,
+12,1899-03-15,1899-03-15,,7°15' S,115°15'.6,-7.25,115.26,,,289,289,bottom sounding,Mud and broken shells.,Trawl.,—,yes,3,,,,
+13,1899-03-15,1899-03-15,,7°11'.6 S,115°16'.8,-7.1933,115.28,,,402,402,bottom sounding,Mud.,—,—,yes,3,,,,
+14,1899-03-15,1899-03-15,,7°5'.5 S,115°13'.8,-7.0917,115.23,,,91,91,bottom sounding,Mud (?),—,"2 miles from the reef of Urk-Island (Kemirian), Kangeang-group.",yes,3,,,,
+15,1899-03-15,1899-03-15,,7°2'.6 S,115°23'.6,-7.0433,115.3933,,,100,100,bottom sounding,Fine coralsand.,Trawl.,—,yes,3,,,,
+16,1899-03-15/16,1899-03-15,1899-03-16,6°59' S,115°24'.7,-6.9833,115.4117,,,22,22,bottom sounding,Mud.,Shore-explor. Hensen Vertical net.,"Bay of Kankamaraän, S. coast of Kangeang. Electric light in vertical net.",yes,3,,,,
+17,1899-03-17,1899-03-17,,7°28'.5 S,115°28',-7.475,115.4667,,,1060,1060,bottom sounding,Fine grey mud.,Deep-sea trawl.,Part of cable in a tangle.,yes,3,,,,
+18,1899-03-18,1899-03-18,,7°28'.2 S,115°24'.6,-7.47,115.41,,,1018,1018,bottom sounding,Fine grey mud.,Deep-sea trawl.,—,yes,3,,,,
+19,1899-03-19/21,1899-03-19,1899-03-21,8°44'.5 S,116°2'.5,-8.7417,116.0417,,,18-27,22.5,bottom sounding,"River-mud, coral, coralsand.",Land-expl.; trawl and dredge.,"Bay of Labuan Tring, west coast of Lombok.",yes,3,,,,
+20,1899-03-22,1899-03-22,,8°45'.8 S,115°46'.6,-8.7633,115.7767,,,210,210,bottom sounding,Hard; probably stone.,—,—,yes,3,,,,
+21,1899-03-22,1899-03-22,,8°46'.8 S,115°44'.1,-8.78,115.735,,,193,193,bottom sounding,Hard; small stones and coral.,—,—,yes,3,,,,
+22,1899-03-22,1899-03-22,,8°47'.7 S,115°44'.2,-8.795,115.7367,,,220,220,bottom sounding,Not obtained.,—,"Sounder caught in bottom; lost sounder, thermometer, water-cup and 87 M. of wire.",yes,3,,,,lon
+22a,1899-03-22,1899-03-22,,8°47'.7 S,115°44'.2,-8.795,115.7367,,,230,230,bottom sounding,Stone and coral.,—,"Nearly same position, as N°. 22.",yes,3,,,,lat/lon
+23,1899-03-22,1899-03-22,,8°48'.5 S,115°40',-8.8083,115.6667,,,165,165,bottom sounding,Hard; coral.,—,—,yes,3,,,,
+24,1899-03-22,1899-03-22,,8°48'.7 S,115°39'.5,-8.8117,115.6583,,,312,312,bottom sounding,Hard. Not obtained.,—,—,yes,3,,,,
+25,1899-03-22,1899-03-22,,8°48'.9 S,115°38',-8.815,115.6333,,,118,118,bottom sounding,Hard. Not obtained.,—,—,yes,3,,,,
+26,1899-03-23,1899-03-23,,8°35'.1 S,115°31'.2,-8.585,115.52,,,305,305,bottom sounding,Black sand.,—,—,yes,3,,,,
+27,1899-03-23,1899-03-23,,8°43'.5 S,115°21'.5,-8.725,115.3583,,,210,210,bottom sounding,Coarse sand with small pieces of coral.,—,—,yes,3,,,,
+28,1899-03-23,1899-03-23,,8°43'.7 S,115°19'.5,-8.7283,115.325,,,143,143,bottom sounding,"Hard, coral bottom.",—,—,yes,3,,,,
+29,1899-03-23,1899-03-23,,8°42'.7 S,115°23'.5,-8.7117,115.3917,,,178,178,bottom sounding,"Hard, coral and stone.",—,—,yes,3,,,,
+30,1899-03-23,1899-03-23,,,,,,-8.7517,115.525,191,191,bottom sounding,Coral.,—,Southern entrance of channel between Penida- and Jeningan-Islands.,no,3,,,Latitude/Longitude extrapolated: linear interpolation between station 29 and station 31.,
+31,1899-03-23,1899-03-23,,8°47'.5 S,115°39'.5,-8.7917,115.6583,,,310,310,bottom sounding,"Hard, stone.",—,—,yes,3,,,,lat/lon
+32,1899-03-23,1899-03-23,,9°2' S,115°47',-9.0333,115.7833,,,842,842,bottom sounding,Hard sand.,—,In a first attempt to obtain this sounding stray line broke in consequence of heavy swell; lost sounder and thermometer.,yes,4,,,,
+33,1899-03-24/26,1899-03-24,1899-03-26,,,,,-8.6905,116.1833,22 and less,22,bottom sounding,"Mud, coral and coralsand.","Trawl, dredge and shore-exploration.","Bay of Pidjot, Lombok.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 32 and station 35.,
+34,1899-03-27,1899-03-27,,,,,,-8.3478,116.5833,18,18,bottom sounding,Coral reef.,Shore-exploration.,"Anchorage off Labuan Pandan, Lombok.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 32 and station 35.,
+35,1899-03-28,1899-03-28,,8°0'.3 S,116°59',-8.005,116.9833,,,1310,1310,bottom sounding,"Fine, grey mud, with dark red brown stripes.",Deep sea trawl.,—,yes,4,,,,
+36,1899-03-29,1899-03-29,,7°38' S,117°31',-7.6333,117.5167,,,640,640,bottom sounding,Hard.,—,—,yes,4,,,,
+37,1899-03-30/31,1899-03-30,1899-03-31,,,,,-7.6117,117.4967,27 and less,27,bottom sounding,Coral and coralsand.,Dredge. Monaco-trap in 100 M.,"Sailus ketjil, Paternoster-islands. Close to reef.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 36 and station 38.,
+38,1899-04-01,1899-04-01,,7°35'.4 S,117°28'.6,-7.59,117.4767,,,521,521,bottom sounding,Coral.,Trawl.,—,yes,4,,,,
+39,1899-04-01,1899-04-01,,7°31'.2 S,117°42',-7.52,117.7,,,./667,667,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,4,,,,
+40,1899-04-02,1899-04-02,,,,,,-7.4683,117.7708,12,12,bottom sounding,Coralreef.,Townet. Shore-exploration.,Anchorage off Pulu Kawassang. Paternoster-islands.,no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 39 and station 41.,
+41,1899-04-03,1899-04-03,,7°25' S,117°50'.5,-7.4167,117.8417,,,96,96,bottom sounding,Sand (?),Trawl.,—,yes,4,,,,
+41a,1899-04-03,1899-04-03,,7°23'.7 S,117°52'.6,-7.395,117.8767,,,313,313,bottom sounding,Coral.,—,—,yes,4,,,,
+42,1899-04-03,1899-04-03,,7°20'.7 S,117°58'.3,-7.345,117.9717,,,571,571,bottom sounding,Coral.,—,—,yes,4,,,,
+42a,1899-04-03,1899-04-03,,7°12'.6 S,118°7'.7,-7.21,118.1283,,,30,30,bottom sounding,Coral.,—,—,yes,4,,,,
+43,1899-04-04/05,1899-04-04,1899-04-05,,,,,-7.2266,118.1533,up to 36,36,bottom sounding,Coral.,Dredge. Hensen vertical net.,"Anchorage off Pulu Sarassa, Postillon-islands. Electric light in vertical net.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 42a and station 43a.,
+43a,1899-04-05,1899-04-05,,7°14'.6 S,118°10'.7,-7.2433,118.1783,,,33,33,bottom sounding,"Hard, coral sand.",—,—,yes,4,,,,
+43b,1899-04-05,1899-04-05,,7°15'.5 S,118°12'.3,-7.2583,118.205,,,66,66,bottom sounding,Sand.,—,—,yes,4,,,,
+43c,1899-04-05,1899-04-05,,7°17'.4 S,118°14',-7.29,118.2333,,,32,32,bottom sounding,Coral sand und coral.,—,—,yes,4,,,,
+43d,1899-04-05,1899-04-05,,7°19'.8 S,118°14'.5,-7.33,118.2417,,,868,868,bottom sounding,Mud.,—,—,yes,4,,,,
+44,1899-04-05,1899-04-05,,7°18'.2 S,118°13'.6,-7.3033,118.2267,,,883,883,bottom sounding,Soft grey mud.,Trawl.,Lost trawl in consequence of change of bottom (rocky slope) during this haul.,yes,4,,,,
+45,1899-04-06,1899-04-06,,7°24' S,118°15'.2,-7.4,118.2533,,,794,794,bottom sounding,"Fine grey mud, with some radiolariae and diatomes.",Deep sea trawl.,—,yes,4,,,,
+45a,1899-04-06,1899-04-06,,7°36'.5 S,118°15'.5,-7.6083,118.2583,,,./450,450,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,4,,,,
+46,1899-04-07,1899-04-07,,7°52'.2 S,118°34'.8,-7.87,118.58,,,3100,3100,bottom sounding,"Fine, grey mud.",—,—,yes,4,,,,
+46a,1899-04-07,1899-04-07,,8°0'.5 S,118°34'.7,-8.0083,118.5783,,,1600,1600,bottom sounding,Mud.,Deep sea trawl.,"Brake not being strong enough, cable paid out too quickly and part of it kinked.",yes,4,,,,
+47,1899-04-08/12,1899-04-08,1899-04-12,,,,,-8.0258,118.6183,55,55,bottom sounding,Mud with patches of fine coral sand.,"Trawl, dredge and shore-exploration.",Bay of Bima; near south fort. Trawl torn. — Bima-anchorage.,no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 46a and station 48.,
+47a,1899-04-12,1899-04-12,,,,,,-8.0433,118.6583,320,320,bottom sounding,Fine sand.,Dredge.,"Off Batu Putih, entrance Bay of Bima.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 46a and station 48.,
+47b,1899-04-12,1899-04-12,,,,,,-8.0608,118.6983,296,296,bottom sounding,Fine sand with mud. (coral).,Trawl.,"Trawl torn on coral slope, reached during haul. 47b is 0,5 mile north of 47a.",no,4,,,Latitude/Longitude extrapolated: linear interpolation between station 46a and station 48.,
+48,1899-04-13,1899-04-13,,8°4'.7 S,118°44'.3,-8.0783,118.7383,,,2060,2060,bottom sounding,"Fine, grey mud; partially green.",Deep sea trawl.,Trawl brought up pumice stone.,yes,4,,,,
+49,1899-04-14,1899-04-14,,8°20'.5 S,119°4'.5,-8.3417,119.075,,,369,369,bottom sounding,Coral and shells.,—,—,yes,4,,,,
+49a,1899-04-14,1899-04-14,,8°23'.5 S,119°4'.6,-8.3917,119.0767,,,69,69,bottom sounding,Coral and shells.,Dredge.,Sapeh-Strait.,yes,4,,,,
+50,1899-04-16/18,1899-04-16,1899-04-18,,,,,-8.6134,119.3661,up to 40,40,bottom sounding,"Mud, sand and shells, according to locality.","Dredge, trawl and shore-exploration.","Bay of Dadjo, West coast of Flores.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 49a and station 52.,
+51,1899-04-19,1899-04-19,,,,,,-8.835,119.6556,From 69 to 91,80,bottom sounding,Fine grey sand; coarse sand with shells and stones.,Dredge and trawl. Shore-explor.,Madura-bay and other localities in the southern part of Molo-strait.,no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 49a and station 52.,
+52,1899-04-20,1899-04-20,,9°3'.4 S,119°56'.7,-9.0567,119.945,,,959,959,bottom sounding,Globigerina ooze.,Deep sea trawl.,—,yes,5,,,,lat/lon
+53,1899-04-21/22,1899-04-21,1899-04-22,,,,,-9.7034,120.4875,up to 36,36,bottom sounding,Coral sand; near the shore mud.,Trawl and Shore-explor.,"Bay of Nangamessi, Sumba.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 52 and station 54.,
+54,1899-04-23,1899-04-23,,10°21' S,121°1'.8,-10.35,121.03,,,779,779,bottom sounding,"Fine, grey mud.; sand with fine mud.",—,Position from bearings. According to observations of the sun the real longitude was 4′ more to the West.,yes,5,,,source: position from bearings; real longitude ~4′ further W per sun observations,lat
+55,1899-04-23,1899-04-23,,10°24'.8 S,121°11'.5,-10.4133,121.1917,,,1456,1456,bottom sounding,Fine grey mud.,—,"Wire parted, lost thermometer, lead and 500 M. of wire.",yes,5,,,,lat
+56,1899-04-23,1899-04-23,,10°27'.3 S,121°24'.2,-10.455,121.4033,,,1480,1480,bottom sounding,Fine grey mud; foraminiferae.,—,—,yes,5,,,,lat/lon
+57,1899-04-24,1899-04-24,,10°29' S,121°28'.7,-10.4833,121.4783,,,1419,1419,bottom sounding,Foraminiferae ooze.,—,—,yes,5,,,,lat
+58,1899-04-25,1899-04-25,,,,,,-10.4308,122.3767,up to 27,27,bottom sounding,Sand.,Dredge and shore-exploration.,"Anchorage off Seba, Savu.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 57 and station 59.,
+59,1899-04-26,1899-04-26,,10°22'.7 S,123°16'.5,-10.3783,123.275,,,390,390,bottom sounding,Coarse coralsand with small stones.,Dredge.,Western entrance Samau-strait.,yes,5,,,,
+60,1899-04-27/28,1899-04-27,1899-04-28,,,,,-9.7725,122.9938,23,23,bottom sounding,Lithothamnion in 3 M. and less. Reef.,Shore-exploration.,"Haingsisi, Samau Island, Timor.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 59 and station 62.,
+61,1899-05-01/02,1899-05-01,1899-05-02,,,,,-9.1667,122.7125,20,20,bottom sounding,Coral and sand.,Shore-exploration.,"Lumakwera, Solor-Island.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 59 and station 62.,
+61a,1899-05-02,1899-05-02,,,,,,-8.5608,122.4313,31,31,bottom sounding,Coral.,Shore-exploration.,North coast of Adonara.,no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 59 and station 62.,
+62,1899-05-03,1899-05-03,,7°57'.3 S,122°9',-7.955,122.15,,,2570,2570,bottom sounding,"Fine, grey mud.",—,—,yes,5,,,,lon
+63,1899-05-03,1899-05-03,,7°37'.2 S,122°3'.5,-7.62,122.0583,,,2560,2560,bottom sounding,"Fine, grey mud.",—,—,yes,5,,,,lon
+64,1899-05-04/05,1899-05-04,1899-05-05,,,,,-7.31,121.3167,up to 32,32,bottom sounding,"Coral, coralsand.","Trawl, dredge and shore-exploration.","Kambaragi-bay, Tanah Djampeah.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 63 and station 65.,
+65,1899-05-06,1899-05-06,,7°0' S,120°34'.5,-7,120.575,,,510,510,bottom sounding,"Pale, grey mud.",—,—,yes,5,,,,lat/lon
+65a,1899-05-06,1899-05-06,,very near station 65,,,,-6.8117,120.6111,From 400,400,bottom sounding,"Same, changing during haul into coral bottom.",Dredge.,"Depth changed rapidly during haul, diminishing to 120 M. coral bottom, in which dredge was caught and broke.",no,,,,Latitude/Longitude extrapolated: linear interpolation between station 65 and station 67.,row was missing in OCR
+66,1899-05-07/08,1899-05-07,1899-05-08,,,,,-6.6233,120.6472,8 to 10,9,bottom sounding,Dead coral; Halimeda; Lithothamnion.,Dredge.,"Bank between islands of Bahuluwang and Tambolungan, south of Saleyer.",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 65 and station 67.,
+67,1899-05-09,1899-05-09,,6°26'.1 S,120°41',-6.435,120.6833,,,1627,1627,bottom sounding,Foraminif. ooze.,—,—,yes,5,,,,
+68,1899-05-09,1899-05-09,,6°1'.5 S,120°45'.5,-6.025,120.7583,,,3110,3110,bottom sounding,Globigerina ooze.,—,—,yes,5,,,,
+69,1899-05-09,1899-05-09,,5°35'.2 S,120°42'.1,-5.5867,120.7017,,,1196,1196,bottom sounding,"Fine, grey mud.",—,—,yes,5,,,,lat corrected!
+70,1899-05-10,1899-05-10,,6°19'.5 S,119°52',-6.325,119.8667,,,1091,1091,bottom sounding,"Fine, grey mud.",—,—,yes,5,,,,
+71,1899-05-10/06-07,1899-05-10,1899-06-07,,,,,-5.7392,119.5017,up to 32,32,bottom sounding,Mud. Sand with mud. Coral.,"Dredge, townet and shore-exploration.","Makassar and surroundings. (Pulu Barang, Samalona, Ley-Ley, mouth of Tello-river).",no,5,,,Latitude/Longitude extrapolated: linear interpolation between station 70 and station 72.,
+72,1899-06-08,1899-06-08,,5°9'.2 S,119°8'.2,-5.1533,119.1367,,,58,58,bottom sounding,Hard.,Hensen quantitative net.,From 45 M. to surface.,yes,5,,,,lat/lon
+73,1899-06-08,1899-06-08,,5°8'.5 S,119°2'.5,-5.1417,119.0417,,,360 (chart),360,bottom sounding,Hard.,Hensen quantitative net.,From 45 M. to surface. 2 miles West of edge of Spermonde-bank.,yes,5,,,,
+74,1899-06-08,1899-06-08,,5°3'.5 S,119°0',-5.0583,119,,,450 (chart),450,bottom sounding,Globigerina ooze (obviously a thin layer).,Trawl.,—,yes,5,,,,lat/lon
+75,1899-06-08,1899-06-08,,4°57'.4 S,119°2'.8,-4.9567,119.0467,,,18,18,bottom sounding,—,Hensen vertical net.,From 11 M. to surface; electric light in net.,yes,6,,,,
+76,1899-06-09,1899-06-09,,4°22'.1 S,118°16'.9,-4.3683,118.2817,,,2029,2029,bottom sounding,"Fine, grey mud. (Globigerina).",Deep sea trawl.,—,yes,6,,,,
+77,1899-06-10,1899-06-10,,3°27' S,117°36',-3.45,117.6,,,59,59,bottom sounding,"Fine, grey coralsand.",Dredge.,Borneo-bank.,yes,6,,,,lat/lon
+77a,1899-06-10,1899-06-10,,3°24' S,117°36',-3.4,117.6,,,59,59,bottom sounding,"Fine, grey coralsand.",Trawl. Hensen quantitative net.,Borneo-bank. These catches were numbered 77.,yes,6,,,,lat/lon
+78,1899-06-10/11,1899-06-10,1899-06-11,,,,,-3.0583,117.6667,34,34,bottom sounding,Coral and coralsand.,Shore-exploration.,"Lumu-Lumu-shoal, Borneo-bank.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 77a and station 79.,
+79,1899-06-12,1899-06-12,,2°43' S,117°44',-2.7167,117.7333,,,From 41 to 54,47.5,bottom sounding,Fine coralsand.,Trawl. Hensen quantitative net.,Borneo-bank.,yes,6,,,,lat/lon
+79a,1899-06-12,1899-06-12,,2°38'.5 S,117°46',-2.6417,117.7667,,,54,54,bottom sounding,Fine coralsand.,Trawl. Hensen quantitative net.,Borneo-bank; 5 miles NNE from station 79.,yes,6,,,,lat/lon
+79b,1899-06-12/13,1899-06-12,1899-06-13,,,,,-2.5292,117.7417,22,22,bottom sounding,Coralsand.,Shore-explor.,"Pulu Kabala-dua, Borneo-bank.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 79a and station 80.,
+80,1899-06-13,1899-06-13,,2°25 S,117°43',-2.4167,117.7167,,,From 50-40,45,bottom sounding,Fine coralsand.,Trawl. Hensen quantitative net. Hensen vertical net.,Borneo-bank. Quantit. net From 34 M. to surface. Electric light in vertical net.,yes,6,,,,lat/lon
+81,1899-06-14,1899-06-14,,,,,,-1.8361,117.9589,34,34,bottom sounding,Coral bottom and Lithothamnion.,"Dredge, and shore-exploration.","Pulu Sebangkatan, Borneo-bank.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 80 and station 83.,
+82,1899-06-15/16,1899-06-15,1899-06-16,,,,,-1.2556,118.2011,,,,—,"Collecting fishes, etc.","Batu Pangal, Kutei-(Mahakkam-) river.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 80 and station 83.,
+83,1899-06-16,1899-06-16,,0°40'.5 S,118°26'.6,-0.675,118.4433,,,2400,2400,bottom sounding,"Fine, grey mud.",—,—,yes,6,,,,
+84,1899-06-17,1899-06-17,,0°40'.5 S,119°4',-0.675,119.0667,,,1624,1624,bottom sounding,"Fine, grey mud.",—,—,yes,6,,,,
+85,1899-06-17,1899-06-17,,0°36'.5 S,119°29'.5,-0.6083,119.4917,,,724,724,bottom sounding,"Fine, grey mud.",Trawl.,—,yes,6,,,,
+86,1899-06-18/19,1899-06-18,1899-06-19,,,,,-0.5708,119.5775,36,36,bottom sounding,"Fine, grey mud (river-mud).","Trawl, and Shore-exploration.","Anchorage off Dongala, Palos-bay, Celebes.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 85 and station 87.,
+87,1899-06-19,1899-06-19,,0°32' S,119°39'.8,-0.5333,119.6633,,,655,655,bottom sounding,"Fine, grey mud.",Trawl.,Trawl was evidently overset before reaching bottom; net came up in pieces.,yes,6,,,,lat/lon
+88,1899-06-20,1899-06-20,,0°34'.6 N,119°8'.5,0.5767,119.1417,,,1301,1301,bottom sounding,"Fine, grey mud. Trawl chiefly brought up yellow mud.",Deep sea trawl.,—,yes,6,,,,lat/lon
+89,1899-06-21,1899-06-21,,,,,,0.9342,119.0125,11,11,bottom sounding,Coral.,Shore-exploration.,Pulu Kaniungan ketjil.,no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 88 and station 90.,
+90,1899-06-21,1899-06-21,,1°17'.5 N,118°53',1.2917,118.8833,,,281,281,bottom sounding,Coral sand and stones.,Dredge.,Dredge came up with one arm broken.,yes,6,,,,lat/lon
+91,1899-06-22,1899-06-22,,,,,,2.2042,119.125,up to 54,54,bottom sounding,Hard coral sand. Coral at anchorage.,Trawl and dredge.,"Moearas-reef, inner side: East coast of Borneo.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 90 and station 92.,
+92,1899-06-23,1899-06-23,,3°7' N,119°22',3.1167,119.3667,,,3975,3975,bottom sounding,"Bluish mud, mixed with yellow-red patches and stripes.",Deep sea trawl.,"In consequence of defective working of brake cable evidently kinked and parted, when hauling in, net being very heavy and nearly at the surface.",yes,6,,,,lat/lon
+93,1899-06-24/25,1899-06-24,1899-06-25,,,,,4.1517,119.4784,12,12,bottom sounding,Lithothamnion-bottom. Sand and coral.,"Dredge, town-net, Shore-explor.","Pulu Sanguisiapo, Tawi-Tawi-islands, Sulu-archipelago.",no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 92 and station 94.,
+94,1899-06-26,1899-06-26,,5°11'.2 N,119°35'.4,5.1867,119.59,,,450 (chart),450,bottom sounding,Apparently sand and stone.,Trawl.,Trawl was overset before reaching bottom.,yes,6,,,,lon
+95,1899-06-26,1899-06-26,,5°43'.5 N,119°40',5.725,119.6667,,,522,522,bottom sounding,Stony bottom.,Dredge.,—,yes,6,,,,lat/lon
+96,1899-06-27,1899-06-27,,,,,,5.7683,119.7467,15,15,bottom sounding,Lithothamnion-bottom.,Dredge. Tow-net.,South-east side of Pearl-bank. Sulu-archipelago.,no,6,,,Latitude/Longitude extrapolated: linear interpolation between station 95 and station 97.,
+97,1899-06-28,1899-06-28,,5°48'.7 N,119°49'.6,5.8117,119.8267,,,564,564,bottom sounding,"Coarse, coralsand.",Dredge.,Dredge-net torn to pieces.,yes,6,,,,
+98,1899-06-28,1899-06-28,,6°9' N,120°21',6.15,120.35,,,350,350,bottom sounding,Sand.,Dredge.,Contained nothing but fine sand.,yes,6,,,,
+99,1899-06-28/29/30,1899-06-28,1899-06-30,6°7'.5 N,120°26',6.125,120.4333,,,16-23,19.5,bottom sounding,Lithothamnion-bottom.,Dredge. Tow-net.,Anchorage off North-Ubian. June 28 and 29 to the West; June 30 to the East of the island.,yes,7,,,,
+100,1899-06-29,1899-06-29,,6°11' N,120°37'.5,6.1833,120.625,,,450 (chart),450,bottom sounding,Dead coral.,Dredge.,Dredge full of dead coral; nearly no animals.,yes,7,,,,
+101,1899-06-30,1899-06-30,,6°15' N,120°21',6.25,120.35,,,1270,1270,bottom sounding,"Fine, grey mud. (Globigerinae).",Deep sea trawl.,Sulu-sea.,yes,7,,,,
+102,1899-07-01,1899-07-01,,6°4'.1 N,120°44',6.0683,120.7333,,,535,535,bottom sounding,"Fine, yellow sand.",Dredge.,Dredge full of fine yellow sand; nearly no animals.,yes,7,,,,
+103,1899-07-01,1899-07-01,,6°4'.2 N,120°51'.3,6.07,120.855,,,126 (chart),126,bottom sounding,—,Dredge.,Came up quite empty.,yes,7,,,,
+104,1899-07-02/03,1899-07-02,1899-07-03,,,,,6.1017,121.0858,14,14,bottom sounding,Sand.,Dredge and Tow-net.,"Sulu-harbour, Sulu-island.",no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 103 and station 105.,
+105,1899-07-04,1899-07-04,,6°8' N,121°19',6.1333,121.3167,,,275,275,bottom sounding,Coralbottom.,Dredge.,"Very short haul, dredge nearly immediately being caught in the bottom.",yes,7,,,,
+106,1899-07-04,1899-07-04,,,,,,6.0792,121.3917,13,13,bottom sounding,Coralbottom.,Dredge. Townet.,"Anchorage off Kapul-island, Sulu-archipelago.",no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 105 and station 107.,
+107,1899-07-05,1899-07-05,,6°1'.5 N,121°28',6.025,121.4667,,,270 (chart),270,bottom sounding,Probably hard rock.,Dredge.,Channel between the islands of Sulu and Bangalao.,yes,7,,,,
+108,1899-07-05,1899-07-05,,6°10'.3 N,121°32',6.1717,121.5333,,,73 (chart),73,bottom sounding,"Hard, probably coral.",Dredge.,Dredge broken and lost.,yes,7,,,,
+109,1899-07-05/06,1899-07-05,1899-07-06,,,,,5.3692,121.7666,13,13,bottom sounding,Lithothamnion-bottom.,"Dredge, Townet.","Anchorage off Pulu Tongkil, Sulu-archipelago.",no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 108 and station 110.,
+110,1899-07-06,1899-07-06,,4°34' N,122°0',4.5667,122,,,,,,—,Townet.,—,yes,7,,,,
+111,1899-07-07,1899-07-07,,3°19' N,122°2',3.3167,122.0333,,,./4902,4902,apparatus/wire depth — bottom not reached (no sample),—,Townet.,No more wire on drum.,yes,7,,,,
+112,1899-07-07,1899-07-07,,3°1' N,122°2',3.0167,122.0333,,,,,,—,Horizontal cylinder. Fowler closing net.,"Towed over, a distance of 7 miles. — Closing net from 600 to 300 M. depth.",yes,7,,,,
+113,1899-07-08,1899-07-08,,1°37' N,122°37',1.6167,122.6167,,,,,,—,Fowler closing net.,"From 600 to 300 M. depth. Net quite empty, was supposed to be closed accidentally in consequence of the short, high sea.",yes,7,,,,lon
+114,1899-07-08,1899-07-08,,0°58'.5 N,122°55',0.975,122.9167,,,75 (chart),75,bottom sounding,"Hard sand, very fine.",Dredge.,Kwandang-bay-entrance.,yes,7,,,,
+115,1899-07-09/11,1899-07-09,1899-07-11,,,,,0.975,122.8125,,,,—,Reef-exploration.,East side of Pajunga I. Kwandang-bay.,no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 114 and station 116.,
+116,1899-07-12,1899-07-12,,0°58'.5 N,122°42'.5,0.975,122.7083,,,72 (chart),72,bottom sounding,Fine sand with mud.,Dredge.,West of Kwandang-bay-entrance.,yes,7,,,,lon
+117,1899-07-12,1899-07-12,,1°0'.5 N,122°56',1.0083,122.9333,,,80 (chart),80,bottom sounding,Sand and coral.,Trawl.,Kwandang bay-entrance.,yes,7,,,,lat/lon
+117a,1899-07-12,1899-07-12,,1°15' N,123°37',1.25,123.6167,,,,,,—,Townet.,—,yes,7,,,,
+118,1899-07-13,1899-07-13,,1°38' N,124°28'.2,1.6333,124.47,,,,,,—,Hensen vertical net.,From 900 M. to surface.,yes,7,,,,
+119,1899-07-13,1899-07-13,,1°33'.5 N,124°41',1.5583,124.6833,,,1901,1901,bottom sounding,Stony bottom.,—,—,yes,7,,,,
+120,1899-07-13,1899-07-13,,1°33'.7 N,124°46'.5,1.5617,124.775,,,368,368,bottom sounding,Stone.,Deep sea trawl.,Trawl came up in an oblique position binding being broken.,yes,7,,,,
+121,1899-07-14/16,1899-07-14,1899-07-16,,,,,1.7684,124.8916,55,55,bottom sounding,—,Shore-exploration.,Menado-anchorage.,no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 120 and station 122.,
+122,1899-07-17,1899-07-17,,1°58'.5 N,125°0'.5,1.975,125.0083,,,1264-1165,1214.5,bottom sounding,Stone.,Deep sea trawl.,Depths according to chart.,yes,7,,,,lat/lon
+123,1899-07-17/18,1899-07-17,1899-07-18,,,,,2.2125,125.2958,36-27,31.5,bottom sounding,Stone and Lithothamnion-bottom.,Dredge.,North-bay. Biaru-island.,no,7,,,Latitude/Longitude extrapolated: linear interpolation between station 122 and station 124.,
+124,1899-07-18,1899-07-18,,2°27' N,125°35',2.45,125.5833,,,1327 (chart),1327,bottom sounding,Stone.,Deep sea trawl.,Trawl-iron bent.,yes,8,,,,lon
+125,1899-07-18/19,1899-07-18,1899-07-19,,,,,2.9508,125.4475,27,27,bottom sounding,Stone and some Lithothamnion.,Reef-exploration. Dredge. Townet. Monaco-trap.,"Anchorage off Sawan, Siau-island. In 90 M. depth, came up empty.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 124 and station 126.,
+126,1899-07-20,1899-07-20,,3°27'.1 N,125°18'7,3.4517,125.3117,,,2053,2053,bottom sounding,"Hard. (Traces of fine dark, hard sand).",Deep sea trawl.,—,yes,8,,,source writes the tenth-minute without a dot (e.g. …'7 = …'.7); decimal includes it,lat/lon
+127,1899-07-20/21,1899-07-20,1899-07-21,,,,,3.9508,125.37,45,45,bottom sounding,"Fine, darkcoloured sand.",Trawl. Reef-exploration.,"Taruna-bay, Great-Sangir-island.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 126 and station 128.,
+128,1899-07-22,1899-07-22,,4°27' N,125°25'7,4.45,125.4283,,,1645,1645,bottom sounding,Globigerina ooze.,Hensen vertical net.,From 700 M. to surface.,yes,8,,,source writes the tenth-minute without a dot (e.g. …'7 = …'.7); decimal includes it,lat/lon
+129,1899-07-22/23,1899-07-22,1899-07-23,,,,,4.725,125.435,23-31,27,bottom sounding,Sand.,Reef-exploration. Dredge. Townet.,"Anchorage off Kawio- and Kamboling-islands, Karkaralong-group.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 128 and station 130.,
+130,1899-07-23,1899-07-23,,5°0' N,125°26'5,5,125.4417,,,1638,1638,bottom sounding,Hard shell-bottom.,—,—,yes,8,,,source writes the tenth-minute without a dot (e.g. …'7 = …'.7); decimal includes it,lat/lon
+131,1899-07-24/25,1899-07-24,1899-07-25,,,,,5.4725,125.9292,13,13,bottom sounding,Mud and sand.,Reef-exploration.,"Anchorage off Beo, Karakelang-islands.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 130 and station 132.,
+132,1899-07-25,1899-07-25,,5°56'.7 N,126°25',5.945,126.4167,,,3302,3302,bottom sounding,"Fine, grey and blueish mud.",—,—,yes,8,,,,lat/lon
+133,1899-07-25/27,1899-07-25,1899-07-27,,,,,4.3933,126.6559,up to 36,36,bottom sounding,Mud and hard sand.,"Trawl, dredge and reef-exploration. Townet.","Anchorage off Lirung, Salibabu-island.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 132 and station 134.,
+134,1899-07-28,1899-07-28,,2°50'.5 N,126°53'.7,2.8417,126.895,,,2291,2291,bottom sounding,"Fine, brown mud.",Deep sea trawl.,Trawl did not reach the bottom.,yes,8,,,,lat/lon
+135,1899-07-29,1899-07-29,,1°34' N,126°54',1.5667,126.9,,,1994 (chart),1994,bottom sounding,"Coarse grey, sandy bottom.",Deep sea trawl.,—,yes,8,,,,lat/lon
+136,1899-07-29/08-03,1899-07-29,1899-08-03,,,,,0.9817,127.1917,23,23,bottom sounding,Mud and stone.,Townet.,Ternate anchorage.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 135 and station 137.,
+137,1899-08-03,1899-08-03,,0°23'.8 N,127°29',0.3967,127.4833,,,472,472,bottom sounding,"Fine, dark muddy sand.",Dredge.,Channel between Makjan and Halmaheira.,yes,8,,,,lat/lon
+138,1899-08-03,1899-08-03,,,,,,0.1067,127.45,66,66,bottom sounding,Coral.,Townet.,Anchorage on the east coast of Kajoa-island.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 137 and station 139.,
+139,1899-08-04,1899-08-04,,0°11' S,127°25',-0.1833,127.4167,,,397,397,bottom sounding,Mud stones and coral.,Trawl.,—,yes,8,,,,lat/lon
+140,1899-08-04/05,1899-08-04,1899-08-05,,,,,-0.595,127.4192,13,13,bottom sounding,Mud.,Tow-net.,Bay of Batjan.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 139 and station 141.,
+141,1899-08-05,1899-08-05,,1°0'.4 S,127°25'.3,-1.0067,127.4217,,,1950,1950,bottom sounding,"Very fine, hard sand.",Hensen vertical net.,From 1500 M. depth to surface.,yes,8,,,,lat/lon
+142,1899-08-05/07,1899-08-05,1899-08-07,,,,,-1.0408,127.6492,23,23,bottom sounding,Mud.,"Hensen vertical net. Townet, dredge and reef-explor.","Anchorage off Laiwui, coast of Obi Major. Electric light in vertical net.",no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 141 and station 143.,
+143,1899-08-07,1899-08-07,,1°4'.5 S,127°52'.6,-1.075,127.8767,,,1454,1454,bottom sounding,"Fine, grey mud.",Hensen vertical net.,From 1000 M. depth to surface.,yes,8,,,,lat/lon
+144,1899-08-07/09,1899-08-07,1899-08-09,,,,,-0.9875,128.2708,45,45,bottom sounding,Coral bottom and Lithothamnion.,"Dredge, townet and reef-explor.",Anchorage north of Salomakiëe-(Damar-) island.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 143 and station 145.,
+145,1899-08-09,1899-08-09,,0°54' S,128°39'.9,-0.9,128.665,,,827,827,bottom sounding,Hard. Pumicestone.,Deep sea trawl.,Lost water-cup and thermometer in consequence of bad working of counter.,yes,8,,,,lat/lon
+146,1899-08-09,1899-08-09,,0°36' S,128°32'.7,-0.6,128.545,,,512,512,bottom sounding,"Coral sand, fine and coarse.",Townet.,2½ miles north of eastern Widi-group.,yes,8,,,,lon
+147,1899-08-10,1899-08-10,,0°22'.7 S,128°52'.7,-0.3783,128.8783,,,2039,2039,bottom sounding,Fine bluish mud.,—,—,yes,8,,,,
+148,1899-08-10,1899-08-10,,0°17'.6 S,129°14'.5,-0.2933,129.2417,,,1855,1855,bottom sounding,"Fine, grey and green mud.",Hensen vertical net.,From 1000 M. depth to surface.,yes,8,,,,
+149,1899-08-10/11,1899-08-10,1899-08-11,,,,,-0.2655,129.4278,31,31,bottom sounding,Coral.,Townet. Reef-exploration.,Fau-anchorage and lagune. West coast of Gebé-island.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 148 and station 151.,
+150,1899-08-11,1899-08-11,,,,,,-0.2378,129.6139,1089,1089,bottom sounding,Yellow grey mud and sand. Stones.,Trawl.,Trawl torn to pieces; fore-beam bent; obviously met with very rough bottom.,no,8,,,Latitude/Longitude extrapolated: linear interpolation between station 148 and station 151.,
+151,1899-08-12,1899-08-12,,0°12'.6 S,129°48',-0.21,129.8,,,845,845,bottom sounding,Fine grey mud with coarse particles.,—,—,yes,9,,,,lon
+152,1899-08-12/13,1899-08-12,1899-08-13,,,,,-0.0733,130.1025,32,32,bottom sounding,Lithothamnion-bottom.,"Dredge, townet and reef-explor.","Wunoh-bay, N.W.-coast of Waigeu-island.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 151 and station 153.,
+153,1899-08-14,1899-08-14,,0°3'.8 N,130°24.3,0.0633,130.405,,,141,141,bottom sounding,Fine and coarse sand with dead shells.,Dredge.,—,yes,9,,,,lat/lon
+154,1899-08-14,1899-08-14,,0°7'.2 N,130°25'.5,0.12,130.425,,,83,83,bottom sounding,"Grey muddy sand, shells and Lithothamnion.",Dredge.,Depth decreased till 59 M. during this haul.,yes,9,,,,lat/lon
+155,1899-08-14,1899-08-14,,,,,,-0.1834,130.2567,58,58,bottom sounding,Coral sand.,Shore-exploration.,Anchorage in Piapis-bay (Telok Sapira) Northwest coast of Waigeu-island.,no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 154 and station 156.,
+156,1899-08-15,1899-08-15,,0°29'.2 S,130°5'.3,-0.4867,130.0883,,,469,469,bottom sounding,Coarse sand and broken shells.,Dredge.,Dredge-net came up in pieces.,yes,9,,,,lat/lon
+157,1899-08-15/16,1899-08-15,1899-08-16,0°32'.9 S,130°14'.6,-0.5483,130.2433,,,45,45,bottom sounding,Stone and coarse sand.,"Townet, Shore-exploration.",4½ cables N.N.W. of the North point of Great Fam-island. (Jef-Fam-besar).,yes,9,,,source also gives a landmark bearing/distance for this station (see Remarks),lat/lon
+158,1899-08-16,1899-08-16,,0°43'.5 S,129°56'.5,-0.725,129.9417,,,391,391,bottom sounding,Coral.,—,—,yes,9,,,,
+159,1899-08-16,1899-08-16,,0°59'.1 S,129°48'.8,-0.985,129.8133,,,411,411,bottom sounding,Coarse sand.,Dredge.,—,yes,9,,,,
+160,1899-08-16/17,1899-08-16,1899-08-17,,,,,-1.08,129.9817,31,31,bottom sounding,—,Shore-exploration.,North-coast of Kofiau-island near Kampong Hebera.,no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 159 and station 161.,
+161,1899-08-17,1899-08-17,,1°10'.5 S,130°9',-1.175,130.15,,,798,798,bottom sounding,Muddy sand.,Deep sea trawl.,—,yes,9,,,,lat/lon
+162,1899-08-18,1899-08-18,,,,,,-1.3528,130.3639,18,18,bottom sounding,Coarse and fine sand with clay and shells.,Dredge.,"Between Loslos and Broken-islands, West-coast of Salawatti.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 161 and station 164.,
+163,1899-08-18/20,1899-08-18,1899-08-20,,,,,-1.5305,130.5778,29,29,bottom sounding,"Sand and stone, mixed with mud.","Dredge, reef-exploration.","Anchorage near Seget, West-entrance Selee (Galewo-)strait.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 161 and station 164.,
+164,1899-08-20,1899-08-20,,1°42'.5 S,130°47'.5,-1.7083,130.7917,,,32,32,bottom sounding,"Sand, small stones and shells.",Dredge.,—,yes,9,,,,lat
+165,1899-08-20/22,1899-08-20,1899-08-22,,,,,-2.0917,130.9233,49,49,bottom sounding,—,"Dredge, Townet, Reef-exploration.","Anchorage on North-east side of Daram-island (False Pisangs), East-coast of Misool.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 164 and station 166.,
+166,1899-08-22,1899-08-22,,2°28'.5 S,131°3'.3,-2.475,131.055,,,118,118,bottom sounding,"Hard, coarse sand.",Trawl.,—,yes,9,,,,
+167,1899-08-22,1899-08-22,,2°35'.5 S,131°26'.2,-2.5917,131.4367,,,95,95,bottom sounding,—,Trawl.,—,yes,9,,,,
+168,1899-08-22/23,1899-08-22,1899-08-23,,,,,-2.9372,131.4378,63,63,bottom sounding,—,Townet.,Anchorage North of Sabuda-island.,no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 167 and station 170.,
+169,1899-08-23/25,1899-08-23,1899-08-25,,,,,-3.2828,131.4389,57,57,bottom sounding,Mud.,"Trawl, dredge, townet, reef-explor.","Anchorage off Atjatuning, West-coast of New-Guinea.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 167 and station 170.,
+170,1899-08-26,1899-08-26,,3°37'.7 S,131°26'.4,-3.6283,131.44,,,924,924,bottom sounding,Fine grey mud.,Deep sea trawl.,—,yes,9,,,,
+171,1899-08-26,1899-08-26,,3°46'.3 S,131°9'.3,-3.7717,131.155,,,470,470,bottom sounding,Fine grey mud.,—,—,yes,9,,,,
+172,1899-08-26/27,1899-08-26,1899-08-27,,,,,-3.6109,131.0816,18,18,bottom sounding,Coral- and Lithothamnion-bottom.,"Townet, reef-exploration.",Gisser; anchorage between this island and Ceram-Laut.,no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 171 and station 173.,
+173,1899-08-28,1899-08-28,,3°27'.0 S,131°0'.5,-3.45,131.0083,,,567,567,bottom sounding,"Fine, yellow grey mud.",Deep sea trawl.,—,yes,9,,,,lat/lon
+174,1899-08-28/29,1899-08-28,1899-08-29,,,,,-3.0392,130.7825,18,18,bottom sounding,Mud.,Dredge. Townet. Reef-exploration.,"Waru-bay, North coast of Ceram.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 173 and station 175.,
+175,1899-08-30,1899-08-30,,2°37'.7 S,130°33'.4,-2.6283,130.5567,,,1914,1914,bottom sounding,"Fine, grey and green mud.",Deep sea trawl.,—,yes,9,,,,lat/lon
+176,1899-08-30/31,1899-08-30,1899-08-31,,,,,-2.5183,130.0992,36,36,bottom sounding,Mud and stones.,Shore- and reef-exploration.,"Anchorage off Lilintah, South coast of Misool.",no,9,,,Latitude/Longitude extrapolated: linear interpolation between station 175 and station 177.,
+177,1899-09-01,1899-09-01,,2°24'.5 S,129°38'.5,-2.4083,129.6417,,,1633,1633,bottom sounding,"Dead coral and stones, covered with manganese.",Dredge.,Dredged a large quantity of dead coral and stones with very few animals. During haul depth diminished till 1300 M.,yes,9,,,,lat/lon
+177a,1899-09-01,1899-09-01,,2°30' S,129°28',-2.5,129.4667,,,,,,—,Townet.,—,yes,9,,,,row was missed in ocr
+178,1899-09-02,1899-09-02,,2°40' S,128°37'.5,-2.6667,128.625,,,835,835,bottom sounding,Blue mud.,Deep sea trawl.,—,yes,10,,,,lat
+179,1899-09-02/03,1899-09-02,1899-09-03,,,,,-2.9417,128.3938,36,36,bottom sounding,Stony bottom.,"Dredge, townet and Shore-exploration.","Kawa-bay, West coast of Ceram.",no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 178 and station 182.,
+180,1899-09-04,1899-09-04,,,,,,-3.2167,128.1625,48,48,bottom sounding,Stone and sand.,Land-exploration.,North coast of Pulu Kelang.,no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 178 and station 182.,
+181,1899-09-05/11,1899-09-05,1899-09-11,,,,,-3.4917,127.9313,36-54,45,bottom sounding,"Mud, sand and coral.","Dredge and trawl, reef-exploration.",Ambon-anchorage.,no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 178 and station 182.,
+182,1899-09-11,1899-09-11,,3°46' S,127°42',-3.7667,127.7,,,3702,3702,bottom sounding,Bluish grey mud.,—,—,yes,10,,,,lat/lon
+183,1899-09-11,1899-09-11,,3°29' S,127°33',-3.4833,127.55,,,./1820,1820,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,10,,,,lat/lon
+184,1899-09-11/12,1899-09-11,1899-09-12,,,,,-3.4083,127.4658,36,36,bottom sounding,"Coral, sand.","Dredge, Townet.","Anchorage off Kampong Kelang, South coast of Manipa-island.",no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 183 and station 185.,
+185,1899-09-12,1899-09-12,,3°20' S,127°22'.9,-3.3333,127.3817,,,./1536,1536,apparatus/wire depth — bottom not reached (no sample),—,Hensen vertical net.,Manipa-strait. From 1536 M. to surface.,yes,10,,,,
+186,1899-09-12,1899-09-12,,3°10'.5 S,127°20'.5,-3.175,127.3417,,,940,940,bottom sounding,Rock.,—,North side of Manipa-strait.,yes,10,,,,
+187,1899-09-12,1899-09-12,,3°12'.8 S,127°26',-3.2133,127.4333,,,1195,1195,bottom sounding,Hard. (Rock?),—,North side of Manipa-strait.,yes,10,,,,
+188,1899-09-12,1899-09-12,,3°13' S,127°13'.8,-3.2167,127.23,,,1067,1067,bottom sounding,Gravel coarse sand.,—,North side of Manipa-strait.,yes,10,,,,
+189,1899-09-12,1899-09-12,,2°48'.3 S,127°13',-2.805,127.2167,,,2124,2124,bottom sounding,"Fine, grey mud.",—,—,yes,10,,,,
+189a,1899-09-12,1899-09-12,,2°22' S,126°46',-2.3667,126.7667,,,,,,—,Townet.,—,yes,10,,,,
+190,1899-09-13,1899-09-13,,2°19' S,126°23'.5,-2.3167,126.3917,,,4082,4082,bottom sounding,Fine bluish green mud.,—,—,yes,10,,,,
+191,1899-09-13,1899-09-13,,2°8'.7 S,126°10'.4,-2.145,126.1733,,,2694,2694,bottom sounding,Bluish green mud.,—,—,yes,10,,,,
+192,1899-09-13,1899-09-13,,2°6'.3 S,126°5'.5,-2.105,126.0917,,,1020,1020,bottom sounding,Fine sand.,—,5 miles East of Sula Besi-island.,yes,10,,,,
+193,1899-09-13/14,1899-09-13,1899-09-14,,,,,-1.9983,126.3709,22,22,bottom sounding,Mud.,Reef-exploration.,"Sanana-bay, East coast of Sula Besi.",no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 192 and station 194.,
+194,1899-09-15,1899-09-15,,1°53'.5 S,126°39',-1.8917,126.65,,,1504,1504,bottom sounding,Stone.,Townet. Horizontal cylinder.,"Cylinder towed over a distance of 25 miles, with a speed of 7 to 8 knots.",yes,10,,,,lat/lon
+195,1899-09-15,1899-09-15,,1°55' S,126°50'.7,-1.9167,126.845,,,1476,1476,bottom sounding,Stone.,Townet.,—,yes,10,,,,
+196,1899-09-15,1899-09-15,,1°52'.8 S,127°6',-1.88,127.1,,,2001,2001,bottom sounding,Stone.,Townet.,—,yes,10,,,,
+197,1899-09-15,1899-09-15,,1°45'.3 S,127°8'.3,-1.755,127.1383,,,680,680,bottom sounding,Not obtained.,Townet. Horizontal cylinder.,From this station towed horizontal cylinder over a distance of 90 miles.,yes,10,,,,
+198,1899-09-16,1899-09-16,,2°49'.4 S,126°17',-2.8233,126.2833,,,4113,4113,bottom sounding,"Bluish, green mud.",Townet.,—,yes,10,,,,lon
+199,1899-09-16,1899-09-16,,2°55'.5 S,126°4'.5,-2.925,126.075,,,./2000,2000,apparatus/wire depth — bottom not reached (no sample),—,Townet.,"Wire parted, close to stray line (twisted off by strong rotation, probably caused by thermometer-screw).",yes,10,,,,lon
+200,1899-09-16/17,1899-09-16,1899-09-17,,,,,-2.995,126.0292,up to 54,54,bottom sounding,Mud and stone.,Dredge and Shore-exploration.,"Bara-bay, North coast of Buru-island.",no,10,,,Latitude/Longitude extrapolated: linear interpolation between station 199 and station 201.,
+201,1899-09-18,1899-09-18,,3°3'.9 S,125°59',-3.065,125.9833,,,2693,2693,bottom sounding,Green mud.,—,—,yes,10,,,,
+202,1899-09-18,1899-09-18,,3°15' S,125°43'.8,-3.25,125.73,,,3088,3088,bottom sounding,Grey and green mud.,Horizontal cylinder.,Towed cylinder over a distance of about 23 miles (speed 7 knots).,yes,10,,,,
+202a,1899-09-18,1899-09-18,,3°18' S,125°18',-3.3,125.3,,,./500,500,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,10,,,,lat/lon
+202b,1899-09-18,1899-09-18,,3°19' S,125°9'.5,-3.3167,125.1583,,,./500,500,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,10,,,,lat/lon
+202c,1899-09-18,1899-09-18,,3°19' S,125°4'.5,-3.3167,125.075,,,./500,500,apparatus/wire depth — bottom not reached (no sample),—,—,—,yes,10,,,,lat/lon
+202d,1899-09-18,1899-09-18,,3°14'.2 S,124°59',-3.2367,124.9833,,,./500,500,apparatus/wire depth — bottom not reached (no sample),—,Horizontal cylinder.,"Towed cylinder over a distance of about 50 miles, with a speed of 8 knots.",yes,10,,,,lat/lon
+203,1899-09-19,1899-09-19,,3°32'.5 S,124°15'.5,-3.5417,124.2583,,,./4892,4892,apparatus/wire depth — bottom not reached (no sample),—,Hensen vertical net.,No more wire on drum. Vertical net from 1500 M. depth to surface.,yes,11,,,,
+204,1899-09-20,1899-09-20,,4°20' S,122°58',-4.3333,122.9667,,,From 75-94,84.5,bottom sounding,Sand with dead shells.,Dredge and townet.,Between islands of Wowoni and Buton; Northern entrance of Buton-strait.,yes,11,,,,
+205,1899-09-20,1899-09-20,,,,,,-4.65,122.8333,22,22,bottom sounding,Sandy mud.,Dredge and townet.,"Lohio-bay, Buton-strait.",no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 204 and station 206.,
+206,1899-09-21,1899-09-21,,4°58' S,122°42',-4.9667,122.7,,,51,51,bottom sounding,"Fine, green mud.",Trawl.,Buton-strait. Trawl was overset and came up torn to pieces.,yes,11,,,,
+207,1899-09-21,1899-09-21,,5°7'.5 S,122°39',-5.125,122.65,,,148,148,bottom sounding,Grey mud.,Trawl.,Buton-strait. Net torn.,yes,11,,,,
+208,1899-09-22,1899-09-22,,5°39' S,122°12',-5.65,122.2,,,1886,1886,bottom sounding,Solid green mud.,Deep sea trawl.,—,yes,11,,,,
+209,1899-09-23,1899-09-23,,,,,,-5.5584,121.7959,22,22,bottom sounding,Coarse sand.,Dredge. Reef-exploration.,Anchorage off the south point of Kabaëna-island.,no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 208 and station 210.,
+210,1899-09-24,1899-09-24,,5°28' S,121°23'.5,-5.4667,121.3917,,,2218,2218,bottom sounding,"Grey mud, upper layer more liquid and brown.",—,—,yes,11,,,,
+210a,1899-09-24,1899-09-24,,5°26' S,121°18',-5.4333,121.3,,,1944 (chart),1944,bottom sounding,Same as at preceeding station; pumice-stone.,Deep sea trawl.,—,yes,11,,,,
+211,1899-09-25,1899-09-25,,5°40'.7 S,120°45'.5,-5.6783,120.7583,,,1158,1158,bottom sounding,"Coarse grey mud, superficial layer more liquid and brown.",Deep sea trawl.,—,yes,11,,,,
+212,1899-09-26,1899-09-26,,5°54'.5 S,120°19'.2,-5.9083,120.32,,,462,462,bottom sounding,Fine grey and green mud.,Deep sea trawl.,—,yes,11,,,,
+213,1899-09-26/10-26,1899-09-26,1899-10-26,,,,,-6.2042,121.1183,up to 36,36,bottom sounding,"Coralreefs, mud and mud with sand.","Trawl, townet, reef-exploration.","Saleyer-anchorage and Surroundings, including Pulu Pasi Tanette, near the North point of Saleyer-island.",no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 212 and station 214.,
+214,1899-10-27,1899-10-27,,6°30' S,121°55',-6.5,121.9167,,,2796,2796,bottom sounding,Grey and green mud superficial layer more liquid and brown.,Deep sea trawl.,"Cable kinked, net fouled.",yes,11,,,,
+215,1899-10-28/29,1899-10-28,1899-10-29,,,,,-6.6056,122.1834,701,701,bottom sounding,Stone.,Reef-exploration.,"Sounding due West, 1300 M. distant from the North point of Kabia-island reef.",no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 214 and station 216.,
+215a,1899-10-29,1899-10-29,,,,,,-6.7111,122.45,500,500,bottom sounding,Stone.,Monaco-trap.,West 1000 M. distant from North point of Kabia-island reef.,no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 214 and station 216.,
+216,1899-10-31,1899-10-31,,6°49' S,122°43',-6.8167,122.7167,,,2190,2190,bottom sounding,"Solid grey and green mud, superficial layer more liquid and brown.",Fowler closing net.,From 975-415 M. depth.,yes,11,,,,
+217,1899-10-31,1899-10-31,,6°40'.6 S,123°14'.7,-6.6767,123.245,,,2477,2477,bottom sounding,Same as at station 216.,Deep sea trawl. Townet. Horizontal cylinder.,—,yes,11,,,,
+218,1899-11-01,1899-11-01,,6°24'.2 S,123°39'.1,-6.4033,123.6517,,,3912,3912,bottom sounding,"Solid bluish grey mud, 25 mM. thick, upper layer more liquid and brown.",Horizontal cylinder.,—,yes,11,,,,
+219,1899-11-01,1899-11-01,,6°2' S,123°57'.7,-6.0333,123.9617,,,1573,1573,bottom sounding,Grey mud.,—,About 5 miles Southwest of Binongka-island.,yes,11,,,,
+219a,1899-11-01,1899-11-01,,,,,,-6.1066,124.0994,323,323,bottom sounding,Coral sand.,—,"About 1000 M. Southwest of Popaliha, Binongka-island.",no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 219 and station 221.,
+219b,1899-11-01,1899-11-01,,,,,,-6.18,124.237,292,292,bottom sounding,Coral sand.,—,About 500 M. Southwest of Popaliha.,no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 219 and station 221.,
+219c,1899-11-01,1899-11-01,,,,,,-6.2533,124.3747,307,307,bottom sounding,Coral sand.,—,600 M. Southwest of Popaliha.,no,11,,,Latitude/Longitude extrapolated: linear interpolation between station 219 and station 221.,
+220,1899-11-01/03,1899-11-01,1899-11-03,,,,,-6.3267,124.5123,278,278,bottom sounding,Coral sand.,Townet. Reef-exploration. Dredge. Hensen vertical net.,"Anchorage off Pasir Pandjang, west coast of Binongka. In 55 M. depth, close to the reef. By day from 200 M. depth; at night about 10 M. with electric light in net.",no,12,,,Latitude/Longitude extrapolated: linear interpolation between station 219 and station 221.,
+221,1899-11-04,1899-11-04,,6°24' S,124°39',-6.4,124.65,,,2798,2798,bottom sounding,"Solid bluish grey mud with foraminiferae, covered by a 5 cM. thick layer of brown mud, uppermost layer of foraminiferae.","Deep sea trawl. Horizontal cylinder, towed during 4 hours.",Depth was presumed to have increased till 3112 M. during this haul.,yes,12,,,,lat/lon
+222,1899-11-05,1899-11-05,,6°10' S,125°35'.5,-6.1667,125.5917,,,3215,3215,bottom sounding,"Same as at Station 221, without superficial layer of foraminiferae.","Townet. Horizontal cylinder, towed 50 miles.",—,yes,12,,,,lat/lon
+223,1899-11-06,1899-11-06,,5°44'.7 S,126°27'.3,-5.745,126.455,,,4391,4391,bottom sounding,"A 14 cM. thick layer of brown and black mud, underneath gradually changing into bluish grey mud, the whole bottom specimen being 28 cM. high.",Deep sea trawl.,"The fore trawl beam not being provided with openings, was totally crushed by the water pressure.",yes,12,,,,lat/lon
+224,1899-11-07,1899-11-07,,5°34' S,127°4',-5.5667,127.0667,,,2952,2952,bottom sounding,Bluish grey mud with an upper layer of brown mud.,Horizontal cylinder.,—,yes,12,,,,lat/lon
+225,1899-11-08,1899-11-08,,5700 M.N. 279° E. from Southpoint of South-Lucipara-island,,,,,,894,894,bottom sounding,Coral and shells.,Horizontal cylinder.,Towed for 4 hours.,derived (from bearing),12,-5.5019,127.4912,"position derived from source bearing/distance (5700 m, azimuth 279°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225a,1899-11-08,1899-11-08,,2100 M.N. 255° E. from Southpoint of South-Lucipara-island,,,,,,510,510,bottom sounding,Small stones and shells.,—,—,derived (from bearing),12,-5.5149,127.5237,"position derived from source bearing/distance (2100 m, azimuth 255°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225b,1899-11-08,1899-11-08,,2100 M.N. 195° E. from Southpoint of South-Lucipara-island,,,,,,421,421,bottom sounding,Coral and stone.,—,—,derived (from bearing),12,-5.5283,127.5371,"position derived from source bearing/distance (2100 m, azimuth 195°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225c,1899-11-08/10,1899-11-08,1899-11-10,2700 M.N. 185° E. from Southpoint of South-Lucipara-island,,,,,,646,646,bottom sounding,Stone.,Townet and reef-exploration.,Anchorage south of Lucipara-group. (Stop-anchor with 1000 M. of cable).,derived (from bearing),12,-5.5343,127.5399,"position derived from source bearing/distance (2700 m, azimuth 185°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225d,1899-11-08,1899-11-08,,6900 M.N. 209° E. from Southpoint of South-Lucipara-island,,,,,,828,828,bottom sounding,Stone.,—,—,derived (from bearing),12,-5.5646,127.5118,"position derived from source bearing/distance (6900 m, azimuth 209°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225e,1899-11-08,1899-11-08,,6000 M.N. 258° E. from Southpoint of South-Lucipara-island,,,,,,1047,1047,bottom sounding,Coral sand.,—,—,derived (from bearing),12,-5.5213,127.489,"position derived from source bearing/distance (6000 m, azimuth 258°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225f,1899-11-11,1899-11-11,,11900 M.N. 277° E. from Southpoint of South-Lucipara-island,,,,,,1702,1702,bottom sounding,"A mixture of coral sand, mud and a solid calcareous sediment.",—,—,derived (from bearing),12,-5.4969,127.4354,"position derived from source bearing/distance (11900 m, azimuth 277°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225g,1899-11-11,1899-11-11,,16300 M.N. 280° E. from Southpoint of South-Lucipara-island,,,,,,1811,1811,bottom sounding,Hard.,—,—,derived (from bearing),12,-5.4844,127.3971,"position derived from source bearing/distance (16300 m, azimuth 280°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+225h,1899-11-11,1899-11-11,,6900 M.N. 175° E. from Southpoint of South-Lucipara-island,,,,,,1092,1092,bottom sounding,Coral sand.,—,—,derived (from bearing),12,-5.5722,127.5474,"position derived from source bearing/distance (6900 m, azimuth 175°) from South point of South-Lucipara I. — approximate (±~2–3 km)",lat/lon
+226,1899-11-11/12,1899-11-11,1899-11-12,5°26'.7 S,127°36'.5,-5.445,127.6083,,,1595,1595,bottom sounding,Hard. Obtained none but some small stones in dredge.,Dredge. Horizontal cylinder.,Mid channel between the Lucipara- and Schildpad-islands.,yes,12,,,,lat/lon
+227,1899-11-13,1899-11-13,,4°50'.5 S,127°59',-4.8417,127.9833,,,2081,2081,bottom sounding,"Grey mud with an upper layer of brown mud, both mixed with sand.",Deep sea trawl.,—,yes,12,,,,lat/lon
+228,1899-11-14,1899-11-14,,4°32'.5 S,128°30'.5,-4.5417,128.5083,,,2527,2527,bottom sounding,"Same as at Station 227, but without sand.",Horizontal cylinder.,—,yes,13,,,,
+229,1899-11-14,1899-11-14,,4°23' S,128°45'.5,-4.3833,128.7583,,,1980,1980,bottom sounding,Brown and grey mud with much sand.,Townet.,—,yes,13,,,,
+230,1899-11-14,1899-11-14,,3°58' S,128°20',-3.9667,128.3333,,,,,,—,Hensen vertical net. Horizontal cylinder.,From a depth of 2000 M. to surface.,yes,13,,,,
+231,1899-11-14/18,1899-11-14,1899-11-18,,,,,-3.9556,128.3639,40,40,bottom sounding,Coralsand.,Reef-exploration.,Ambon-anchorage.,no,13,,,Latitude/Longitude extrapolated: linear interpolation between station 230 and station 233.,
+232,1899-11-19,1899-11-19,,,,,,-3.9444,128.3944,634,634,bottom sounding,Coral sand and shells.,—,Mid channel in Ambon-bay-entrance.,no,13,,,Latitude/Longitude extrapolated: linear interpolation between station 230 and station 233.,
+233,1899-11-19,1899-11-19,,3°56' S,128°25'.5,-3.9333,128.425,,,4489,4489,bottom sounding,"Fine bluish green mud, apparently of a uniform composition.",—,—,yes,13,,,,
+234,1899-11-19/20,1899-11-19,1899-11-20,,,,,-3.8167,128.7366,46,46,bottom sounding,Stony.,Reef-exploration.,"Nalahia-bay, Nusa-Laut-island.",no,13,,,Latitude/Longitude extrapolated: linear interpolation between station 233 and station 235.,
+235,1899-11-21,1899-11-21,,3°42' S,129°2'.9,-3.7,129.0483,,,1910,1910,bottom sounding,"Grey mud, upper layer 5 cM. thick, coffee brown.",—,"Although weights did not slip, sounder contained a 18 cM. high bottomspecimen.",yes,13,,,,
+236,1899-11-21,1899-11-21,,3°45'.2 S,129°20'.2,-3.7533,129.3367,,,3685,3685,bottom sounding,"Fine, dark grey and green mud.",—,—,yes,13,,,,
+237,1899-11-21,1899-11-21,,4°2' S,129°20'.3,-4.0333,129.3383,,,4507,4507,bottom sounding,Traces of dark grey mud.,—,—,yes,13,,,,
+238,1899-11-22,1899-11-22,,4°19'.5 S,129°20'.8,-4.325,129.3467,,,4428,4428,bottom sounding,"Upper layer of mud liquid, dark greenish grey. Second layer: brown, 9 cM. thick, third layer: very fine bluish green.",—,"Although weights did not slip, sounder contained a bottom-specimen of 36 cM. height.",yes,13,,,,
+239,1899-11-22,1899-11-22,,4°12' S,129°20'.4,-4.2,129.34,,,4446,4446,bottom sounding,Same as at station 238.,—,—,yes,13,,,,
+240,1899-11-22/12-01,1899-11-22,1899-12-01,,,,,-4.3025,129.5808,From 9-45,27,bottom sounding,Black sand. Coral. Lithothamnion bank in 18-36 M.,"Trawl, dredge and reef-exploration.",Banda-anchorage.,no,13,,,Latitude/Longitude extrapolated: linear interpolation between station 239 and station 241.,
+241,1899-12-01,1899-12-01,,4°24'.3 S,129°49'.3,-4.405,129.8217,,,1570,1570,bottom sounding,Dark sand with small stones.,Blake dredge.,—,yes,13,,,,
+242,1899-12-02,1899-12-02,,4°30' S,129°20',-4.5,129.3333,,,4237,4237,bottom sounding,"Upper layer: liquid, bluish green mud; second layer: brown mud, 4 cM. thick; third layer: brownish grey clotty clay.",—,—,yes,13,,,,
+243,1899-12-02,1899-12-02,,4°30'.2 S,129°25',-4.5033,129.4167,,,,,,—,Hensen vertical net.,From a depth of 1000 M. to surface.,yes,13,,,,
+244,1899-12-03,1899-12-03,,4°25'.7 S,130°3'.7,-4.4283,130.0617,,,2991,2991,bottom sounding,"Fine bluish green mud, with more solid particles.",—,—,yes,13,,,,
+245,1899-12-03,1899-12-03,,4°16'.5 S,130°15'.8,-4.275,130.2633,,,4956,4956,bottom sounding,Traces of bluish green mud.,Townet.,—,yes,13,,,,
+246,1899-12-04,1899-12-04,,4°38' S,130°42',-4.6333,130.7,,,5684,5684,bottom sounding,Solid fine greyish green mud with a rather brown upper layer.,Horizontal cylinder.,Having been towed over a distance of 33 miles with a speed of 3 knots.,yes,13,,,,
+247,1899-12-04,1899-12-04,,4°41'.6 S,131°19',-4.6933,131.3167,,,4239,4239,bottom sounding,Fine bluish grey mud of uniform composition; upper layer of liquid brown mud.,—,—,yes,13,,,,
+248,1899-12-04/05,1899-12-04,1899-12-05,,,,,-4.8141,131.645,Till 54,54,bottom sounding,—,"Dredge, townet and reef-exploration.","Anchorage off Rumah Lusi, North-point of Tiur-island.",no,13,,,Latitude/Longitude extrapolated: linear interpolation between station 247 and station 249.,
+249,1899-12-06,1899-12-06,,4°56'.1 S,131°58'.4,-4.935,131.9733,,,192,192,bottom sounding,Hard. Only traces of coral sand on sounder.,Blake dredge.,"Depth being considerably increased during haul, dredge did not reach bottom with 520 M. of cable.",yes,14,,,,lat/lon
+250,1899-12-06/07,1899-12-06,1899-12-07,,,,,-5.2042,131.9883,20-45,32.5,bottom sounding,Coral and Lithothamnion.,Dredge and reef-exploration.,"Anchorage off Kilsuin, West-coast of Kur-island.",no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 249 and station 251.,
+251,1899-12-08,1899-12-08,,5°28'.4 S,132°0'.2,-5.4733,132.0033,,,204,204,bottom sounding,Hard coral sand.,Trawl.,"Trawl brought up pieces of grey clay and manganese nodules, the interior of which consisted of dry clay.",yes,14,,,,lat/lon
+251a,1899-12-08,1899-12-08,,5°28'.5 S,132°0'.5,-5.475,132.0083,,,238,238,bottom sounding,Traces of hard coral sand.,Blake dredge.,"Catch combined whit preceding. Dredge brought up dead shells, etc.",yes,14,,,,lon
+252,1899-12-08/09,1899-12-08,1899-12-09,,,,,-5.6391,132.1125,9-36,22.5,bottom sounding,—,"Dredge, townet and reef-exploration.",West side of Taam-island.,no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 251a and station 253.,
+253,1899-12-10,1899-12-10,,5°48'.2 S,132°13',-5.8033,132.2167,,,304,304,bottom sounding,"Grey clay, hard and crumbly.",Trawl.,—,yes,14,,,,lat/lon
+254,1899-12-10,1899-12-10,,5°40' S,132°26',-5.6667,132.4333,,,310,310,bottom sounding,"Fine, grey mud.",Trawl.,—,yes,14,,,,lat/lon
+255,1899-12-11,1899-12-11,,,,,,-5.555,132.4875,22,22,bottom sounding,Coral.,Dredge.,"Anchorage off Er-island, Kei-islands.",no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 254 and station 256.,
+256,1899-12-11,1899-12-11,,5°26'.6 S,132°32'.5,-5.4433,132.5417,,,397,397,bottom sounding,Greyish green mud.,Trawl.,—,yes,14,,,,lon
+257,1899-12-11,1899-12-11,,,,,,-5.4578,132.6528,Till 52,52,bottom sounding,Coral.,Blake dredge.,In Du-roa-strait Kei-islands.,no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 256 and station 259.,
+258,1899-12-12/16,1899-12-12,1899-12-16,,,,,-5.4722,132.7639,22,22,bottom sounding,Lithothamnion; sand and coral.,Reef-exploration. Dredge.,"Tual-anchorage, Kei-islands.",no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 256 and station 259.,
+259,1899-12-16,1899-12-16,,5°29'.2 S,132°52'.5,-5.4867,132.875,,,487,487,bottom sounding,Coral sand and dead coral.,Trawl with dredge.,Dredge-iron bent; trawl-net torn.,yes,14,,,,lat/lon
+260,1899-12-16 and 18,1899-12-16,1899-12-18,5°36'.5 S,132°55'.2,-5.6083,132.92,,,90,90,bottom sounding,"Sand, coral and shells.",Blake dredge.,"2,3 miles N. 63° W. from the North point of Nuhu Jaan, Kei-islands.",yes,14,,,source also gives a landmark bearing/distance for this station (see Remarks),lat/lon
+261,1899-12-16/18,1899-12-16,1899-12-18,,,,,-5.7525,132.8666,27,27,bottom sounding,Mud.,Dredge. Reef-exploration.,"Elat, West coast of Great-Kei-island.",no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 260 and station 262.,
+262,1899-12-18,1899-12-18,,5°53'.8 S,132°48'.8,-5.8967,132.8133,,,560,560,bottom sounding,Solid bluish grey mud upper layer more liquid and brown mud.,Trawl.,—,yes,14,,,,lat/lon
+263,1899-12-18/19,1899-12-18,1899-12-19,,,,,-6.0175,132.8883,27,27,bottom sounding,Sand and coral.,—,"Anchorage off Feer, West coast of Great Kei-island.",no,14,,,Latitude/Longitude extrapolated: linear interpolation between station 262 and station 264.,
+264,1899-12-19,1899-12-19,,6°8'.3 S,132°57'.8,-6.1383,132.9633,,,2655,2655,bottom sounding,"Fine, bluish green mud.",—,—,yes,14,,,,
+265,1899-12-19,1899-12-19,,6°3'.8 S,132°52'.8,-6.0633,132.88,,,3026,3026,bottom sounding,"Fine, bluish green mud.",—,5 miles N. 130° E. from the South point of Great Kei-island.,yes,14,,,source also gives a landmark bearing/distance for this station (see Remarks),
+266,1899-12-19,1899-12-19,,5°56'.5 S,132°47'.7,-5.9417,132.795,,,595,595,bottom sounding,Grey mud with coral and stones.,Deep sea trawl.,Net came up torn to pieces.,yes,14,,,,lat/lon
+267,1899-12-20,1899-12-20,,5°54' S,132°56'.7,-5.9,132.945,,,984,984,bottom sounding,Grey mud with a brown upper layer.,Trawl.,Net came up torn to pieces.,yes,14,,,,lat/lon
+268,1899-12-20,1899-12-20,,5°53' S,132°56'.3,-5.8833,132.9383,,,630,630,bottom sounding,Yellowish grey mud with sand.,—,—,yes,14,,,,lat/lon
+269,1899-12-20,1899-12-20,,5°49'.2 S,133°21'.7,-5.82,133.3617,,,2731,2731,bottom sounding,"Bluish green mud, partially hard, 1 cM. thick, upper layer yellowish brown mud.",—,—,yes,14,,,,lon
+270,1899-12-20,1899-12-20,,5°47' S,133°39',-5.7833,133.65,,,3565,3565,bottom sounding,Fine bluish green mud.,—,—,yes,14,,,,lon
+271,1899-12-21,1899-12-21,,5°46'.7 S,134°0',-5.7783,134,,,1788,1788,bottom sounding,Bluish green mud of a uniform appearance.,Deep sea trawl. Horizontal cylinder.,In a depth of 1600 M. decreasing to 1520. Cylinder had been towed for 3 hours with a speed of 7 knots.,yes,14,,,,lon
+272,1899-12-21/23,1899-12-21,1899-12-23,,,,,-5.6755,134.2994,31,31,bottom sounding,—,Reef-exploration.,"Dobo, Aru-islands.",no,15,,,Latitude/Longitude extrapolated: linear interpolation between station 271 and station 274.,
+273,1899-12-23/26,1899-12-23,1899-12-26,,,,,-5.5728,134.5989,13,13,bottom sounding,Sand and shells.,"Trawl, dredge and divers.","Anchorage off Pulu Jedan, East coast of Aru-islands. (Pearl-banks).",no,15,,,Latitude/Longitude extrapolated: linear interpolation between station 271 and station 274.,
+274,1899-12-26,1899-12-26,,5°28'.2 S,134°53'.9,-5.47,134.8983,,,57,57,bottom sounding,Sand and shells. Stones.,Blake dredge.,—,yes,15,,,,
+275,1900-01-08,1900-01-08,,4°52'.5 S,128°37',-4.875,128.6167,,,4914,4914,bottom sounding,Bluish grey mud with a brown upper layer.,—,—,yes,15,,,,
+276,1900-01-09,1900-01-09,,6°47'.5 S,128°40'.5,-6.7917,128.675,,,,,,—,Hensen vertical net.,From a depth of 750 M.,yes,15,,,,
+277,1900-01-09,1900-01-09,,,,,,-7.1033,128.3567,45,45,bottom sounding,"Sand, white and black mixed.","Trawl, dredge, reef-exploration.","Kulewatti-(Sollot)-bay, Dammer-island.",no,15,,,Latitude/Longitude extrapolated: linear interpolation between station 276 and station 278.,
+278,1900-01-11,1900-01-11,,7°24'.9 S,128°2'.3,-7.415,128.0383,,,3518,3518,bottom sounding,Hard. Nothing obtained.,—,—,yes,15,,,,
+279,1900-01-11/13,1900-01-11,1900-01-13,,,,,-7.8525,127.775,36,36,bottom sounding,Mud and sand.,Dredge and reef-exploration.,"Rumah-Kuda-bay, Roma-island.",no,15,,,Latitude/Longitude extrapolated: linear interpolation between station 278 and station 280.,
+280,1900-01-15,1900-01-15,,8°17'.4 S,127°30'.7,-8.29,127.5117,,,1224,1224,bottom sounding,"Dredge brought up glossy, black manganese nodules.",Dredge.,—,yes,15,,,,
+281,1900-01-15,1900-01-15,,8°20'.6 S,127°25'.9,-8.3433,127.4317,,,890,890,bottom sounding,Only traces obtained; presumed to be the same as at station 280.,—,—,yes,15,,,,
+282,1900-01-15/17,1900-01-15,1900-01-17,8°25'.2 S,127°18'.4,-8.42,127.3067,,,27-54,40.5,bottom sounding,"Sand, coral and Lithothamnion.","Trawl, dredge and reef-exploration.",Anchorage between Nusa Besi and the N.E.-point of Timor.,yes,15,,,,
+283,1900-01-18,1900-01-18,,8°37'.3 S,127°18'.6,-8.6217,127.31,,,487,487,bottom sounding,Hard. Not obtained.,—,—,yes,15,,,,
+284,1900-01-18,1900-01-18,,8°43'.1 S,127°16'.7,-8.7183,127.2783,,,828,828,bottom sounding,Grey mud.,Deep sea trawl.,Net torn.,yes,15,,,,
+285,1900-01-18,1900-01-18,,8°39'.1 S,127°4'.4,-8.6517,127.0733,,,34,34,bottom sounding,On the limit between mud and coral. Lithothamnion.,Dredge.,Anchorage South coast of Timor.,yes,15,,,,
+286,1900-01-19,1900-01-19,,8°50'.2 S,127°2'.2,-8.8367,127.0367,,,883,883,bottom sounding,"Mud, evidently a thin layer.",Deep sea trawl.,—,yes,15,,,,
+287,1900-01-19,1900-01-19,,8°55'.2 S,126°35'.5,-8.92,126.5917,,,216,216,bottom sounding,"Fine, grey mud.",—,—,yes,15,,,,
+288,1900-01-20,1900-01-20,,9°0'.5 S,126°31'.2,-9.0083,126.52,,,869,869,bottom sounding,Hard; not obtained.,—,—,yes,15,,,,
+288a,1900-01-20,1900-01-20,,9°0'.1 S,126°25'.6,-9.0017,126.4267,,,100,100,bottom sounding,"Fine, grey mud.",—,—,yes,15,,,,
+289,1900-01-20,1900-01-20,,9°0'.3 S,126°24'.5,-9.005,126.4083,,,112,112,bottom sounding,"Mud, sand and shells.",Trawl.,—,yes,15,,,,
+290,1900-01-20,1900-01-20,,9°12'.3 S,125°56'.3,-9.205,125.9383,,,816,816,bottom sounding,Not obtained.,—,—,yes,15,,,,
+291,1900-01-20,1900-01-20,,9°10'.3 S,125°55'.1,-9.1717,125.9183,,,421,421,bottom sounding,"Very fine, grey mud.",Trawl.,Trawl did not reach the bottom.,yes,15,,,,
+292,1900-01-21,1900-01-21,,9°11'.7 S,125°47'.3,-9.195,125.7883,,,709,709,bottom sounding,Very fine river-mud.,Trawl.,Net came up torn to pieces.,yes,15,,,,
+293,1900-01-21/22,1900-01-21,1900-01-22,9°29'.7 S,125°4'.2,-9.495,125.07,,,13,13,bottom sounding,Mud with fine sand.,Tow net.,Anchorage South coast of Timor.,yes,15,,,,
+294,1900-01-23,1900-01-23,,10°12'.2 S,124°27'.3,-10.2033,124.455,,,73,73,bottom sounding,Soft mud with very fine sand.,Trawl.,—,yes,15,,,,
+295,1900-01-24,1900-01-24,,10°35'.6 S,124°11'.7,-10.5933,124.195,,,2050,2050,bottom sounding,"Fine grey mud 3 cM. thick, upper layer more liquid, brown with black stripes.",Deep sea trawl.,—,yes,15,,,,
+296,1900-01-24/26,1900-01-24,1900-01-26,10°14' S,124°5'.5,-10.2333,124.0917,,,8-36,22,bottom sounding,Sandy mud.,Reef-exploration. Dredge and trawl.,"Anchorage off Noimini, South coast of Timor.",yes,15,,,,
+297,1900-01-27,1900-01-27,,10°39' S,123°40',-10.65,123.6667,,,520,520,bottom sounding,"Soft, grey mud with brown upper layer.",Deep sea trawl.,Trawl brought up a big piece of a trunk.,yes,15,,,,
+298,1900-01-27,1900-01-27,,10°50'.5 S,123°16',-10.8417,123.2667,,,230,230,bottom sounding,Hard. Nothing obtained.,Blake dredge.,Dredge did not reach the bottom.,yes,15,,,,
+299,1900-01-27/29,1900-01-27,1900-01-29,10°52'.4 S,123°1'.1,-10.8733,123.0183,,,34,34,bottom sounding,"Mud, coral and Lithothamnion.","Dredge, reef-exploration, diving.","Boeka- or Cyrus-bay, South-coast of Rotti-island. Dived to a depth of 34 M.",yes,16,,,,lon
+300,1900-01-30,1900-01-30,,10°48'.6 S,123°23'.1,-10.81,123.385,,,918,918,bottom sounding,Fine grey mud.,Deep sea trawl.,Trawl brought up some stones and numerous plant-remains.,yes,16,,,,lon
+301,1900-01-30/02-01,1900-01-30,1900-02-01,10°38' S,123°25'.2,-10.6333,123.42,,,22,22,bottom sounding,"Mud, coral and Lithothamnion.",Dredge. Reef-exploration.,"Pepela-bay, East coast of Rotti-island. Dredged in 27-45 M.",yes,16,,,,lat/lon
+302,1900-02-02,1900-02-02,,10°27'.9 S,123°28'.7,-10.465,123.4783,,,216,216,bottom sounding,Sand and coral sand.,Trawl.,—,yes,16,,,,lon
+303,1900-02-02/05,1900-02-02,1900-02-05,,,,,-9.9612,123.3358,up to 36,36,bottom sounding,Lithothamnion.,Dredge. Reef-exploration.,"Haingsisi, Samau-island.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 302 and station 306.,
+304,1900-02-06/08,1900-02-06,1900-02-08,,,,,-9.4575,123.1933,16,16,bottom sounding,Coral and sand.,Reef-exploration. Horizontal cylinder.,"Lamararap, Lomblen-island. Lamakera, Solor-island. Cylinder towed over a distance of 36 miles.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 302 and station 306.,
+305,1900-02-08,1900-02-08,,,,,,-8.9537,123.0508,113,113,bottom sounding,Stony.,Blake dredge.,Mid-channel in Solor-strait off Kampong Menanga. Dredge-iron broken.,no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 302 and station 306.,
+306,1900-02-08,1900-02-08,,8°27' S,122°54'.5,-8.45,122.9083,,,247,247,bottom sounding,Sandy mud.,Trawl.,After this haul anchored for some hours in 29 M. Lithothamnion-bottom near Mount Lobetobi.,yes,16,,,source also gives a landmark bearing/distance for this station (see Remarks),lon
+307,1900-02-09/11,1900-02-09,1900-02-11,,,,,-8.75,122.3208,27,27,bottom sounding,Volcanic Sand.,Land-exploration.,"Ipih-bay, south coast of Flores.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 306 and station 308.,
+308,1900-02-10,1900-02-10,,9°3' S,121°44',-9.05,121.7333,,,2596,2596,bottom sounding,Not obtained.,—,"Wire kinked, lost sounder and thermometer.",yes,16,,,,
+309,1900-02-10,1900-02-10,,8°58' S,121°41',-8.9667,121.6833,,,1918,1918,bottom sounding,Volcanic sand and ashes.,—,4½ miles South of Gunong Api.,yes,16,,,source also gives a landmark bearing/distance for this station (see Remarks),lon
+309a,1900-02-10,1900-02-10,,8°54' S,121°43',-8.9,121.7167,,,./1150,1150,apparatus/wire depth — bottom not reached (no sample),—,—,"2½ miles from the shore, Gunong Api bearing W.N.W.",yes,16,,,source also gives a landmark bearing/distance for this station (see Remarks),
+310,1900-02-12,1900-02-12,,8°30' S,119°7'.5,-8.5,119.125,,,73,73,bottom sounding,Sand with few pieces of dead coral.,Dredge.,—,yes,16,,,,
+311,1900-02-12/13,1900-02-12,1900-02-13,,,,,-8.4084,118.4042,up to 36,36,bottom sounding,Mud and sand.,Reef-exploration. Dredge.,"Sapeh-bay, East coast of Sumbawa.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 310 and station 312.,
+312,1900-02-15 00:00:00,1900-02-15,,8°19' S,117°41',-8.3167,117.6833,,,274,274,bottom sounding,"Fine, sandy mud.",Trawl.,"Saleh-bay, North coast of Sumbawa.",yes,16,,,,lon
+313,1900-02-14/16,1900-02-14,1900-02-16,,,,,-7.9584,117.5983,up to 36,36,bottom sounding,"Sand, coral and mud.","Dredge, trawl and reef-exploration.","Anchorage East of Dangar Besar, Saleh-bay.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 312 and station 314.,
+314,1900-02-17,1900-02-17,,7°36' S,117°30'.8,-7.6,117.5133,,,694,694,bottom sounding,"Fine, sandy mud.",Trawl.,—,yes,16,,,,lat
+315,1900-02-17/18,1900-02-17,1900-02-18,,,,,-7.4616,117.1692,up to 36,36,bottom sounding,Coral and Lithothamnion.,Dredge.,"Anchorage East of Sailus Besar, Paternoster-islands.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 314 and station 316.,
+316,1900-02-20 00:00:00,1900-02-20,,7°19'.4 S,116°49'.5,-7.3233,116.825,,,538,538,bottom sounding,"Fine, dark brown sandy mud.",Trawl.,—,yes,16,,,,lat
+317,1900-02-19/21,1900-02-19,1900-02-21,,,,,-6.9658,115.875,10,10,bottom sounding,Mud and sand.,Land-exploration.,"Ketapang-bay, West coast of Kangeang-island.",no,16,,,Latitude/Longitude extrapolated: linear interpolation between station 316 and station 318.,
+318,1900-02-22,1900-02-22,,6°36'.5 S,114°55'.5,-6.6083,114.925,,,88,88,bottom sounding,"Fine, yellowish grey mud.",Trawl.,—,yes,16,,,,lat/lon
+319,1900-02-22,1900-02-22,,6°16'.5 S,114°37',-6.275,114.6167,,,82,82,bottom sounding,"Fine, yellowish grey mud.",Trawl.,Trawl reached bottom upside down and came up torn to pieces.,yes,16,,,,lat/lon
+320,1900-02-23,1900-02-23,,6°5' S,114°7',-6.0833,114.1167,,,82,82,bottom sounding,"Fine, grey mud.",Trawl.,—,yes,16,,,,lat/lon
+321,1900-02-23,1900-02-23,,6°5'.5 S,113°30',-6.0917,113.5,,,82,82,bottom sounding,"Fine, grey mud.",Trawl.,—,yes,16,,,,lat/lon
+322,1900-02-24,1900-02-24,,,,,,,,32,32,bottom sounding,Coral.,Dredge.,"1½ mile south of Tandjong Lajar, South coast of Bawean-island.",no,16,,,"No following station with exact coordinates, so not extrapolated (anchorage near Bawean).",
+323,1900-02-24/25,1900-02-24,1900-02-25,,,,,,,12,12,bottom sounding,Mud.,—,"Sangkapoera-roads, Bawean-island.",no,16,,,"No following station with exact coordinates, so not extrapolated (anchorage near Bawean).",
