@@ -4,7 +4,6 @@
 export const DEFAULT_MESSAGES = {
     about_site : 'Over deze site',
     back : 'Terug',
-    back_to_map : 'Terug naar de kaart',
     build_built_at : 'Gebouwd op',
     build_code : 'code',
     build_content : 'content',

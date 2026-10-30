@@ -7,8 +7,6 @@
     const store = inject('store');
     const t = inject('t');
 
-    const lastRead = computed(() => store.readChapters.at(-1) ?? null);
-
     const items = computed(() => store.chapters.map((chapter, index) => ({
         id : chapter.id,
         numeral : toRoman(chapter.number ?? index + 1),
@@ -31,16 +29,7 @@
         <el-sheet
             state="full"
             v-bind:states="['full']">
-            <div class="bar">
-                <router-link
-                    class="back-link"
-                    v-bind:to="lastRead ? `/chapters/${lastRead}` : '/'">
-                    <el-icon
-                        name="arrowLeft"
-                        v-bind:size="18" />
-                    {{ t('back_to_map') }}
-                </router-link>
-            </div>
+            <div class="bar"></div>
 
             <h1 class="title">{{ t('chapters') }}</h1>
 
