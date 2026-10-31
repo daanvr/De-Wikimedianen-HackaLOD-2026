@@ -2,7 +2,6 @@
     import { computed, inject, onMounted } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
-    import logoUrl from '@/media/logo.png';
 
     const store = inject('store');
     const t = inject('t');
@@ -24,11 +23,6 @@
 <template>
     <div class="vw-home">
         <article class="card">
-            <img
-                class="logo"
-                v-bind:src="logoUrl"
-                alt="Label van de Siboga-Expeditie" />
-
             <header class="heading">
                 <h1 class="title">{{ welcome?.title ?? 'De Siboga-Expeditie' }}</h1>
 
@@ -80,9 +74,11 @@
         width: 100%;
         max-height: 100%;
         overflow-y: auto;
+        --pad-top: 2.6rem;
+        --pad-x: 2.4rem;
         background: var(--c-paper);
         border-radius: 18px;
-        padding: 2.6rem 2.4rem 1.8rem;
+        padding: var(--pad-top) var(--pad-x) 1.8rem;
         box-shadow: var(--shadow-card);
         display: flex;
         flex-direction: column;
@@ -90,15 +86,23 @@
         animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 
         @include mixins.respond-from(900px) {
+            --pad-top: 3.2rem;
+            --pad-x: 3.2rem;
             width: var(--sheet-width);
-            padding: 3.2rem 3.2rem 2.2rem;
+            padding-bottom: 2.2rem;
         }
-    }
 
-    .logo {
-        display: block;
-        width: 100%;
-        height: auto;
+        // Photo of the Siboga bleeding to the card edges and fading into the paper,
+        // the negative bottom margin lets the title sit on the faded water
+        &::before {
+            content: "";
+            flex-shrink: 0;
+            margin: calc(var(--pad-top) * -1) calc(var(--pad-x) * -1) -14%;
+            aspect-ratio: 1709 / 897;
+            background:
+                linear-gradient(to bottom, transparent 40%, var(--c-paper) 100%),
+                url("../media/boat.jpg") center / cover no-repeat;
+        }
     }
 
     // Title and tagline belong together, closer than the gap between the parts of the card
@@ -119,7 +123,7 @@
 
     .title {
         font-weight: 700;
-        font-size: 3.5rem;
+        font-size: 3.2rem;
         line-height: 1.02;
         color: var(--c-marine);
         text-align: center;
