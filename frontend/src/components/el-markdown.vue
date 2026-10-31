@@ -4,6 +4,7 @@
     import ElGallery from '@/components/el-gallery.vue';
     import ElLightbox from '@/components/el-lightbox.vue';
     import ElPlugin from '@/components/el-plugin.vue';
+    import ElTerm from '@/components/el-term.vue';
     import ElZoomedImage from '@/components/el-zoomed-image.vue';
     import { renderSegments } from '@/services/markdown.js';
 
@@ -21,6 +22,11 @@
         },
         // A record href to its image, for the credit and license under images in the body
         lookupImage : {
+            type : Function,
+            default : null
+        },
+        // A record href to its record if that is a term; a click on it shows the definition
+        lookupTerm : {
             type : Function,
             default : null
         },
@@ -42,8 +48,13 @@
     // Any of these means the reader takes over, so we stop scrolling for them
     const READER_EVENTS = ['keydown', 'pointerdown', 'touchstart', 'wheel'];
 
+    // Each open term card gets its own id, for aria-controls
+    let termCount = 0;
+
     const root = ref(null);
     const zoomedImage = ref(null);
+    // { term, anchor, id } of the open definition
+    const openTerm = ref(null);
     const segments = computed(() => renderSegments(props.body, {
         lookupImage : props.lookupImage,
         lookupKind : props.lookupKind,
@@ -53,6 +64,12 @@
     let scrollTimer = null;
     let settleObserver = null;
     let settleTimer = null;
+
+    function closeTerm() {
+        openTerm.value?.anchor.removeAttribute('aria-expanded');
+        openTerm.value?.anchor.removeAttribute('aria-controls');
+        openTerm.value = null;
+    }
 
     function highlightLink() {
         clearTimeout(scrollTimer);
@@ -117,6 +134,14 @@
         }
 
         event.preventDefault();
+
+        const term = props.lookupTerm ? props.lookupTerm(link.getAttribute('href')) : null;
+
+        if (term) {
+            toggleTerm(term, link);
+            return;
+        }
+
         router.push(link.getAttribute('href'));
     }
 
@@ -137,9 +162,32 @@
         }
     }
 
+    function toggleTerm(term, link) {
+        const isSame = openTerm.value?.anchor === link;
+
+        closeTerm();
+
+        if (isSame) {
+            return;
+        }
+
+        const id = `term-${++termCount}`;
+
+        link.setAttribute('aria-expanded', 'true');
+        link.setAttribute('aria-controls', id);
+        openTerm.value = {
+            term,
+            anchor : link,
+            id
+        };
+    }
+
     watch([segments, () => props.highlight], highlightLink, {
         flush : 'post'
     });
+
+    // A new body replaces the word the card points at
+    watch(segments, closeTerm);
 
     onMounted(highlightLink);
 
@@ -172,6 +220,15 @@
                 class="segment"
                 v-html="segment.html"></div>
         </template>
+
+        <el-term
+            v-if="openTerm"
+            v-bind:key="openTerm.id"
+            v-bind:id="openTerm.id"
+            v-bind:term="openTerm.term"
+            v-bind:anchor="openTerm.anchor"
+            v-bind:lookup-kind="lookupKind"
+            v-on:close="closeTerm()" />
 
         <el-lightbox
             v-if="zoomedImage"
@@ -241,6 +298,16 @@
             border: 1px solid var(--c-frame);
             padding: 0.8rem;
             background: var(--c-plate);
+        }
+
+        // A small image with an Obsidian size, such as ![[icon.svg|14]], is an icon in the line
+        .segment :deep(img.icon-image) {
+            display: inline;
+            margin: 0 0.2rem;
+            padding: 0;
+            border: 0;
+            background: none;
+            vertical-align: -0.2rem;
         }
 
         .segment :deep(.zoomable) {
@@ -405,6 +472,25 @@
         // An internal link to something unknown gets no icon
         :deep(a[data-kind="internal"])::after {
             display: none;
+        }
+
+        // A term opens its definition in place, so it gets no icon and stays in the text colour
+        :deep(a[data-kind="term"]) {
+            color: inherit;
+            cursor: help;
+            text-decoration-color: var(--c-terracotta);
+
+            &:hover {
+                color: var(--c-terracotta);
+            }
+
+            &::after {
+                display: none;
+            }
+        }
+
+        :deep(a[data-kind="term"][aria-expanded]) {
+            background: var(--c-terracotta-soft);
         }
 
         :deep(a[is-highlighted]) {

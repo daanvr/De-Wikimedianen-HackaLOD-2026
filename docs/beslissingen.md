@@ -25,6 +25,7 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 | Bij een nieuwe commit in de content-repo bouwt een systemd-timer de site opnieuw                                     | [ontwikkelen.md](ontwikkelen.md#automatisch-bouwen) |
 | De site is voorlopig alleen Nederlands                                                                               | [content-repo.md](content-repo.md#frontmatter)      |
 | Een chapter heeft geen eigen plek op de kaart. Er vaart geen boot over de kaart; een chapter kan met `geojson` markers tonen, getekend in een gewone GeoJSON-editor | [content-repo.md](content-repo.md#frontmatter)      |
+| Begrippen zijn records met `contenttype: term`; een klik op het woord toont de uitleg in een kaartje, niet de recordpagina. Alleen bij klik, niet bij hover | [content-repo.md](content-repo.md#begrippen)        |
 | Een record heeft precies één `uri`; geen veld `sources`. Overige bronnen op Wikidata of als externe link in de tekst | [content-repo.md](content-repo.md#frontmatter)      |
 | De pipeline zet markdown niet om in HTML; de frontend doet dat met een markdown-parser                               | [frontend-data.md](frontend-data.md#tekst-en-links) |
 | Plaatjes altijd lokaal ophalen, en altijd licentie en bronvermelding overnemen                                       | [pipeline.md](pipeline.md#cache)                    |

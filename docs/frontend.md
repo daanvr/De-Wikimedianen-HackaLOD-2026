@@ -64,6 +64,9 @@ Geen losse tekst in de HTML. Alle tekst die de site zelf toont, zoals knoppen, m
 ## Velden van een record
 Een record heeft een lijst `fields`, al in de goede volgorde voor zijn contenttype. De frontend toont ze zoals ze komen: de naam via `t('field_' + key)`, en de waarden; bij `type: "date"` opgemaakt als datum.
 
+## Begrippen
+Een link naar een record met `contentType: "term"` ([begrippen](content-repo.md#begrippen)) gaat niet naar de recordpagina. `el-markdown.vue` vraagt met `lookupTerm` (`store.termForHref`) of een link een begrip is, en toont dan `el-term.vue`: een kaartje bij het woord, met de uitleg (de `body`) en, als er een `uri` is, "Lees meer". Het kaartje gaat open met een klik, op desktop en mobiel hetzelfde, niet bij hover. Het sluit met nog een klik op het woord, een klik ernaast, Escape of scrollen. Het woord krijgt `aria-expanded`, en het kaartje `role="dialog"` en de focus. Met Cmd- of Ctrl-klik open je de recordpagina zelf. Begrippen staan niet in de bibliotheek (`HIDDEN_TYPES` in `vw-library.vue`).
+
 ## Plugins
 Een plugin uit de content-repo ([type `plugin`](content-repo.md#plugins)) is één component in `src/plugins/`, geregistreerd onder zijn `id` in `src/plugins/index.js`. Een component krijgt twee props: `argument` (de tekst na de `#`, of `null`) en `fullscreen`. `components/el-plugin.vue` zet hem in de tekst, in een kader met een knop die hem schermvullend toont, en `vw-plugin.vue` toont hem schermvullend. Een plugin zonder component toont zijn titel en beschrijving met de melding dat er nog aan gewerkt wordt.
 

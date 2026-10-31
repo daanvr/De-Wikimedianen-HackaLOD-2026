@@ -6,6 +6,7 @@
     import { mediaUrl } from '@/services/data.js';
 
     const TYPE_ORDER = ['person', 'specimen', 'media', 'item', 'publication', 'location', 'expedition', 'other'];
+    const HIDDEN_TYPES = ['term'];
     const TYPE_ICONS = {
         person : 'person',
         specimen : 'specimen',
@@ -34,11 +35,15 @@
     const activeFilter = computed(() => isSearching.value ? 'all' : filter.value);
 
     const types = computed(() => {
-        const present = store.contentTypes;
+        // Terms are definitions in the text, not part of the collection
+        const present = store.contentTypes.filter((type) => !HIDDEN_TYPES.includes(type));
 
         return TYPE_ORDER.filter((type) => present.includes(type))
             .concat(present.filter((type) => !TYPE_ORDER.includes(type)));
     });
+
+    // Everything in the library, whatever the filter or search
+    const total = computed(() => store.recordList.filter((record) => !HIDDEN_TYPES.includes(record.contentType)).length);
 
     const chips = computed(() => [
         {
@@ -132,6 +137,8 @@
             <div class="bar"></div>
 
             <h1 class="title">{{ t('library') }}</h1>
+
+            <p class="kicker total">{{ total }} {{ t('library_total') }}</p>
 
             <label
                 for="library-search"
@@ -236,6 +243,11 @@
         font-weight: 700;
         font-size: 3.2rem;
         line-height: 1.06;
+    }
+
+    .total {
+        margin: -0.4rem 0 1.6rem;
+        color: var(--c-ink-soft);
     }
 
     .search-label {

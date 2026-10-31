@@ -22,6 +22,7 @@ from siboga.content import (
     content_type,
     convert_body,
     description,
+    is_term,
     page_title,
     plugin_title,
     read_content,
@@ -362,9 +363,12 @@ def _build_record(
     converted = convert_body(item, index, report)
     _copy_attachments(converted.attachments, media_dir, item, report)
     uri = record_uri(item, report)
-    adapter = registry.adapter_for(uri) if uri else None
+    term = is_term(item)
+    if term and not converted.markdown.strip():
+        report.warn("term without definition (the body is empty)", item.path)
+    adapter = registry.adapter_for(uri) if uri and not term else None
     source = None
-    if uri and adapter is None:
+    if uri and adapter is None and not term:
         report.warn(f"no adapter for {uri}", item.path)
     elif adapter is not None:
         source = _normalize(adapter, uri, cache, item, report)

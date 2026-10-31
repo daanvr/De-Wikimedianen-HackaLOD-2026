@@ -21,6 +21,7 @@ export const DEFAULT_MESSAGES = {
     content_type_person : 'Personen',
     content_type_publication : 'Publicaties',
     content_type_specimen : 'Specimens',
+    content_type_term : 'Begrippen',
     content_type_single_expedition : 'Expeditie',
     content_type_single_item : 'Voorwerp',
     content_type_single_location : 'Plaats',
@@ -29,6 +30,7 @@ export const DEFAULT_MESSAGES = {
     content_type_single_person : 'Persoon',
     content_type_single_publication : 'Publicatie',
     content_type_single_specimen : 'Specimen',
+    content_type_single_term : 'Begrip',
     explore_mode : 'Ontdekmodus',
     field_alternate_name : 'Ook bekend als',
     field_archive : 'Archief',
@@ -75,6 +77,7 @@ export const DEFAULT_MESSAGES = {
     library_empty : 'Niets gevonden.',
     library_search : 'Zoek in de bibliotheek',
     library_search_placeholder : 'Persoon, soort, plaats…',
+    library_total : 'records in de bibliotheek',
     loading : 'De kaart wordt uitgevouwen…',
     load_error : 'De gegevens konden niet worden geladen.',
     map_layer : 'Kaartlaag',
@@ -100,5 +103,6 @@ export const DEFAULT_MESSAGES = {
     share_title : 'Deel deze pagina',
     site_title : 'De Siboga-Expeditie',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',
+    term_read_more : 'Lees meer',
     to_start : 'Terug naar het begin'
 };

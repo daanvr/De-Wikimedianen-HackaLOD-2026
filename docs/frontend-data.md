@@ -173,7 +173,7 @@ Sleutels in camelCase.
 ## Tekst en links
 `body` is markdown; de frontend zet die om in HTML. Wel zet de pipeline de Obsidian-schrijfwijzen om in gewone markdown, zodat elke markdown-parser ermee overweg kan:
 - `[[Anna Weber]]` wordt `[Anna Weber](/records/anna-weber)`;
-- `![[foto.jpg]]` wordt `![](media/foto.jpg)`;
+- `![[foto.jpg]]` wordt `![](media/foto.jpg)`, en `![[foto.jpg|300]]` wordt `![|300](media/foto.jpg)`: de breedte uit Obsidian staat in de alt-tekst, de frontend maakt er `width` van;
 - `[[IIIF#https://…/default.jpg]]` wordt `[IIIF](/plugins/iiif?argument=https%3A%2F%2F…)`: het argument komt URL-gecodeerd in `argument`. Een alinea met alleen zo'n link toont de frontend als de plugin zelf;
 - een link naar iets wat niet bestaat wordt gewone tekst, met een waarschuwing.
 

@@ -13,6 +13,10 @@ const FENCE_OPEN = /^:::[ \t]*\S/;
 // and the images inside are shown as ordinary images.
 const GALLERY = /^:::[ \t]*gallery[ \t]*\n([\s\S]*?)\n:::[ \t]*(?:\n+|$)/;
 const GALLERY_START = /^:::[ \t]*gallery/m;
+// An image this wide or less (in px) is an icon in the text, without the zoom button
+const ICON_MAX_WIDTH = 32;
+// "alt|14" or "alt|300x200": the Obsidian size the pipeline keeps in the alt text
+const IMAGE_SIZE = /^(.*?)\|(\d+)(?:x(\d+))?$/;
 const PLUGIN_HREF = /^\/plugins\/([^/?#]+)(?:\?([^#]*))?/;
 const RECORD_HREF = /^\/records\//;
 
@@ -22,6 +26,25 @@ function escapeHtml(value) {
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;');
+}
+
+// The alt text of an image and its size from Obsidian, if any
+function imageSize(text) {
+    const match = (text || '').match(IMAGE_SIZE);
+
+    if (!match) {
+        return {
+            alt : text || '',
+            width : null,
+            height : null
+        };
+    }
+
+    return {
+        alt : match[1].trim(),
+        width : Number(match[2]),
+        height : match[3] ? Number(match[3]) : null
+    };
 }
 
 // The first link to a record in a list of inline tokens, also inside italics
@@ -183,11 +206,17 @@ function createMarked({ lookupImage, lookupKind, zoomLabel }) {
         renderer : {
             image({ href, title, text }) {
                 const src = escapeHtml(mediaUrl(href));
-                const alt = escapeHtml(text || '');
+                const { alt, width, height } = imageSize(text);
                 const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
+                const sizeAttr = (width ? ` width="${width}"` : '') + (height ? ` height="${height}"` : '');
+
+                if (width && width <= ICON_MAX_WIDTH) {
+                    return `<img class="icon-image" src="${src}" alt="${escapeHtml(alt)}"${sizeAttr}${titleAttr}>`;
+                }
+
                 const label = zoomLabel ? ` aria-label="${escapeHtml(zoomLabel)}"` : '';
 
-                return `<button type="button" class="zoomable" data-zoom${label}><img src="${src}" alt="${alt}"${titleAttr} loading="lazy"></button>`;
+                return `<button type="button" class="zoomable" data-zoom${label}><img src="${src}" alt="${escapeHtml(alt)}"${sizeAttr}${titleAttr} loading="lazy"></button>`;
             },
             link({ href, title, tokens }) {
                 const text = this.parser.parseInline(tokens);
@@ -195,8 +224,10 @@ function createMarked({ lookupImage, lookupKind, zoomLabel }) {
 
                 if (href.startsWith('/')) {
                     const kind = lookupKind ? lookupKind(href) : 'internal';
+                    // A term opens its definition in a card instead of going to a page
+                    const popup = kind === 'term' ? ' aria-haspopup="dialog"' : '';
 
-                    return `<a href="${escapeHtml(href)}" data-internal data-kind="${kind}"${titleAttr}>${text}</a>`;
+                    return `<a href="${escapeHtml(href)}" data-internal data-kind="${kind}"${popup}${titleAttr}>${text}</a>`;
                 }
 
                 return `<a href="${escapeHtml(href)}" data-kind="external" target="_blank" rel="noopener"${titleAttr}>${text}</a>`;
@@ -225,7 +256,7 @@ function createMarked({ lookupImage, lookupKind, zoomLabel }) {
 function gallerySegment(token, marked, lookupImage) {
     const images = token.tokens.map(figureTokens).filter(Boolean).map(({ image, caption }) => ({
         src : mediaUrl(image.href),
-        alt : image.text || '',
+        alt : imageSize(image.text).alt,
         caption : caption ? Parser.parseInline(caption.tokens, marked.defaults) + creditHtml(caption.tokens, lookupImage) : null
     }));
 

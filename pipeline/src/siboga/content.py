@@ -25,6 +25,8 @@ _FRONTMATTER = re.compile(
     re.DOTALL | re.MULTILINE
 )
 _I18N_TYPE = "i18n"
+# ![[icon.svg|14]] or ![[map.png|300x200]]: the width (and height) in Obsidian, kept as ![|14](...) for the frontend.
+_IMAGE_SIZE = re.compile(r"[0-9]+(?:x[0-9]+)?")
 _IMAGE = re.compile(r"!\[[^\]\n]*\]\((?P<src>(?:[^()\s]|\([^()\s]*\))+)")
 _IMAGE_LINE = re.compile(r"^!\[[^\]\n]*\]\((?:[^()\n]|\([^()\n]*\))*\)[ \t]*$")
 _KINDS = {
@@ -133,7 +135,8 @@ class _BodyConverter:
         attachment = None if ref else self.index.attachments.get(_key(name))
         if match.group("embed"):
             if attachment:
-                return f"![]({self._attachment(attachment)})"
+                size = f"|{alias}" if _IMAGE_SIZE.fullmatch(alias) else ""
+                return f"![{size}]({self._attachment(attachment)})"
             if not ref and _EXTENSION.search(name):
                 self.report.warn(f"attachment does not exist: ![[{target}]], left out", self.item.path)
                 return ""
@@ -273,6 +276,9 @@ def description(item: ContentItem) -> str | None:
         return None
     return str(value).strip() or None
 
+def is_term(item: ContentItem) -> bool:
+    return str(item.frontmatter.get("contenttype") or "").strip() == ContentType.TERM.value
+
 def page_title(item: ContentItem, report: Report) -> str:
     """A page's title comes from `title`; without a title, the file name is used."""
     value = item.frontmatter.get("title")
@@ -320,9 +326,11 @@ def read_messages(content_path: Path, report: Report) -> dict[str, str]:
     return messages
 
 def record_uri(item: ContentItem, report: Report) -> str | None:
+    """For a term the uri is optional: a link to read more, which the pipeline does not fetch."""
     value = item.frontmatter.get("uri")
     if value is None or value == "":
-        report.warn("record without uri", item.path)
+        if not is_term(item):
+            report.warn("record without uri", item.path)
         return None
     if not isinstance(value, str) or not _is_http_url(value.strip()):
         report.warn(f"uri is not an http(s) URL: {value!r}", item.path)

@@ -7,7 +7,7 @@ from loguru import logger
 from siboga.build import check_output, run_build
 from siboga.cache import Cache
 from siboga.config import Config, load_config
-from siboga.content import read_content, record_uri
+from siboga.content import is_term, read_content, record_uri
 from siboga.explorer import fetch_explorer
 from siboga.fetcher import Fetcher
 from siboga.models import ItemKind, Report
@@ -75,7 +75,8 @@ def run_fetch(
     )
     try:
         for item in items:
-            if item.kind != ItemKind.RECORD:
+            # The uri of a term is only a link to read more
+            if item.kind != ItemKind.RECORD or is_term(item):
                 continue
             uri = record_uri(item, report)
             if uri is None:

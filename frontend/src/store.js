@@ -166,6 +166,12 @@ export const useStore = defineStore('data', {
 
         t(key) {
             return this.messages[key] ?? key;
+        },
+
+        termForHref(href) {
+            const record = this.itemByRef(href);
+
+            return record?.contentType === 'term' ? record : null;
         }
     }
 });

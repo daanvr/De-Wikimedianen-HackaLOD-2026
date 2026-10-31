@@ -40,6 +40,7 @@
                 v-bind:body="body"
                 v-bind:lookup-kind="store.kindForHref"
                 v-bind:lookup-image="store.imageForHref"
+                v-bind:lookup-term="store.termForHref"
                 v-bind:highlight="mention" />
         </el-sheet>
     </div>

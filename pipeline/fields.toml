@@ -16,6 +16,7 @@ item = ["author", "publication_date", "inception", "publisher", "published_in", 
 publication = ["author", "publication_date", "published_in"]
 expedition = ["start_date", "end_date", "location", "participant"]
 location = ["country", "location"]
+term = []
 
 [fields]
 alternate_name = "text"

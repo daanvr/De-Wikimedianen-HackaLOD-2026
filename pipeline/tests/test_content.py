@@ -13,6 +13,7 @@ from siboga.content import (
     content_type,
     convert_body,
     description,
+    is_term,
     page_title,
     plugin_title,
     read_content,
@@ -178,7 +179,7 @@ def test_convert_chapter_fixture(items, index):
         "[Anna Weber](/records/anna-weber) was aan boord van de [Siboga](/records/hr-ms-siboga). \n"
         "Er is een [vlinder](/records/weberolegra-weberi) naar haar vernoemd.\n"
         "\n"
-        "![](media/foto-van-anna.png)\n"
+        "![|300](media/foto-van-anna.png)\n"
     )
     assert converted.links == ["records/anna-weber", "records/hr-ms-siboga", "records/weberolegra-weberi"]
     assert converted.attachments == {"foto-van-anna.png": (FIXTURE_PATH / "bijlagen" / "Foto van Anna.png").resolve()}
@@ -327,6 +328,15 @@ def test_record_uri(items):
     assert record_uri(_item({"uri": "ftp://a.org/x"}), report) is None
     assert len(report.warnings) == 4
 
+def test_record_uri_of_term():
+    report = Report()
+    # A term needs no uri; with one, it is a link to read more.
+    assert record_uri(_item({"contenttype": "term"}), report) is None
+    assert record_uri(_item({"contenttype": "term", "uri": "https://nl.wikipedia.org/wiki/Sloep"}), report) == "https://nl.wikipedia.org/wiki/Sloep"
+    assert report.warnings == []
+    assert is_term(_item({"contenttype": " term "}))
+    assert not is_term(_item({"contenttype": "person"}))
+
 def test_resolve_link(index):
     assert resolve_link("Anna Weber", index) == "records/anna-weber"
     assert resolve_link(" ANNA WEBER#Kop ", index) == "records/anna-weber"
@@ -422,6 +432,11 @@ def test_convert_plugin_wikilink(tmp_path: Path):
         "[IIIF](/plugins/iiif) [Bekijk](/plugins/iiif?argument=a%20b)"
     )
     assert converted.links == ["plugins/iiif"]
+    assert report.warnings == []
+
+def test_convert_image_size(index):
+    converted, report = _convert("![[Foto van Anna.png|14]] ![[Foto van Anna.png|300x200]] ![[Foto van Anna.png|Anna]]", index)
+    assert converted.markdown == "![|14](media/foto-van-anna.png) ![|300x200](media/foto-van-anna.png) ![](media/foto-van-anna.png)"
     assert report.warnings == []
 
 def test_convert_gallery(index):

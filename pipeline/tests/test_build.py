@@ -260,6 +260,22 @@ def test_build_copies_audio(config: Config):
     assert data["records"]["anna-weber"]["audio"] is None
     assert (config.output_path / "media" / "kat.ogg").read_bytes() == b"OggS"
 
+def test_build_term(config: Config):
+    _write(config.content_path / "records" / "Sloep.md", "---\ntype: record\ncontenttype: term\nuri: https://nl.wikipedia.org/wiki/Sloep\n---\nEen kleine **boot** aan boord.\n")
+    _write(config.content_path / "records" / "Leeg.md", "---\ntype: record\ncontenttype: term\n---\n")
+    report = Report()
+    data = json.loads(run_build(config, report).read_text(encoding = "utf-8"))
+    sloep = data["records"]["sloep"]
+    assert sloep["contentType"] == "term"
+    assert sloep["body"] == "Een kleine **boot** aan boord."
+    # The uri is only a link to read more: no source, no warnings about it.
+    assert sloep["uri"] == "https://nl.wikipedia.org/wiki/Sloep"
+    assert sloep["source"] is None
+    assert sloep["sources"] == []
+    assert not any("Sloep" in warning for warning in report.warnings)
+    assert any("Leeg" in warning and "term without definition" in warning for warning in report.warnings)
+    assert not any("Leeg" in warning and "uri" in warning for warning in report.warnings)
+
 def test_build_warns_about_images_without_license(config: Config):
     _cache_image(config)
     _write(

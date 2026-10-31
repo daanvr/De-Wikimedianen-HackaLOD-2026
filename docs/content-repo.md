@@ -26,7 +26,7 @@ contenttype: person
 
 - `uri`: precies één bron. Er is geen veld voor overige bronnen: die zetten we op Wikidata, of als gewone externe link in de lopende tekst. Een paar identifiers op Wikidata volgt de pipeline wel, zoals het NTA-ID (P1006) van een persoon; zie [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata). Wil je bij een persoon ook de naamvarianten en werken uit de NTA, voeg dan op Wikidata P1006 toe. Aan de markdown verandert niets.
 - `description_nl`: optioneel; gaat voor de beschrijving uit de bron. De site is voorlopig alleen Nederlands, dus de pipeline leest alleen `_nl`-velden.
-- `contenttype`: nu `person`, `item`, `media`, `location`, `publication`, `expedition` of `specimen`. Het contenttype bepaalt welke velden het record op de site toont, niet de bron: een Wikidata-item over een persoon toont geboortedatum en beroep, een Wikidata-item over een soort de wetenschappelijke naam en familie. Welke velden bij welk contenttype horen, staat in [pipeline/fields.toml](../pipeline/fields.toml).
+- `contenttype`: nu `person`, `item`, `media`, `location`, `publication`, `expedition`, `specimen` of `term` (een [begrip](#begrippen)). Het contenttype bepaalt welke velden het record op de site toont, niet de bron: een Wikidata-item over een persoon toont geboortedatum en beroep, een Wikidata-item over een soort de wetenschappelijke naam en familie. Welke velden bij welk contenttype horen, staat in [pipeline/fields.toml](../pipeline/fields.toml).
 
 ```yaml
 ---
@@ -112,6 +112,8 @@ Een bijschrift is een regel helemaal in cursief, **direct** onder het plaatje (z
 
 Dat werkt ook met een embed: `![[siboga.jpg]]` met de cursieve regel eronder.
 
+Een breedte in pixels, zoals in Obsidian, neemt de site over: `![[siboga.jpg|300]]` of `![[kaart.png|300x200]]`. Een plaatje van 32 pixels breed of smaller, zoals `![[media/icoon-wikipedia.svg|14]]`, is een icoontje in de regel: het staat tussen de tekst en is niet groot te bekijken.
+
 ### Licentie
 Bij elk plaatje op de site staan de maker en de licentie. Die komen uit het record waar het bijschrift naar linkt: maak voor het plaatje een record (bijvoorbeeld met de Commons-pagina als `uri`) en link er in het bijschrift naar. De site zet de maker en licentie van dat record dan onder het bijschrift, ook in een galerij en schermvullend.
 
@@ -153,6 +155,23 @@ Tekst die niet iedereen hoeft te lezen, zoals een lange lijst bronnen, zet je in
 - Een galerij in een inklapblok mag, maar wordt daar een rij losse plaatjes met bijschrift, geen carrousel. Een plugin wordt er een gewone link.
 - Net als bij een galerij: `:::details` en `:::` aan het begin van de regel, en zonder afsluitende `:::` waarschuwt de pipeline en toont de site het als gewone tekst. Obsidian toont de regels met `:::` als gewone tekst.
 - Zonder kopje (alleen `:::details`) toont de browser zijn eigen woord, zoals "Details".
+
+## Begrippen
+Een moeilijk woord leg je uit met een record met `contenttype: term`. De bestandsnaam is het woord, de tekst is de uitleg.
+
+```yaml
+---
+type: record
+contenttype: term
+uri: https://nl.wikipedia.org/wiki/Sloep
+---
+Een kleine boot die aan boord van een groot schip wordt meegenomen.
+```
+
+- Link er gewoon naar: `[[Sloep]]`, of `[[Sloep|sloepen]]` voor een andere vorm van het woord. Klik je op de site op zo'n woord, dan opent er geen pagina, maar verschijnt de uitleg in een kaartje bij het woord. Nog een klik, een klik ernaast, Escape of scrollen sluit het weer.
+- `uri` is bij een begrip niet verplicht. Staat hij er wel, dan krijgt het kaartje een link "Lees meer" naar die pagina. De pipeline haalt er niets op.
+- In de uitleg werkt gewone markdown, zoals vet en links. Houd hem kort: een paar zinnen.
+- Een begrip zonder uitleg geeft een waarschuwing. Begrippen staan niet in de bibliotheek.
 
 ## Onaffe content
 Er staan nu al lege bestanden, `uri`'s die geen URL zijn (`wikidata`), en links naar bestanden die niet bestaan. De pipeline slaat zoiets over, logt een waarschuwing met de bestandsnaam en gaat door.

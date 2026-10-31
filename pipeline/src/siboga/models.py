@@ -14,6 +14,8 @@ class ContentType(Enum):
     PERSON = "person"
     PUBLICATION = "publication"
     SPECIMEN = "specimen"
+    # A word and its definition; the site shows it in a tooltip instead of on a page of its own.
+    TERM = "term"
 
 class FieldType(Enum):
     DATE = "date"
