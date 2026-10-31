@@ -23,6 +23,8 @@
     const DRAG_THRESHOLD = 4;
     // Autoplay waits a moment, so the map has settled on the ship first
     const AUTOPLAY_DELAY = 1200;
+    // Playing goes on this long after the strip has come to rest under a finger, mouse or wheel
+    const RESUME_DELAY = 300;
     // Once the strip has been touched, the hint stays away, also on the next visit
     const HINT_KEY = 'explorer-timeline-hint-done';
     const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
@@ -76,6 +78,9 @@
     let autoplayTimer = null;
     let bumpTimer = null;
     let resizeObserver = null;
+    let resumeTimer = null;
+    let isHeld = false;
+    let isTouching = false;
 
     const half = computed(() => width.value / 2);
     const stripWidth = computed(() => Math.ceil(props.length * PX_PER_KM + width.value));
@@ -260,9 +265,22 @@
         }
     }
 
+    // A finger, mouse or wheel on the strip takes over from a running animation. Playing only
+    // pauses: it goes on from the new place once the strip is let go and has come to rest.
+    function holdPlaying() {
+        if (!isPlaying.value) {
+            stopTween();
+            return;
+        }
+
+        cancelAnimationFrame(tween);
+        clearTimeout(resumeTimer);
+        isHeld = true;
+    }
+
     // Touch and trackpads scroll the strip themselves; a mouse grabs it and drags
     function onPointerDown(event) {
-        stopTween();
+        holdPlaying();
         hideHint();
 
         if (event.pointerType !== 'mouse' || event.button !== 0) {
@@ -322,17 +340,33 @@
 
         drag = null;
         isDragging.value = false;
+        resumeLater();
     }
 
     function onScroll() {
         if (track.value) {
             emit('update:position', Math.max(0, Math.min(props.length, track.value.scrollLeft / PX_PER_KM)));
         }
+
+        // A fling or the momentum of a finger keeps the strip moving; playing waits until it rests
+        if (isHeld && !isTouching && !drag) {
+            resumeLater();
+        }
+    }
+
+    function onTouchEnd() {
+        isTouching = false;
+        resumeLater();
+    }
+
+    function onTouchStart() {
+        isTouching = true;
     }
 
     // A mouse wheel turns the strip; sideways scrolling on a trackpad already works by itself
     function onWheel(event) {
-        stopTween();
+        holdPlaying();
+        resumeLater();
         hideHint();
 
         if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
@@ -378,6 +412,24 @@
         tween = requestAnimationFrame(step);
     }
 
+    function resumeLater() {
+        if (!isHeld) {
+            return;
+        }
+
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(resumePlaying, RESUME_DELAY);
+    }
+
+    function resumePlaying() {
+        isHeld = false;
+        isPlaying.value = false;
+
+        if (props.position < props.length - 1) {
+            play();
+        }
+    }
+
     function scrollToKm(km, duration = null) {
         if (!track.value) {
             return;
@@ -417,9 +469,11 @@
         }
     }
 
-    // A finger, mouse or wheel on the strip takes over from a running animation, playing included
+    // Stops any animation of the strip, playing included
     function stopTween() {
         cancelAnimationFrame(tween);
+        clearTimeout(resumeTimer);
+        isHeld = false;
         isPlaying.value = false;
     }
 
@@ -487,6 +541,7 @@
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
         clearTimeout(bumpTimer);
+        clearTimeout(resumeTimer);
         resizeObserver?.disconnect();
     });
 </script>
@@ -566,6 +621,9 @@
                 v-bind:is-dragging="isDragging ? '' : null"
                 v-on:scroll.passive="onScroll()"
                 v-on:pointerdown="onPointerDown($event)"
+                v-on:touchstart.passive="onTouchStart()"
+                v-on:touchend="onTouchEnd()"
+                v-on:touchcancel="onTouchEnd()"
                 v-on:wheel="onWheel($event)">
                 <div
                     class="strip"
