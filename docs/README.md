@@ -20,6 +20,7 @@ Uiteindelijke website draait op Ubuntu 26.04 met nginx en Python via uv. Verder 
 | [pipeline.md](pipeline.md)           | Bronnen ophalen, cachen, frontend data bouwen       |
 | [frontend-data.md](frontend-data.md) | Het contract tussen pipeline en frontend            |
 | [gouden-dataset.md](gouden-dataset.md) | De vaste dataset met zekere specimens en stations |
+| [soortbeelden.md](soortbeelden.md)   | Open waarnemingsfoto's bij de specimens, met hoe verwant ze zijn en de voorwaarden voor tonen |
 | [ontdekmodus.md](ontdekmodus.md)     | De datavisualisatie (ontdekmodus): kaart, tijdlijn, duik en zijn data |
 | [spelmodus.md](spelmodus.md)         | Het spel: zelf varen, specimens verzamelen, de zee ontdekken |
 | [frontend.md](frontend.md)           | De Vue-frontend                                     |

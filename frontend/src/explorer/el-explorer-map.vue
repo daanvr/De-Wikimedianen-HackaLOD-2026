@@ -1,9 +1,10 @@
 <script setup>
     import maplibregl from 'maplibre-gl';
-    import { computed, inject, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
+    import { computed, inject, onBeforeUnmount, onMounted, ref, shallowRef, toRaw, watch } from 'vue';
+    import { formatDate } from '@/services/format.js';
     import { LAND_LABELS, SEA_LABELS, limitZoom, seaChartLayers, seaChartSources } from '@/services/sea-chart.js';
-    import { createBoat, move as moveMap } from './boat.js';
     import { lineIndexAt, pointAt, stationIndexAt } from './data.js';
+    import Ship, { monsoonAt } from './ship.js';
 
     const MAX_ZOOM = 12;
     const FOLLOW_ZOOM = 6.4;
@@ -15,6 +16,12 @@
     const TOP_STATIONS = 5;
     // Zoomed out further than this, the photos of the stations would cover the whole map
     const PHOTO_MIN_ZOOM = 4.5;
+    // While the ship is within this many route kilometres of a station with a photo, that photo
+    // gets a ring on the map and shows larger in a corner; it stays a moment after the ship has gone
+    const PHOTO_NEAR_KM = 25;
+    const PHOTO_LINGER = 1500;
+    // Faster than this (km/s, scrubbing or a high speed) no new photo comes up, so it does not flicker
+    const PHOTO_MAX_SPEED = 100;
     // The compass lies down with the camera, but only partly, so it stays readable
     const COMPASS_TILT = 0.6;
     const EMPTY = {
@@ -60,20 +67,30 @@
     });
 
     // Only when the camera is tilted or the map turned; under water the dive has the screen
+    // The station whose photo shows in the corner
+    const nearStation = shallowRef(null);
     const isCompassVisible = computed(() => !camera.value.isDiving && (camera.value.pitch >= 0.5 || Math.abs(camera.value.bearing) >= 0.5));
     // North of the compass points to north on the map
     const compassTransform = computed(() => `rotateX(${camera.value.pitch * COMPASS_TILT}deg) rotateZ(${-camera.value.bearing}deg)`);
 
     let map = null;
-    let boat = null;
+    let ship = null;
+    let shipCanvas = null;
+    let shipContext = null;
+    let pixelRatio = 1;
     let frame = null;
+    let lastFrame = 0;
     let isFollowing = true;
+    let isFollowPaused = false;
     let isDiving = false;
-    let target = null;
+    let isShipHidden = false;
     let visitedUpTo = -1;
     let trailKm = -1;
     let topMarkers = [];
     let photoMarkers = [];
+    let photoStations = [];
+    let nearIndex = -1;
+    let nearLeftAt = 0;
     let labels = [];
     let resizeObserver = null;
 
@@ -161,6 +178,16 @@
         };
     }
 
+    // The ship is drawn on its own canvas right above the map, under the markers and labels
+    function createShipCanvas() {
+        shipCanvas = document.createElement('canvas');
+        shipCanvas.className = 'ship';
+        shipCanvas.setAttribute('aria-hidden', 'true');
+        map.getCanvasContainer().insertBefore(shipCanvas, map.getCanvas().nextSibling);
+        shipContext = shipCanvas.getContext('2d');
+        resizeShipCanvas();
+    }
+
     // The names of the main map; they stay flat on the screen, so they go when the map tilts
     function createLabels() {
         const kinds = [
@@ -183,8 +210,8 @@
 
     // A round photo above the stations that have one on Wikidata, as an invitation to tap
     function createPhotoMarkers() {
-        photoMarkers = props.stations
-            .filter((station) => station.photo)
+        photoStations = props.stations.filter((station) => station.photo);
+        photoMarkers = photoStations
             .map((station) => {
                 const element = document.createElement('button');
                 const image = document.createElement('img');
@@ -236,17 +263,18 @@
             return;
         }
 
-        const ship = pointAt(props.line, station.km);
+        const spot = pointAt(props.line, station.km);
         const height = container.value.clientHeight;
 
         isDiving = true;
         stopFollowing();
         setInteractive(false);
         updateCamera();
-        boat.setLngLat([ship.lon, ship.lat]);
+        // The ship lies still at the station for the dive
+        ship.place(station.km);
 
         await move('flyTo', {
-            center : [ship.lon, ship.lat],
+            center : [spot.lon, spot.lat],
             zoom : FOCUS_ZOOM,
             pitch : FOCUS_PITCH,
             bearing : -10,
@@ -260,7 +288,7 @@
 
         setMarkersHidden(true);
         map.easeTo({
-            center : [ship.lon, ship.lat],
+            center : [spot.lon, spot.lat],
             zoom : DIVE_ZOOM,
             pitch : DIVE_PITCH,
             bearing : map.getBearing() + 12,
@@ -279,30 +307,31 @@
     }
 
     function move(method, options) {
-        return moveMap(map, method, options);
+        return new Promise((resolve) => {
+            map.once('moveend', resolve);
+            map[method](options);
+        });
     }
 
     // Under water the drawn ship takes over from the marker; the labels go too
     function setMarkersHidden(hidden) {
-        for (const marker of [boat, ...topMarkers, ...photoMarkers, ...labels]) {
+        for (const marker of [...topMarkers, ...photoMarkers, ...labels]) {
             marker.getElement().style.visibility = hidden ? 'hidden' : '';
         }
+
+        isShipHidden = hidden;
     }
 
     // Straight down with north up; the map stays where it is
     async function resetNorth() {
-        // The follow loop would stop the ease halfway
-        cancelAnimationFrame(frame);
-        frame = null;
+        // Following would stop the ease halfway
+        isFollowPaused = true;
         await move('easeTo', {
             pitch : 0,
             bearing : 0,
             duration : 700
         });
-
-        if (isFollowing) {
-            startFollowing();
-        }
+        isFollowPaused = false;
     }
 
     function setInteractive(isInteractive) {
@@ -326,7 +355,7 @@
 
         setMarkersHidden(false);
         await move('easeTo', {
-            center : target ? [target.lon, target.lat] : map.getCenter(),
+            center : ship ? [ship.position.lon, ship.position.lat] : map.getCenter(),
             zoom : FOLLOW_ZOOM,
             pitch : 0,
             bearing : 0,
@@ -347,25 +376,19 @@
         updateCamera();
     }
 
-    function follow() {
-        frame = null;
-
-        if (!map || !isFollowing || !target || isDiving) {
-            return;
-        }
-
+    // Eases the camera towards the ship, one step per frame
+    function followShip() {
         const center = map.getCenter();
-        const dx = target.lon - center.lng;
-        const dy = target.lat - center.lat;
+        const dx = ship.position.lon - center.lng;
+        const dy = ship.position.lat - center.lat;
 
-        if (Math.abs(dx) + Math.abs(dy) < 0.0005) {
+        if (Math.abs(dx) + Math.abs(dy) < 0.00005) {
             return;
         }
 
         map.jumpTo({
             center : [center.lng + dx * 0.16, center.lat + dy * 0.16]
         });
-        frame = requestAnimationFrame(follow);
     }
 
     function lineFeature(coordinates) {
@@ -397,16 +420,105 @@
         };
     }
 
-    function startFollowing() {
-        if (!frame) {
-            frame = requestAnimationFrame(follow);
+    function resizeShipCanvas() {
+        if (!shipCanvas) {
+            return;
         }
+
+        const width = container.value.clientWidth;
+        const height = container.value.clientHeight;
+
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
+        shipCanvas.width = Math.round(width * pixelRatio);
+        shipCanvas.height = Math.round(height * pixelRatio);
+        shipCanvas.style.width = `${width}px`;
+        shipCanvas.style.height = `${height}px`;
+    }
+
+    // One frame of the ship: physics, the camera following it, the trail and the drawing
+    function step(now) {
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastFrame) / 1000));
+
+        frame = requestAnimationFrame(step);
+        lastFrame = now;
+
+        if (!map || isShipHidden) {
+            return;
+        }
+
+        const station = props.stations[Math.max(0, stationIndexAt(props.stations, ship.km))];
+        const view = {
+            bearing : map.getBearing(),
+            pitch : map.getPitch(),
+            zoom : map.getZoom(),
+            project : (lon, lat) => {
+                const point = map.project([lon, lat]);
+
+                return [point.x, point.y];
+            }
+        };
+
+        ship.update(dt, props.position, view.zoom, monsoonAt(station?.datum));
+
+        if (isFollowing && !isFollowPaused && !isDiving) {
+            followShip();
+        }
+
+        updateVisited(stationIndexAt(props.stations, ship.km));
+        updateNearPhoto(now);
+
+        if (Math.abs(ship.km - trailKm) > 6 || (Math.abs(ship.velocity) < 0.5 && Math.abs(ship.km - trailKm) > 0.5)) {
+            updateTrail(ship.km);
+        }
+
+        shipContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        shipContext.clearRect(0, 0, shipCanvas.width, shipCanvas.height);
+        ship.draw(shipContext, view);
     }
 
     function stopFollowing() {
         isFollowing = false;
-        cancelAnimationFrame(frame);
-        frame = null;
+    }
+
+    // Rings the photo of the station the ship is passing and puts it in the corner
+    function updateNearPhoto(now) {
+        let index = -1;
+        let distance = PHOTO_NEAR_KM;
+
+        photoStations.forEach((station, i) => {
+            const gap = Math.abs(station.km - ship.km);
+
+            if (gap < distance) {
+                index = i;
+                distance = gap;
+            }
+        });
+
+        // A new photo only comes up at a speed at which you can see it
+        if (index !== nearIndex && Math.abs(ship.velocity) > PHOTO_MAX_SPEED) {
+            index = -1;
+        }
+
+        // The photo stays a moment after the ship has gone
+        if (index === -1 && nearIndex !== -1) {
+            nearLeftAt ||= now;
+
+            if (now - nearLeftAt < PHOTO_LINGER) {
+                return;
+            }
+        } else {
+            nearLeftAt = 0;
+        }
+
+        if (index === nearIndex) {
+            return;
+        }
+
+        photoMarkers[nearIndex]?.getElement().removeAttribute('is-near');
+        photoMarkers[index]?.getElement().setAttribute('is-near', '');
+        nearIndex = index;
+        nearLeftAt = 0;
+        nearStation.value = photoStations[index] ?? null;
     }
 
     function updatePhotoZoom() {
@@ -427,24 +539,10 @@
         }
     }
 
+    // The timeline moved: the ship sails there by itself, and the camera follows it again
     function updatePosition() {
-        if (!map) {
-            return;
-        }
-
-        const km = props.position;
-
-        target = pointAt(props.line, km);
-        boat.setLngLat([target.lon, target.lat]).setRotation(target.bearing - 90);
-        updateVisited(stationIndexAt(props.stations, km));
-
-        if (Math.abs(km - trailKm) > 6) {
-            updateTrail(km);
-        }
-
-        if (!isDiving) {
+        if (map && !isDiving) {
             isFollowing = true;
-            startFollowing();
         }
     }
 
@@ -453,7 +551,7 @@
         const coordinates = props.line.slice(0, end).map((point) => [point[1], point[2]]);
 
         trailKm = km;
-        coordinates.push([target.lon, target.lat]);
+        coordinates.push([ship.position.lon, ship.position.lat]);
         map.getSource('trail')?.setData(lineFeature(coordinates));
     }
 
@@ -510,9 +608,17 @@
         }
 
         // The plugin can mount before its frame has its final size
-        resizeObserver = new ResizeObserver(() => map?.resize());
+        resizeObserver = new ResizeObserver(() => {
+            map?.resize();
+            resizeShipCanvas();
+        });
         resizeObserver.observe(container.value);
-        boat = createBoat().setLngLat([start.lon, start.lat]).addTo(map);
+        // With less motion asked for, the ship lies on a flat sea
+        ship = new Ship(props.line, {
+            waves : window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6
+        });
+        ship.place(props.position);
+        createShipCanvas();
 
         // A user who moves the map takes over until the timeline moves again
         map.on('dragstart', stopFollowing);
@@ -543,12 +649,15 @@
             createTopMarkers();
             updatePhotoZoom();
             updatePosition();
+            lastFrame = performance.now();
+            frame = requestAnimationFrame(step);
         });
     });
 
     onBeforeUnmount(() => {
         resizeObserver?.disconnect();
         stopFollowing();
+        cancelAnimationFrame(frame);
         [...topMarkers, ...photoMarkers, ...labels].forEach((marker) => marker.remove());
         map?.remove();
         map = null;
@@ -567,6 +676,25 @@
         <div
             ref="container"
             class="canvas"></div>
+
+        <transition name="photo-card">
+            <button
+                v-if="nearStation && !camera.isDiving"
+                v-bind:key="nearStation.nummer"
+                class="photo-card"
+                type="button"
+                v-bind:aria-label="`Station ${nearStation.nummer}, foto: ${nearStation.photo.caption}. Duik hier.`"
+                v-on:click="emit('select', nearStation)">
+                <img
+                    v-bind:src="nearStation.photo.src"
+                    alt="">
+                <span class="photo-card__text">
+                    <strong>Station {{ nearStation.nummer }}</strong>
+                    {{ formatDate(nearStation.datum) }}
+                    <small v-if="nearStation.photo.caption">{{ nearStation.photo.caption }}</small>
+                </span>
+            </button>
+        </transition>
 
         <button
             v-if="isCompassVisible"
@@ -614,9 +742,11 @@
             inset: 0;
         }
 
-        :deep(.boat) {
+        :deep(.ship) {
+            position: absolute;
+            top: 0;
+            left: 0;
             pointer-events: none;
-            filter: drop-shadow(0 2px 3px rgba(8, 26, 44, 0.35));
         }
 
         :deep(.map-label) {
@@ -668,6 +798,17 @@
                 border-color: var(--c-terracotta);
             }
 
+            // Near the ship: a ring, above the other markers; it stays where it is and keeps its size
+            &[is-near] {
+                z-index: 2;
+                border-color: var(--c-terracotta);
+                box-shadow: 0 0 0 3px rgba(169, 81, 47, 0.35), 0 2px 6px rgba(8, 26, 44, 0.45);
+
+                &::after {
+                    border-top-color: var(--c-terracotta);
+                }
+            }
+
             img {
                 display: block;
                 width: 100%;
@@ -705,6 +846,84 @@
             span {
                 color: var(--c-ink-soft);
             }
+        }
+    }
+
+    // The photo of the station the ship is passing, in the corner under the date
+    .photo-card {
+        position: absolute;
+        top: 6rem;
+        left: 1.6rem;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        width: 17rem;
+        padding: 0;
+        border: 0;
+        border-radius: 0.6rem;
+        overflow: hidden;
+        background: var(--c-paper);
+        color: var(--c-ink);
+        text-align: left;
+        box-shadow: var(--shadow-float);
+        cursor: pointer;
+
+        img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            filter: sepia(0.15);
+        }
+    }
+
+    .photo-card__text {
+        display: flex;
+        flex-direction: column;
+        padding: 0.6rem 1rem 0.8rem;
+        font-family: var(--font-text);
+        font-size: 1.3rem;
+        line-height: 1.35;
+        color: var(--c-ink-soft);
+
+        strong {
+            font-family: var(--font-header);
+            font-weight: 400;
+            font-size: 1.5rem;
+            color: var(--c-ink);
+        }
+
+        small {
+            display: -webkit-box;
+            margin-top: 0.2rem;
+            overflow: hidden;
+            font-size: 1.2rem;
+            font-style: italic;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+    }
+
+    .photo-card-enter-active,
+    .photo-card-leave-active {
+        transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .photo-card-enter-from,
+    .photo-card-leave-to {
+        opacity: 0;
+        transform: translateY(-0.6rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .photo-card-enter-active,
+        .photo-card-leave-active {
+            transition: opacity 0.3s;
+        }
+
+        .photo-card-enter-from,
+        .photo-card-leave-to {
+            transform: none;
         }
     }
 

@@ -1,12 +1,13 @@
 <script setup>
     // The explore mode: a map with the route, a timeline to sail along it, the net that fills up,
     // and a dive into the water column at every station. Also the plugin `deepdive` of the content repo.
-    import { computed, onMounted, ref, shallowRef, watch } from 'vue';
+    import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { formatDate } from '@/services/format.js';
     import ElExplorerDive from './el-explorer-dive.vue';
     import ElExplorerMap from './el-explorer-map.vue';
     import ElExplorerNet from './el-explorer-net.vue';
+    import ElExplorerParade from './el-explorer-parade.vue';
     import ElExplorerSpecimen from './el-explorer-specimen.vue';
     import ElExplorerTimeline from './el-explorer-timeline.vue';
     import { loadExplorer, stationIndexAt } from './data.js';
@@ -35,6 +36,9 @@
     });
 
     const map = ref(null);
+    const timeline = ref(null);
+    // The specimens bobbing by sit right on top of the timeline, whatever its height
+    const timelineHeight = ref(0);
     const data = shallowRef(null);
     const error = ref(null);
     // Kilometres along the route
@@ -58,6 +62,7 @@
 
     // The history position when the explorer opened; anything after it was opened here
     let basePosition = null;
+    let timelineObserver = null;
     let isSyncing = false;
     let needsSync = false;
 
@@ -180,6 +185,21 @@
 
     watch(query, sync);
 
+    watch(timeline, (component) => {
+        timelineObserver?.disconnect();
+
+        if (!component?.$el) {
+            return;
+        }
+
+        timelineObserver = new ResizeObserver(() => {
+            timelineHeight.value = component.$el.offsetHeight;
+        });
+        timelineObserver.observe(component.$el);
+    });
+
+    onBeforeUnmount(() => timelineObserver?.disconnect());
+
     onMounted(async () => {
         basePosition = window.history.state?.position ?? 0;
 
@@ -232,7 +252,16 @@
                 class="date"
                 aria-live="polite">{{ dateLabel }}</p>
 
+            <el-explorer-parade
+                class="parade"
+                v-bind:style="{ bottom : `${timelineHeight}px` }"
+                v-bind:stations="data.stations"
+                v-bind:position="position"
+                v-bind:is-active="phase === 'sail' && !selectedSpecimen && !isNetOpen"
+                v-on:select-specimen="openSpecimen($event)" />
+
             <el-explorer-timeline
+                ref="timeline"
                 class="timeline"
                 v-bind:stations="data.stations"
                 v-bind:line="data.line"
@@ -307,6 +336,16 @@
         text-shadow: 0 1px 3px rgba(8, 26, 44, 0.7), 0 0 12px rgba(8, 26, 44, 0.35);
         pointer-events: none;
         transition: opacity 0.4s;
+
+        [phase="flying"] > &,
+        [phase="dive"] > & {
+            opacity: 0;
+        }
+    }
+
+    .parade {
+        z-index: 2;
+        transition: opacity 0.3s;
 
         [phase="flying"] > &,
         [phase="dive"] > & {
