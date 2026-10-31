@@ -21,6 +21,10 @@
     const FLING_STOP = 0.02;
     // A mouse that moves less than this while pressed has clicked, not dragged
     const DRAG_THRESHOLD = 4;
+    // Autoplay waits a moment, so the map has settled on the ship first
+    const AUTOPLAY_DELAY = 1200;
+    // Once the strip has been touched, the hint stays away, also on the next visit
+    const HINT_KEY = 'explorer-timeline-hint-done';
     const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
     const emit = defineEmits(['update:position', 'select', 'open-net']);
@@ -46,6 +50,11 @@
         total : {
             type : Number,
             default : 0
+        },
+        // Start sailing by itself when it appears
+        autoplay : {
+            type : Boolean,
+            default : false
         }
     });
 
@@ -58,11 +67,13 @@
     const isDragging = ref(false);
     const isPlaying = ref(false);
     const speed = ref(1);
+    const showsHint = ref(!hasSeenHint());
 
     const dots = new Map();
 
     let tween = null;
     let drag = null;
+    let autoplayTimer = null;
     let bumpTimer = null;
     let resizeObserver = null;
 
@@ -227,9 +238,32 @@
         }
     }
 
+    function hasSeenHint() {
+        try {
+            return window.localStorage.getItem(HINT_KEY) === '1';
+        } catch {
+            return false;
+        }
+    }
+
+    function hideHint() {
+        if (!showsHint.value) {
+            return;
+        }
+
+        showsHint.value = false;
+
+        try {
+            window.localStorage.setItem(HINT_KEY, '1');
+        } catch {
+            // Without storage the hint simply comes back next time
+        }
+    }
+
     // Touch and trackpads scroll the strip themselves; a mouse grabs it and drags
     function onPointerDown(event) {
         stopTween();
+        hideHint();
 
         if (event.pointerType !== 'mouse' || event.button !== 0) {
             return;
@@ -299,6 +333,7 @@
     // A mouse wheel turns the strip; sideways scrolling on a trackpad already works by itself
     function onWheel(event) {
         stopTween();
+        hideHint();
 
         if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
             event.preventDefault();
@@ -427,16 +462,27 @@
     });
 
     onMounted(() => {
+        // A resize, such as the address bar of a phone sliding away, must not stop the ship while it plays
         resizeObserver = new ResizeObserver(() => {
             width.value = track.value.clientWidth;
-            nextTick(() => scrollToKm(props.position, 0));
+
+            if (!isPlaying.value) {
+                nextTick(() => scrollToKm(props.position, 0));
+            }
         });
         resizeObserver.observe(track.value);
         width.value = track.value.clientWidth;
         nextTick(() => scrollToKm(props.position, 0));
+
+        const reducesMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+        if (props.autoplay && !reducesMotion) {
+            autoplayTimer = setTimeout(play, AUTOPLAY_DELAY);
+        }
     });
 
     onBeforeUnmount(() => {
+        clearTimeout(autoplayTimer);
         cancelAnimationFrame(tween);
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
@@ -501,6 +547,15 @@
 
             <span class="net__count">{{ collected }}</span>
         </button>
+
+        <p
+            v-if="showsHint"
+            class="hint"
+            aria-hidden="true">
+            <span class="hint__arrow hint__arrow--left">‹</span>
+            Sleep de tijdlijn om te varen
+            <span class="hint__arrow hint__arrow--right">›</span>
+        </p>
 
         <div class="panel">
             <div
@@ -694,6 +749,79 @@
         color: var(--c-paper);
         font-size: 1.3rem;
         font-weight: 600;
+    }
+
+    // Floats just above the strip, in the middle, until the strip is touched for the first time
+    .hint {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 1.2rem);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin: 0;
+        padding: 0.6rem 1.4rem;
+        border-radius: 2rem;
+        background: rgba(27, 36, 51, 0.82);
+        color: var(--c-paper);
+        font-size: 1.3rem;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        box-shadow: 0 2px 8px rgba(8, 26, 44, 0.3);
+        pointer-events: none;
+        animation: hint-in 0.5s 0.8s both;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            margin-left: -6px;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid rgba(27, 36, 51, 0.82);
+        }
+    }
+
+    .hint__arrow {
+        font-size: 1.8rem;
+        line-height: 1;
+        color: var(--c-terracotta-light);
+    }
+
+    .hint__arrow--left {
+        animation: nudge-left 1.4s ease-in-out infinite;
+    }
+
+    .hint__arrow--right {
+        animation: nudge-right 1.4s ease-in-out infinite;
+    }
+
+    @keyframes hint-in {
+        from {
+            opacity: 0;
+            transform: translate(-50%, 0.6rem);
+        }
+    }
+
+    @keyframes nudge-left {
+        50% {
+            transform: translateX(-0.4rem);
+        }
+    }
+
+    @keyframes nudge-right {
+        50% {
+            transform: translateX(0.4rem);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hint,
+        .hint__arrow {
+            animation: none;
+        }
     }
 
     .panel {
