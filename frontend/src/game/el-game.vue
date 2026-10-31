@@ -4,6 +4,7 @@
     // This component runs the game loop and ties the map, the controls and the overlays together.
     import { computed, inject, onBeforeUnmount, onMounted, ref, shallowRef, toRaw } from 'vue';
     import { pointAt } from '@/explorer/data.js';
+    import { monsoonAt } from '@/explorer/ship.js';
     import { ICON_PATHS, groupIcon, groupName } from '@/explorer/groups.js';
     import { newAchievements } from './achievements.js';
     import { createCrew } from './crew.js';
@@ -103,6 +104,8 @@
     let lastInputAt = 0;
     let lastShovelAt = 0;
     let isOffCourse = false;
+    // The monsoon of the month the Siboga was nearby, for the sails and the smoke
+    let wind = monsoonAt(null);
     let toastId = 0;
     const sound = createSound();
     const timers = {
@@ -425,6 +428,22 @@
         }
     }
 
+    function updateWind() {
+        let nearest = null;
+        let nearestKm = Infinity;
+
+        for (const station of data.stations) {
+            const distance = distanceKm(ship, station);
+
+            if (distance < nearestKm) {
+                nearest = station;
+                nearestKm = distance;
+            }
+        }
+
+        wind = monsoonAt(nearest?.datum);
+    }
+
     // When nothing is near for a while, the compass points to the nearest station not yet visited
     function updateCompass() {
         let nearest = null;
@@ -541,7 +560,7 @@
         const level = (ship.pressure - PRESSURE_FLOOR) / (1 - PRESSURE_FLOOR);
 
         pressure.value = ship.pressure;
-        map.value?.update(ship, dt, level);
+        map.value?.update(ship, dt, wind);
         sound.setWaves(level);
 
         if (!stats.crossedEquator && Math.sign(previousLat) !== Math.sign(ship.lat)) {
@@ -582,6 +601,7 @@
         if (timers.slow > 1) {
             timers.slow = 0;
             updateCompass();
+            updateWind();
             checkAchievements();
 
             // The boiler has cooled down to its lowest and nobody stokes it: the shovel asks for coal

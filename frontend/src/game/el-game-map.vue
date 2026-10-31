@@ -1,14 +1,15 @@
 <script setup>
     // The map of the game: the sea chart of the site, the stations as buoys, the specimens that
-    // float near the ship, the fog of what is not discovered yet, and the ship with its smoke and
-    // wake. The game loop drives it from outside through the exposed functions.
+    // float near the ship, the fog of what is not discovered yet, and the ship: the small physical
+    // model of the explore mode, drawn on its own canvas above the map. The game loop drives it
+    // from outside through the exposed functions.
     import maplibregl from 'maplibre-gl';
     import { inject, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
     import { seaChartLayers, seaChartSources } from '@/services/sea-chart.js';
-    import { BOAT_SVG } from '@/explorer/boat.js';
     import { ICON_PATHS } from '@/explorer/groups.js';
     import { EAST, NORTH, SOUTH, WEST, moveKm, ringAround } from './geo.js';
     import { RARITIES } from './rarity.js';
+    import GameShip from './ship.js';
 
     const GAME_ZOOM = 7.4;
     const MIN_ZOOM = 6;
@@ -19,8 +20,6 @@
     const FOLLOW_RATE = 3;
     // After the hand moved the map, the camera goes back to the ship after this many milliseconds
     const RESUME_MS = 2000;
-    const WAKE_POINTS = 42;
-    const WAKE_INTERVAL = 0.12;
     const ICON_SIZE = 52;
     const EMPTY = {
         type : 'FeatureCollection',
@@ -54,14 +53,12 @@
 
     let map = null;
     let ship = null;
-    let hull = null;
-    let smoke = null;
+    let shipCanvas = null;
+    let shipContext = null;
+    let pixelRatio = 1;
     let center = null;
     let resumeAt = 0;
     let isDragging = false;
-    let smokeBudget = 0;
-    let wakeTimer = 0;
-    let wake = [];
     let resizeObserver = null;
 
     function buildStyle() {
@@ -79,11 +76,6 @@
                         coordinates : props.line.map((point) => [point[1], point[2]])
                     }
                 }
-            },
-            wake : {
-                type : 'geojson',
-                data : EMPTY,
-                lineMetrics : true
             },
             stations : {
                 type : 'geojson',
@@ -110,18 +102,6 @@
                     'line-width' : 1.2,
                     'line-opacity' : 0.3,
                     'line-dasharray' : [2, 3]
-                }
-            },
-            {
-                id : 'wake',
-                type : 'line',
-                source : 'wake',
-                layout : {
-                    'line-cap' : 'round'
-                },
-                paint : {
-                    'line-width' : ['interpolate', ['linear'], ['zoom'], 6, 3, 9, 9],
-                    'line-gradient' : ['interpolate', ['linear'], ['line-progress'], 0, 'rgba(251, 248, 241, 0)', 1, 'rgba(251, 248, 241, 0.75)']
                 }
             },
             {
@@ -195,24 +175,14 @@
         };
     }
 
-    function createShip() {
-        const element = document.createElement('div');
-
-        element.className = 'ship';
-        element.setAttribute('aria-hidden', 'true');
-        element.innerHTML = `
-            <div class="ship__glints"><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="ship__bob">
-                <div class="ship__hull">${BOAT_SVG}<div class="ship__smoke"></div></div>
-            </div>`;
-        hull = element.querySelector('.ship__hull');
-        smoke = element.querySelector('.ship__smoke');
-
-        return new maplibregl.Marker({
-            element,
-            rotationAlignment : 'map',
-            pitchAlignment : 'map'
-        });
+    // The ship is drawn on its own canvas right above the map, under the effects and the controls
+    function createShipCanvas() {
+        shipCanvas = document.createElement('canvas');
+        shipCanvas.className = 'ship';
+        shipCanvas.setAttribute('aria-hidden', 'true');
+        map.getCanvasContainer().insertBefore(shipCanvas, map.getCanvas().nextSibling);
+        shipContext = shipCanvas.getContext('2d');
+        resizeShipCanvas();
     }
 
     // Draws the icon of a group with a ring in the colour of its rarity, when the map first asks for it
@@ -298,17 +268,6 @@
         return map ? map.project([point.lon, point.lat]) : null;
     }
 
-    function puff(level) {
-        const element = document.createElement('span');
-
-        element.className = 'puff';
-        element.style.setProperty('--size', `${6 + level * 7}px`);
-        element.style.setProperty('--drift', `${-30 - level * 40}px`);
-        element.style.setProperty('--side', `${(Math.random() - 0.5) * 14}px`);
-        element.addEventListener('animationend', () => element.remove());
-        smoke.appendChild(element);
-    }
-
     function refreshFog() {
         const source = map?.getSource('fog');
 
@@ -317,6 +276,41 @@
             source.pause();
             map.triggerRepaint();
         }
+    }
+
+    function resizeShipCanvas() {
+        if (!shipCanvas) {
+            return;
+        }
+
+        const width = container.value.clientWidth;
+        const height = container.value.clientHeight;
+
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
+        shipCanvas.width = Math.round(width * pixelRatio);
+        shipCanvas.height = Math.round(height * pixelRatio);
+        shipCanvas.style.width = `${width}px`;
+        shipCanvas.style.height = `${height}px`;
+    }
+
+    // Drawn after every render of the map, so the ship and the sea under it never drift apart
+    function drawShip() {
+        if (!ship || !shipContext) {
+            return;
+        }
+
+        shipContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        shipContext.clearRect(0, 0, shipCanvas.width, shipCanvas.height);
+        ship.draw(shipContext, {
+            bearing : map.getBearing(),
+            pitch : map.getPitch(),
+            zoom : map.getZoom(),
+            project : (lon, lat) => {
+                const point = map.project([lon, lat]);
+
+                return [point.x, point.y];
+            }
+        });
     }
 
     function setSpecimens(features) {
@@ -368,40 +362,14 @@
         };
     }
 
-    // Once per frame: the ship, its smoke and wake, and the camera that follows it
-    function update(state, dt, level) {
+    // Once per frame: the ship model, and the camera that follows it; wind is { from, strength }
+    function update(state, dt, wind) {
         if (!map) {
             return;
         }
 
-        ship.setLngLat([state.lon, state.lat]);
-        hull.style.transform = `rotate(${state.heading - 90}deg)`;
-
-        smokeBudget += dt * (1.2 + level * 4);
-
-        while (smokeBudget >= 1) {
-            smokeBudget--;
-            puff(level);
-        }
-
-        wakeTimer += dt;
-
-        if (wakeTimer >= WAKE_INTERVAL) {
-            wakeTimer = 0;
-            wake.push([state.lon, state.lat]);
-            wake = wake.slice(-WAKE_POINTS);
-
-            if (wake.length > 1) {
-                map.getSource('wake')?.setData({
-                    type : 'Feature',
-                    properties : {},
-                    geometry : {
-                        type : 'LineString',
-                        coordinates : wake
-                    }
-                });
-            }
-        }
+        ship.follow(state, dt, map.getZoom(), wind);
+        map.triggerRepaint();
 
         if (isDragging || performance.now() < resumeAt) {
             center = null;
@@ -457,9 +425,14 @@
             window.gameMap = map;
         }
 
-        resizeObserver = new ResizeObserver(() => map?.resize());
+        resizeObserver = new ResizeObserver(() => {
+            map?.resize();
+            resizeShipCanvas();
+        });
         resizeObserver.observe(container.value);
-        ship = createShip().setLngLat([props.start.lon, props.start.lat]).addTo(map);
+        ship = new GameShip(props.start);
+        createShipCanvas();
+        map.on('render', drawShip);
 
         map.on('styleimagemissing', (event) => {
             if (event.id.startsWith('sp|')) {
@@ -549,122 +522,11 @@
         }
     }
 
-    // Light comes from the north west, so the shadow falls to the south east
     :deep(.ship) {
+        position: absolute;
+        top: 0;
+        left: 0;
         pointer-events: none;
-        filter: drop-shadow(3px 5px 3px rgba(8, 26, 44, 0.45));
-    }
-
-    :deep(.ship__bob) {
-        animation: bob 2.6s ease-in-out infinite;
-    }
-
-    :deep(.ship__hull) {
-        position: relative;
-        width: 72px;
-        height: 36px;
-
-        svg {
-            display: block;
-        }
-    }
-
-    :deep(.ship__smoke) {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-    }
-
-    :deep(.puff) {
-        position: absolute;
-        left: calc(var(--size) / -2);
-        top: calc(var(--size) / -2);
-        width: var(--size);
-        height: var(--size);
-        border-radius: 50%;
-        background: rgba(70, 70, 76, 0.35);
-        animation: puff 1.6s ease-out forwards;
-    }
-
-    :deep(.ship__glints) {
-        position: absolute;
-        inset: -18px;
-        pointer-events: none;
-
-        i {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            opacity: 0;
-            animation: glint 2.4s ease-in-out infinite;
-
-            &:nth-child(1) {
-                left: 6%;
-                top: 18%;
-            }
-
-            &:nth-child(2) {
-                left: 88%;
-                top: 30%;
-                animation-delay: 0.6s;
-            }
-
-            &:nth-child(3) {
-                left: 20%;
-                top: 86%;
-                animation-delay: 1.1s;
-            }
-
-            &:nth-child(4) {
-                left: 72%;
-                top: 92%;
-                animation-delay: 1.7s;
-            }
-
-            &:nth-child(5) {
-                left: 48%;
-                top: 2%;
-                animation-delay: 2s;
-            }
-        }
-    }
-
-    @keyframes bob {
-        0%,
-        100% {
-            transform: translateY(0) scale(1);
-        }
-
-        50% {
-            transform: translateY(-1.5px) scale(1.015);
-        }
-    }
-
-    @keyframes puff {
-        0% {
-            opacity: 0.8;
-            transform: translate(0, 0) scale(0.6);
-        }
-
-        100% {
-            opacity: 0;
-            transform: translate(var(--drift), var(--side)) scale(2.4);
-        }
-    }
-
-    @keyframes glint {
-        0%,
-        100% {
-            opacity: 0;
-            transform: scale(0.4);
-        }
-
-        50% {
-            opacity: 0.85;
-            transform: scale(1);
-        }
     }
 
     @keyframes ring {

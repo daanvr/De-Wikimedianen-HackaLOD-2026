@@ -56,7 +56,7 @@ Het spel staat los van de rest van de frontend:
 ```
 frontend/src/game/
 ├── el-game.vue           ← het geheel: de spellus, de staat, de overlays
-├── el-game-map.vue       ← eigen MapLibre-kaart: zeekaart, boeien, specimens, mist, schip, rook, kielzog
+├── el-game-map.vue       ← eigen MapLibre-kaart: zeekaart, boeien, specimens, mist; het schip op een canvas erboven
 ├── el-game-helm.vue      ← het stuurwiel
 ├── el-game-boiler.vue    ← manometer, ketelluik en kolenschep
 ├── el-game-hud.vue       ← netje en score, missiekaartje, kompas, meldingen; de vangst vliegt in het netje
@@ -65,6 +65,7 @@ frontend/src/game/
 ├── el-game-equator.vue   ← linedoop en oorkonde
 ├── data.js               ← laadt alle specimens met de loaders van de ontdekmodus
 ├── physics.js            ← het schip: ketel, snelheid, roer en afketsen (een pure step-functie)
+├── ship.js               ← het scheepsmodel van de ontdekmodus, gestuurd door physics.js
 ├── land.js               ← landmasker (1,5 km per pixel) en een waterrooster van 0,1°
 ├── fog.js                ← de mist als canvas boven de kaart
 ├── spawn.js              ← de plek van elk specimen
@@ -77,7 +78,7 @@ frontend/src/game/
 └── save.js               ← voortgang in localStorage
 ```
 
-Van de ontdekmodus gebruikt het spel de loaders (`rows`, `buildSpecimen`, `pointAt` in `explorer/data.js`), het schip (`explorer/boat.js`), de groepicoontjes, het zegel en de specimenpagina (`el-explorer-specimen.vue`). De zeekaart komt uit `services/sea-chart.js`, het detailland uit `store.mapLayers`.
+Van de ontdekmodus gebruikt het spel de loaders (`rows`, `buildSpecimen`, `pointAt` in `explorer/data.js`), het scheepsmodel (`explorer/ship.js`: helling, stamp, deining, zeilen op de moesson, rook en schuimspoor; `game/ship.js` stuurt het met de koers en vaart uit het spel), de groepicoontjes, het zegel en de specimenpagina (`el-explorer-specimen.vue`). De zeekaart komt uit `services/sea-chart.js`, het detailland uit `store.mapLayers`.
 
 Hoe het werkt:
 - **Land.** `land.js` tekent het detailland van de zeekaart één keer op een onzichtbaar canvas en bewaart per pixel of het land is. Botsen en plaatsen kosten daarna één opzoeking. De richting van de kust volgt uit de landpixels rond het punt; daarlangs wordt de koers gespiegeld. Smalle zeestraten van minder dan een paar kilometer kunnen dicht zitten; daarom start het schip op het eerste punt van de route uit Soerabaja met open water rondom.
