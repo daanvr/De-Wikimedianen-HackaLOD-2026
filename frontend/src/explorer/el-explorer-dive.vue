@@ -1395,6 +1395,11 @@
         right: 0;
     }
 
+    // Room under the round photo for the "verwant" mark, so it does not cover the name
+    .catch__item:has(.catch__likeness) .catch__visual {
+        margin-bottom: 0.8rem;
+    }
+
     .catch__name {
         font-size: 1.4rem;
         line-height: 1.2;

@@ -29,70 +29,73 @@
 </script>
 
 <template>
-    <div
-        class="el-explorer-illustration"
-        role="dialog"
-        aria-modal="true"
-        v-bind:aria-label="illustration.title"
-        v-on:click.self="emit('close')">
-        <article class="window">
-            <div class="visual">
-                <img
-                    class="visual__image"
-                    v-bind:src="illustration.src"
-                    v-bind:alt="illustration.depicted">
-                <el-explorer-likeness
-                    class="visual__likeness"
-                    large
-                    v-bind:illustration="illustration" />
-                <button
-                    type="button"
-                    class="close"
-                    aria-label="Sluiten"
-                    v-on:click="emit('close')">
-                    <el-icon
-                        name="close"
-                        v-bind:size="20" />
-                </button>
-            </div>
+    <!-- Teleported out of the specimen sheet, so it lies above everything, the site menu included -->
+    <teleport to="body">
+        <div
+            class="el-explorer-illustration"
+            role="dialog"
+            aria-modal="true"
+            v-bind:aria-label="illustration.title"
+            v-on:click.self="emit('close')">
+            <article class="window">
+                <div class="visual">
+                    <img
+                        class="visual__image"
+                        v-bind:src="illustration.src"
+                        v-bind:alt="illustration.depicted">
+                    <el-explorer-likeness
+                        class="visual__likeness"
+                        large
+                        v-bind:illustration="illustration" />
+                    <button
+                        type="button"
+                        class="close"
+                        aria-label="Sluiten"
+                        v-on:click="emit('close')">
+                        <el-icon
+                            name="close"
+                            v-bind:size="20" />
+                    </button>
+                </div>
 
-            <div class="body">
-                <p class="kicker">Bij {{ specimenName }}</p>
-                <h3 class="title">{{ illustration.title }}</h3>
-                <p class="depicted">Op de foto: <em>{{ illustration.depicted }}</em></p>
-                <p class="text">{{ illustration.explanation }}</p>
-                <p
-                    v-if="illustration.note"
-                    class="note">{{ illustration.note }}</p>
+                <div class="body">
+                    <p class="kicker">Bij {{ specimenName }}</p>
+                    <h3 class="title">{{ illustration.title }}</h3>
+                    <p class="depicted">Op de foto: <em>{{ illustration.depicted }}</em></p>
+                    <p class="text">{{ illustration.explanation }}</p>
+                    <p
+                        v-if="illustration.note"
+                        class="note">{{ illustration.note }}</p>
 
-                <details
-                    v-if="illustration.reasoning"
-                    class="reasoning">
-                    <summary>Hoe we deze foto gekozen hebben</summary>
-                    <p>{{ illustration.reasoning }}</p>
-                </details>
+                    <details
+                        v-if="illustration.reasoning"
+                        class="reasoning">
+                        <summary>Hoe we deze foto gekozen hebben</summary>
+                        <p>{{ illustration.reasoning }}</p>
+                    </details>
 
-                <p class="credit">
-                    Foto: {{ illustration.maker }}<template v-if="illustration.place">, {{ illustration.place }}</template><template v-if="illustration.date">, {{ illustration.date }}</template> ·
-                    <a
-                        target="_blank"
-                        rel="noopener"
-                        v-bind:href="illustration.licenseUrl">{{ illustration.license }}</a> ·
-                    <a
-                        target="_blank"
-                        rel="noopener"
-                        v-bind:href="illustration.sourceUrl">bekijk op {{ illustration.source }}</a>
-                </p>
-            </div>
-        </article>
-    </div>
+                    <p class="credit">
+                        Foto: {{ illustration.maker }}<template v-if="illustration.place">, {{ illustration.place }}</template><template v-if="illustration.date">, {{ illustration.date }}</template> ·
+                        <a
+                            target="_blank"
+                            rel="noopener"
+                            v-bind:href="illustration.licenseUrl">{{ illustration.license }}</a> ·
+                        <a
+                            target="_blank"
+                            rel="noopener"
+                            v-bind:href="illustration.sourceUrl">bekijk op {{ illustration.source }}</a>
+                    </p>
+                </div>
+            </article>
+        </div>
+    </teleport>
 </template>
 
 <style lang="scss" scoped>
     .el-explorer-illustration {
         position: fixed;
         inset: 0;
-        z-index: 50;
+        z-index: 1000;
         display: flex;
         align-items: center;
         justify-content: center;
