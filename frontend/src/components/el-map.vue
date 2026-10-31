@@ -369,6 +369,7 @@
                     id : 'route-casing',
                     type : 'line',
                     source : 'route',
+                    filter : ['==', ['geometry-type'], 'LineString'],
                     layout : {
                         'line-cap' : 'round',
                         'line-join' : 'round'
@@ -383,6 +384,7 @@
                     id : 'route',
                     type : 'line',
                     source : 'route',
+                    filter : ['==', ['geometry-type'], 'LineString'],
                     layout : {
                         'line-cap' : 'round',
                         'line-join' : 'round'
@@ -391,6 +393,19 @@
                         'line-color' : '#D88A63',
                         'line-width' : ['interpolate', ['linear'], ['zoom'], 4, 1.4, 9, 2.8],
                         'line-dasharray' : [3, 2]
+                    }
+                },
+                {
+                    // Small dots where the ship stopped; not interactive
+                    id : 'route-stations',
+                    type : 'circle',
+                    source : 'route',
+                    filter : ['==', ['geometry-type'], 'Point'],
+                    paint : {
+                        'circle-color' : '#A9512F',
+                        'circle-radius' : ['interpolate', ['linear'], ['zoom'], 4, ['case', ['get', 'port'], 3.5, 1.8], 9, ['case', ['get', 'port'], 6, 3.5]],
+                        'circle-stroke-color' : '#FBF8F1',
+                        'circle-stroke-width' : ['interpolate', ['linear'], ['zoom'], 4, 0.6, 9, 1.2]
                     }
                 }
             ]

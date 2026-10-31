@@ -1,11 +1,12 @@
 """Prepare the static map layers for the frontend.
 
 Reads Natural Earth bathymetry shapefiles, Natural Earth land and the route
-traced from the 1904 route map (route_segmenten.geojson), clips them to the
+drawn from station to station (one LineString per leg), clips them to the
 archipelago, simplifies them and writes small GeoJSON files to public/map/.
+The route file also gets one Point per station, so the map can draw the stops.
 
 Usage:
-    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-data-dir> <land-geojson> <output-dir>
+    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-geojson> <land-geojson> <output-dir>
 """
 import json
 import sys
@@ -74,28 +75,55 @@ def prepare_land(land_path: Path, output_dir: Path):
         "geometry" : mapping(geometry)
     }])
 
-def prepare_route(route_dir: Path, output_dir: Path):
-    source = json.loads((route_dir / "route_segmenten.geojson").read_text())
-    features = []
+def prepare_route(route_path: Path, output_dir: Path):
+    source = json.loads(route_path.read_text())
+    legs = []
+    stations = {}
     for feature in source["features"]:
         properties = feature["properties"]
-        features.append({
+        coordinates = feature["geometry"]["coordinates"]
+        legs.append({
             "type" : "Feature",
             "properties" : {
-                "id" : properties["id"],
-                "dateFrom" : properties.get("date_from") or None,
-                "dateTo" : properties.get("date_to") or None
+                "leg" : properties["etappe"],
+                "from" : properties["van"],
+                "to" : properties["naar"],
+                "dateFrom" : properties["van_datum"],
+                "dateTo" : properties["naar_datum"]
             },
-            "geometry" : feature["geometry"]
+            "geometry" : {
+                "type" : "LineString",
+                "coordinates" : coordinates
+            }
         })
-    write_geojson(output_dir / "route.geojson", features)
+        ends = [
+            (properties["van"], properties["van_datum"], coordinates[0]),
+            (properties["naar"], properties["naar_datum"], coordinates[-1])
+        ]
+        for name, date, coordinate in ends:
+            # Departure and return are both Soerabaja: one port dot
+            is_port = name.startswith("Soerabaja")
+            station = "Soerabaja" if is_port else name
+            stations.setdefault(station, {
+                "type" : "Feature",
+                "properties" : {
+                    "station" : station,
+                    "date" : date,
+                    "port" : is_port
+                },
+                "geometry" : {
+                    "type" : "Point",
+                    "coordinates" : coordinate
+                }
+            })
+    write_geojson(output_dir / "route.geojson", legs + list(stations.values()))
 
 def main():
-    natural_earth_dir, route_dir, land_path, output_dir = [Path(arg) for arg in sys.argv[1:5]]
+    natural_earth_dir, route_path, land_path, output_dir = [Path(arg) for arg in sys.argv[1:5]]
     output_dir.mkdir(parents = True, exist_ok = True)
     prepare_bathymetry(natural_earth_dir, output_dir)
     prepare_land(land_path, output_dir)
-    prepare_route(route_dir, output_dir)
+    prepare_route(route_path, output_dir)
 
 if __name__ == "__main__":
     main()
