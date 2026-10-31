@@ -104,6 +104,7 @@
     let lastInputAt = 0;
     let lastShovelAt = 0;
     let isOffCourse = false;
+    let compassTarget = null;
     // The monsoon of the month the Siboga was nearby, for the sails and the smoke
     let wind = monsoonAt(null);
     let toastId = 0;
@@ -444,6 +445,30 @@
         wind = monsoonAt(nearest?.datum);
     }
 
+    // Points the big arrow around the ship at the station on the screen, so it shows the way to
+    // steer whatever the tilt of the map
+    function aimCompass() {
+        const from = compassTarget ? map.value?.project(ship) : null;
+        const to = from ? map.value.project(compassTarget) : null;
+
+        if (!to) {
+            compass.value = null;
+
+            return;
+        }
+
+        const distance = distanceKm(ship, compassTarget);
+
+        compass.value = {
+            x : from.x,
+            y : from.y,
+            angle : Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI,
+            distance : Math.round(distance),
+            station : compassTarget.nummer,
+            isFar : distance > OFF_COURSE_KM
+        };
+    }
+
     // When nothing is near for a while, the compass points to the nearest station not yet visited
     function updateCompass() {
         let nearest = null;
@@ -465,11 +490,8 @@
         const wasOffCourse = isOffCourse;
 
         isOffCourse = Boolean(nearest) && (nearestKm > OFF_COURSE_KM || (time - lastCatchAt > QUIET_SECONDS && nearestKm > STATION_KM * 2));
-        compass.value = isOffCourse ? {
-            bearing : Math.round(bearingTo(ship, nearest)),
-            distance : Math.round(nearestKm),
-            station : nearest.nummer
-        } : null;
+        compassTarget = isOffCourse ? nearest : null;
+        aimCompass();
 
         if (isOffCourse && !wasOffCourse && nearestKm > OFF_COURSE_KM) {
             say('offCourse', {
@@ -596,6 +618,7 @@
 
             visitStations();
             updateMission();
+            aimCompass();
         }
 
         if (timers.slow > 1) {

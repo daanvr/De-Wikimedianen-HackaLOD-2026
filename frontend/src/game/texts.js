@@ -95,7 +95,7 @@ export const LINES = {
     },
     offCourse : {
         lines : [
-            ['tydeman', 'We zijn uit koers. Het kompas wijst naar het dichtstbijzijnde station: {distance} km.']
+            ['tydeman', 'We zijn uit koers! Stuur de kant op van de rode pijl bij het schip: het dichtstbijzijnde station ligt {distance} km verderop.']
         ]
     },
     valve : {

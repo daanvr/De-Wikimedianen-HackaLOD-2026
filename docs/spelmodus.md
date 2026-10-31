@@ -16,7 +16,7 @@ De disclaimer blijft bereikbaar via de i-knop. In het album staat bij elk specim
 - **Verzamelen.** Vaar over de specimens die in zee drijven. Dichtbij drijven ze naar het schip toe, en ze vliegen in het netje. Elk specimen telt punten naar zijn zeldzaamheid.
 - **Stations.** De stations van de Siboga zijn boeien. Vaar je erlangs, dan luidt de scheepsbel, krijgt het station een stempel in het logboek en drijft de echte vangst van dat station naar je toe.
 - **Mist.** De kaart is eerst een oud perkament. Waar je vaart, gaat het open, en wat je ontdekt hebt, blijft open.
-- **Kompas.** Ben je ver van elk station, of vang je een tijd niets, dan wijst een kompas naar het dichtstbijzijnde station dat je nog niet bezocht hebt.
+- **Uit koers.** Ben je ver van elk station, of vang je een tijd niets, dan verschijnt een balk met het dichtstbijzijnde station dat je nog niet bezocht hebt en de afstand, en wijst een grote rode pijl naast het schip die kant op. Ben je echt ver weg (meer dan 120 km), dan is de balk rood en zegt commandant Tydeman het ook.
 - **Missies.** Iemand van de bemanning vraagt om een specimen dat je nog niet hebt, binnen een gestippelde cirkel. Een nieuwe missie staat even open en klapt dan in tot een portret met een pijl en de afstand; een tik klapt hem weer open. Een gevangen missiespecimen telt dubbel. "Andere missie" geeft een nieuwe; in het album zoekt "Zoek er een" een missie voor een groep die je nog mist.
 - **Linedoop.** De eerste keer dat je de evenaar oversteekt, komt Neptunus boven met een oorkonde, die je als plaatje kunt bewaren.
 - **Meldingen.** Vangsten, insignes en de bemanning liggen als een stapeltje onderin: de nieuwste bovenop, de oudere steken er net achter uit.

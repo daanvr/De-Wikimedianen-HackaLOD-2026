@@ -228,24 +228,23 @@
             <div
                 v-if="compass"
                 class="compass"
-                role="status">
-                <span
-                    class="compass__needle"
-                    v-bind:style="{ transform : `rotate(${compass.bearing}deg)` }">
-                    <svg
-                        viewBox="-12 -12 24 24"
-                        aria-hidden="true">
-                        <path
-                            d="M0,-10 L4,2 L0,0 L-4,2 Z"
-                            fill="#A9512F" />
-                        <path
-                            d="M0,10 L4,2 L0,0 L-4,2 Z"
-                            fill="#FBF8F1"
-                            opacity="0.8" />
-                    </svg>
-                </span>
-                <span class="compass__text">Station {{ compass.station }} · {{ compass.distance }} km</span>
+                role="status"
+                v-bind:is-far="compass.isFar ? '' : null">
+                <strong>{{ compass.isFar ? 'Uit koers!' : 'Hier is weinig te vangen.' }}</strong>
+                <span>Volg de pijl naar station {{ compass.station }} · {{ compass.distance }} km</span>
             </div>
+        </div>
+
+        <div
+            v-if="compass"
+            class="course"
+            aria-hidden="true"
+            v-bind:style="{ left : `${compass.x}px`, top : `${compass.y}px`, transform : `rotate(${compass.angle}deg)` }">
+            <svg
+                class="course__arrow"
+                viewBox="0 0 60 48">
+                <path d="M4 16 H32 V4 L56 24 L32 44 V32 H4 Z" />
+            </svg>
         </div>
 
         <div class="tools">
@@ -594,29 +593,53 @@
         cursor: pointer;
     }
 
+    // Off course: a clear bar under the mission, and the big arrow around the ship below
     .compass {
         display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.4rem 1rem 0.4rem 0.4rem;
-        border-radius: 2.4rem;
-        background: rgba(27, 36, 51, 0.82);
+        flex-direction: column;
+        padding: 0.6rem 1.4rem 0.7rem;
+        border-radius: 0.8rem;
+        background: rgba(27, 36, 51, 0.88);
+        box-shadow: var(--shadow-float);
         color: var(--c-paper);
-        font-size: 1.3rem;
+        font-size: 1.4rem;
+        line-height: 1.3;
         animation: appear 0.3s ease-out;
+
+        strong {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+        }
+
+        &[is-far] {
+            background: var(--c-terracotta);
+            animation: appear 0.3s ease-out, glow 1.6s ease-in-out infinite;
+        }
     }
 
-    .compass__needle {
-        display: flex;
-        width: 3.6rem;
-        height: 3.6rem;
-        border-radius: 50%;
-        background: #B8862E;
-        transition: transform 0.4s ease-out;
+    // A point at the ship that turns towards the station; the arrow sits on a circle around the ship
+    .course {
+        position: absolute;
+        width: 0;
+        height: 0;
+        transition: transform 0.35s ease-out;
+    }
 
-        svg {
-            width: 100%;
-            height: 100%;
+    .course__arrow {
+        position: absolute;
+        left: 6.4rem;
+        top: -2.8rem;
+        width: 7rem;
+        height: 5.6rem;
+        overflow: visible;
+        filter: drop-shadow(0 2px 4px rgba(8, 26, 44, 0.5));
+        animation: nudge 1s ease-in-out infinite;
+
+        path {
+            fill: var(--c-terracotta);
+            stroke: var(--c-paper);
+            stroke-width: 3;
+            stroke-linejoin: round;
         }
     }
 
@@ -740,6 +763,28 @@
         from {
             opacity: 0;
             transform: translateY(-0.8rem);
+        }
+    }
+
+    @keyframes nudge {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        50% {
+            transform: translateX(1.2rem);
+        }
+    }
+
+    @keyframes glow {
+        0%,
+        100% {
+            box-shadow: var(--shadow-float), 0 0 0 0 rgba(216, 138, 99, 0.7);
+        }
+
+        50% {
+            box-shadow: var(--shadow-float), 0 0 0 0.8rem rgba(216, 138, 99, 0);
         }
     }
 
