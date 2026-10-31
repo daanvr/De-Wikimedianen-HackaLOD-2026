@@ -41,6 +41,7 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 | `/plugins/:id`  | `vw-plugin.vue`   | Plugin schermvullend; `?argument=` gaat naar de plugin       |
 | `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype               |
 | `/map`          | `vw-map.vue`      | Datavisualisatie (de ontdekmodus) schermvullend, zie [ontdekmodus.md](ontdekmodus.md); ook de knop na het laatste hoofdstuk gaat hierheen |
+| `/spel`         | `vw-game.vue`     | Het spel: zelf varen en specimens verzamelen, zie [spelmodus.md](spelmodus.md); in het menu onder de streep |
 
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 

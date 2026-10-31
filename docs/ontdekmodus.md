@@ -103,6 +103,7 @@ frontend/src/explorer/
 ├── data.js                   ← laadt en koppelt de drie bestanden; posities op de route
 ├── groups.js                 ← tekentjes per groep, en welke groepen op de bodem leven
 ├── gear.js                   ← het tuig: tekening, uitleg en archieffoto
+├── boat.js                   ← het schip op de kaart en move(); ook gebruikt door het spel
 ├── el-explorer-map.vue       ← eigen MapLibre-kaart met de blauwe zeekaart; vliegen en kantelen
 ├── el-explorer-timeline.vue  ← tijdlijn op afstand, netje en de vliegende vondsten
 ├── el-explorer-dive.vue      ← de duik
