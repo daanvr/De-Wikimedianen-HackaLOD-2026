@@ -33,9 +33,9 @@ Een specimen hoort bij een station als het museumrecord zelf het stationnummer n
 - **Kaart.** Alleen de blauwe zeekaart van de site, net als de gewone kaart over de hele wereld: uitzoomen kan tot de hele aarde, buiten het onderzoeksgebied alleen tot ongeveer provincieniveau, met dezelfde zee- en landnamen. Draaien en kantelen kan met twee vingers (of de rechtermuisknop). Staat de kaart gedraaid of schuin, dan verschijnt onder het menu een kompas dat meedraait met het noorden en een beetje mee kantelt; een tik zet de kaart weer recht van boven met het noorden boven. Stations zijn stippen; hoe meer specimens, hoe groter. De vijf stations met de meeste vondsten zijn uitgelicht. Stations met een foto op Wikidata krijgen een rond fotootje boven hun stip, als uitnodiging om erop te tikken; een tik opent de duik bij dat station. Ver uitgezoomd (onder zoom 4,5) verdwijnen die, anders bedekken ze de kaart. Een stippellijn toont de route, en wat al gevaren is, is helderder.
 - **Tijdlijn.** Op afstand langs de route: 0,6 pixel per kilometer, dus lange oversteken zijn lange lege stukken. Elke kolom naar beneden is een loding uit 1899, op de plek van het station. De doorlopende lijn is de diepte van de zee van nu. Boven het wateroppervlak staan bolletjes waar specimens vandaan komen, met een sterretje als er een naamdrager bij is. Vaar je erlangs, dan vliegen ze het netje in; vaar je terug, dan vliegen ze eruit. Het pijltje rechts vaart soepel naar het volgende station; links staat een afspeelknop die de hele reis afvaart. Het knopje ernaast wisselt de snelheid: ½×, 1×, 2×, 4×, 8× en 16×, daarna weer ½×. Op 1× vaart het schip 12 km per seconde en duurt de hele route zo'n twintig minuten; op 16× ruim een minuut. Met een muis pak je de tijdlijn vast en sleep of slinger je hem; het scrollwiel werkt ook. Kom je de datavisualisatie binnen, dan vaart het schip na ruim een seconde vanzelf op 1× (niet als een link meteen een station of specimen opent, niet in een hoofdstuk, en niet als je apparaat op minder beweging staat). Een hint boven de tijdlijn (“Sleep de tijdlijn om te varen”) blijft staan tot je de tijdlijn zelf aanraakt; de browser onthoudt dat, zodat hij de volgende keer wegblijft.
 - **Netje.** Telt wat er tot nu toe gevangen is, met een voortgangsbalk. Tik erop voor de vangst per station.
-- **Duik.** Overgenomen uit het duikprototype. De kaart vliegt naar het schip en kantelt, de waterlijn komt omhoog en het schip ligt half onder water. Scrollen gaat de diepte in, langs de zones (zonlicht, schemer, middernacht, diepzeevlakte). Een dieptemeter of liniaal staat er bewust niet bij; de enige diepte in getallen is de gelode bodemdiepte onderaan. Het tuig van het station hangt aan zijn kabel (kor, dreg, Hensen-net, sluitnet, sleepnet, cilinder, of “met de hand” bij rif en strand); tik erop voor uitleg en een archieffoto. Het loodlijntje toont de gelode diepte. Op de bodem staat de bodemnotitie uit 1899, daaronder de vangst van het station, een foto bij het station als die er is, de tekst uit de stationslijst en de bronnen. Omhoog scrollen of “Boven water” brengt je terug; tijdens het opstijgen negeert de kaart je hand, zodat hij altijd recht uitkomt.
+- **Duik.** Overgenomen uit het duikprototype. De kaart vliegt naar het schip en kantelt, de waterlijn komt omhoog en het schip ligt half onder water. Scrollen gaat de diepte in, langs de zones (zonlicht, schemer, middernacht, diepzeevlakte). Een dieptemeter of liniaal staat er bewust niet bij; de enige diepte in getallen is de gelode bodemdiepte onderaan. Het tuig van het station hangt aan zijn kabel (kor, dreg, Hensen-net, sluitnet, sleepnet, cilinder, of “met de hand” bij rif en strand); tik erop voor uitleg en een archieffoto. Het loodlijntje toont de gelode diepte. De specimens zijn ronde fotootjes, met de illustratie uit de soortbeelden (of anders de eigen foto van het museum); een verwante soort heeft er een oranje merkje "verwant" onder. Op de bodem staat de bodemnotitie uit 1899, daaronder de vangst van het station (ook met die fotootjes en merkjes), een foto bij het station als die er is, de tekst uit de stationslijst en de bronnen. Omhoog scrollen of “Boven water” brengt je terug; tijdens het opstijgen negeert de kaart je hand, zodat hij altijd recht uitkomt.
 - **Terug.** Wat je opent, is een stap in de browsergeschiedenis en staat in de URL: `/map?station=93`, `/map?net=1`, `/map?station=93&specimen=…`. De terugknop van de browser sluit dus eerst het specimen, dan het netje of de duik, en brengt je terug op de kaart bij de huidige plek van het schip; pas daarna verlaat je de ontdekmodus. In een hoofdstuk (als plugin) blijft dat binnen de plugin, zodat de pagina niet verspringt.
-- **Specimen.** Foto, naam, familie en groep. Is het een naamdrager, dan staat dat er groot bij, met een zegel. Daarna de reis: gevangen (station en datum), elke determinatie die het record kent, en het museum waar het nu ligt. Links naar GBIF en, voor Naturalis, naar Bioportal.
+- **Specimen.** Foto, naam, familie en groep. De foto bovenaan is een illustratie uit de [soortbeelden](soortbeelden.md) als die er is: een waarneming van een levend exemplaar van dezelfde soort of van een verwante soort, nooit het specimen zelf. Er staat altijd een label op ("Illustratie · Zelfde soort", "Illustratie · Verwante soort"). Onder de naam staat wat er op de foto staat, met bij een verwante soort een gekleurde achtergrond. Een tik op de foto, het label of "Uitleg" opent een venster met de foto groot, hoe verwant hij is, de kanttekening (bijvoorbeeld dat het specimen een vorm is die niet apart gefotografeerd is), hoe de foto gekozen is en de bronvermelding. Heeft het museum ook een eigen foto (vaak het doosje of het etiket), dan staat die verderop als "Het specimen zelf". Is het een naamdrager, dan staat dat er groot bij, met een zegel. Daarna de reis: gevangen (station en datum), elke determinatie die het record kent, en het museum waar het nu ligt. Links naar GBIF en, voor Naturalis, naar Bioportal.
 
 ### Naamdragers
 Een specimen waarop een soort beschreven is, alleen (holotype, lectotype, neotype) of samen met andere exemplaren (syntype), krijgt een zegel met een ster: in de tijdlijn, in de waterkolom, in de vangst en op de specimenpagina. In deze selectie zijn dat er 4.
@@ -73,7 +73,9 @@ De stations komen uit de stationslijst van Fauconnier (2026), naar de gedrukte l
 ```
 frontend/public/datasets/              ← in git, als geheel vervangen
 ├── siboga-goud.json                   ← specimens, musea, namen (zie gouden-dataset.md)
-└── route-stations.json                ← route, diepte van nu en alle stations
+├── route-stations.json                ← route, diepte van nu en alle stations
+├── soortbeelden.json                  ← per specimen een waarnemingsfoto en hoe verwant die is (zie soortbeelden.md)
+└── soortbeelden/                      ← die foto's, en thumbs/ (480 px)
 frontend/public/data/                  ← van de pipeline, niet in git
 ├── explorer.json                      ← per specimen: foto en determinaties; per station: foto
 ├── media/specimen-<gbif>.jpg          ← de foto's van specimens
@@ -100,7 +102,7 @@ De ontdekmodus staat los van de rest van de frontend:
 ```
 frontend/src/explorer/
 ├── el-explorer.vue           ← het geheel: kaart, datum, tijdlijn, duik, netje, specimen
-├── data.js                   ← laadt en koppelt de drie bestanden; posities op de route
+├── data.js                   ← laadt en koppelt de vier bestanden; posities op de route
 ├── groups.js                 ← tekentjes per groep, en welke groepen op de bodem leven
 ├── gear.js                   ← het tuig: tekening, uitleg en archieffoto
 ├── el-explorer-map.vue       ← eigen MapLibre-kaart met de blauwe zeekaart; vliegen en kantelen
@@ -109,6 +111,8 @@ frontend/src/explorer/
 ├── el-explorer-specimen.vue  ← één specimen
 ├── el-explorer-net.vue       ← wat er tot nu toe in het netje zit
 ├── el-explorer-badge.vue     ← het zegel voor naamdragers
+├── el-explorer-likeness.vue  ← het label bij een illustratie: "verwant" klein, "Illustratie · …" groot
+├── el-explorer-illustration.vue ← het venster met de illustratie groot en hoe verwant die is
 ├── el-explorer-icon.vue
 └── media/                    ← papier- en aquareltextuur, archieffoto's van het tuig
 ```
@@ -118,6 +122,7 @@ frontend/src/explorer/
 ## Bronnen en licenties
 - **Specimens**: GBIF, licentie en bronvermelding per record en per dataset, zie [gouden-dataset.md](gouden-dataset.md#licenties-en-bronvermelding).
 - **Foto's van specimens**: van het museum via GBIF, met de licentie en naam die erbij staan.
+- **Illustraties (soortbeelden)**: waarnemingen van iNaturalist en Wikimedia Commons, per foto met maker, licentie (CC0, CC BY of CC BY-SA) en link, zie [soortbeelden.md](soortbeelden.md).
 - **Stationslijst**: Fauconnier, S. (2026). *Station list of the Siboga Expedition (1899-1900) cross-referenced with Wikidata* [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.23433434. CC0. Naar Weber (1902), *Siboga-Expeditie* Monographie I (publiek domein).
 - **Diepte van nu**: GEBCO Compilation Group (2024). GEBCO 2024 Grid. doi:10.5285/1c44ce99-0a0d-5f4f-e063-7086abc0ea0f. Publiek domein, met bronvermelding.
 - **Archieffoto's van het tuig**: Hugo Frederik Nierstrasz, 1899–1900. Bijzondere Collecties, Universiteit van Amsterdam. Publiek domein.

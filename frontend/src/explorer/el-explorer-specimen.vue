@@ -4,6 +4,8 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElExplorerBadge from './el-explorer-badge.vue';
     import ElExplorerIcon from './el-explorer-icon.vue';
+    import ElExplorerIllustration from './el-explorer-illustration.vue';
+    import ElExplorerLikeness from './el-explorer-likeness.vue';
     import ElExplorerTerm from './el-explorer-term.vue';
     import { groupName } from './groups.js';
 
@@ -25,6 +27,26 @@
     });
 
     const isImageLoaded = ref(false);
+    const isIllustrationOpen = ref(false);
+
+    // The large photo at the top: an illustration of the species if there is one, else the museum's own photo
+    const visual = computed(() => {
+        const { illustration, image } = props.specimen;
+
+        if (illustration) {
+            return {
+                src : illustration.src,
+                credit : `${illustration.maker} · ${illustration.license}`,
+                isIllustration : true
+            };
+        }
+
+        return image ? {
+            src : image.src,
+            credit : `${image.credit} · ${image.license}`,
+            isIllustration : false
+        } : null;
+    });
 
     const typeTitle = computed(() => {
         if (props.specimen.typeRank === 1) {
@@ -84,11 +106,13 @@
             class="visual"
             v-bind:has-image="isImageLoaded ? '' : null">
             <img
-                v-if="specimen.image"
+                v-if="visual"
                 class="visual__image"
                 alt=""
-                v-bind:src="specimen.image.src"
-                v-on:load="isImageLoaded = true">
+                v-bind:src="visual.src"
+                v-bind:is-illustration="visual.isIllustration ? '' : null"
+                v-on:load="isImageLoaded = true"
+                v-on:click="visual.isIllustration && (isIllustrationOpen = true)">
 
             <el-explorer-icon
                 v-if="!isImageLoaded"
@@ -106,15 +130,36 @@
                     v-bind:size="20" />
             </button>
 
+            <button
+                v-if="specimen.illustration"
+                type="button"
+                class="visual__likeness"
+                aria-label="Uitleg over deze foto"
+                v-on:click="isIllustrationOpen = true">
+                <el-explorer-likeness
+                    large
+                    v-bind:illustration="specimen.illustration" />
+            </button>
+
             <p
-                v-if="specimen.image"
-                class="visual__credit">{{ specimen.image.credit }} · {{ specimen.image.license }}</p>
+                v-if="visual"
+                class="visual__credit">{{ visual.credit }}</p>
         </div>
 
         <div class="body">
             <header class="head">
                 <h2 class="name">{{ specimen.name }}</h2>
                 <p class="meta">{{ [specimen.family, groupName(specimen.group)].filter(Boolean).join(' · ') }}</p>
+                <p
+                    v-if="specimen.illustration"
+                    class="caption"
+                    v-bind:is-related="specimen.illustration.isRelated ? '' : null">
+                    {{ specimen.illustration.label }}
+                    <button
+                        type="button"
+                        class="caption__more"
+                        v-on:click="isIllustrationOpen = true">Uitleg</button>
+                </p>
             </header>
 
             <div
@@ -253,10 +298,30 @@
                 <p class="evidence__text">In het museumrecord, veld <code>{{ specimen.evidence.field }}</code>: “{{ evidenceParts[0] }}<mark>{{ evidenceParts[1] }}</mark>{{ evidenceParts[2] }}”</p>
             </section>
 
+            <figure
+                v-if="specimen.illustration && specimen.image"
+                class="own">
+                <img
+                    class="own__image"
+                    alt=""
+                    loading="lazy"
+                    v-bind:src="specimen.image.src">
+                <figcaption class="own__caption">
+                    <strong>Het specimen zelf</strong>, zoals het museum het fotografeerde.
+                    {{ specimen.image.credit }} · {{ specimen.image.license }}
+                </figcaption>
+            </figure>
+
             <p
                 v-if="specimen.dataset"
                 class="credit">{{ specimen.dataset.bronvermelding ?? specimen.dataset.titel }} · {{ specimen.license }}</p>
         </div>
+
+        <el-explorer-illustration
+            v-if="isIllustrationOpen && specimen.illustration"
+            v-bind:illustration="specimen.illustration"
+            v-bind:specimen-name="specimen.name"
+            v-on:close="isIllustrationOpen = false" />
     </section>
 </template>
 
@@ -311,6 +376,22 @@
             opacity: 1;
             transform: scale(1);
         }
+
+        // An observation photo fills the frame; a museum photo of a box or label is shown whole
+        &[is-illustration] {
+            object-fit: cover;
+            cursor: zoom-in;
+        }
+    }
+
+    .visual__likeness {
+        position: absolute;
+        left: 1.2rem;
+        bottom: 0.8rem;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
     }
 
     .visual__credit {
@@ -318,7 +399,7 @@
         right: 0.8rem;
         bottom: 0.6rem;
         margin: 0;
-        max-width: 80%;
+        max-width: 55%;
         padding: 0.2rem 0.6rem;
         border-radius: 3px;
         background: rgba(251, 248, 241, 0.85);
@@ -366,6 +447,49 @@
 
     .meta {
         margin: 0;
+        color: var(--c-ink-soft);
+    }
+
+    .caption {
+        margin: 0.6rem 0 0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        background: var(--c-plate);
+        font-size: 1.5rem;
+
+        &[is-related] {
+            background: var(--c-terracotta-soft);
+        }
+    }
+
+    .caption__more {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-link);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .own {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        margin: 0;
+    }
+
+    .own__image {
+        flex: none;
+        width: 8rem;
+        height: 8rem;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--c-plate);
+    }
+
+    .own__caption {
+        font-size: 1.3rem;
         color: var(--c-ink-soft);
     }
 

@@ -1,11 +1,13 @@
 // Loads and joins the data of the explore mode: the gold set of Siboga specimens,
-// the route with all stations and today's depth, and what the pipeline added per
-// specimen (a local image and every identification). See docs/ontdekmodus.md.
+// the route with all stations and today's depth, what the pipeline added per
+// specimen (a local image and every identification), and an illustrative photo of
+// the species or a related species. See docs/ontdekmodus.md and docs/soortbeelden.md.
 import { mediaUrl } from '@/services/data.js';
 
 const GOLD_URL = '/datasets/siboga-goud.json';
 const ROUTE_URL = '/datasets/route-stations.json';
 const EXTRA_URL = '/data/explorer.json';
+const ILLUSTRATIONS_URL = '/datasets/soortbeelden.json';
 const NATURALIS_URL = 'https://bioportal.naturalis.nl/specimen/';
 
 async function fetchJson(url) {
@@ -29,6 +31,60 @@ async function fetchExtra() {
             specimens : {}
         };
     }
+}
+
+// The illustrations are optional too: without them the specimens show only their own photo, if any
+async function fetchIllustrations() {
+    try {
+        return await fetchJson(ILLUSTRATIONS_URL);
+    } catch (error) {
+        console.warn(`No illustrations: ${error.message}`);
+
+        return {
+            beelden : {},
+            overeenkomst : {},
+            specimens : {},
+            taxa : {}
+        };
+    }
+}
+
+// An observation photo of the same or a related species, never of the specimen itself, with
+// the texts that say how close it is (see docs/soortbeelden.md)
+function illustrationOf(gbif, illustrations) {
+    const entry = illustrations.specimens[String(gbif)];
+    const image = entry?.beeld ? illustrations.beelden[entry.beeld] : null;
+
+    if (!image) {
+        return null;
+    }
+
+    const level = illustrations.overeenkomst[entry.overeenkomst] ?? {};
+    const taxonEntry = (illustrations.taxa[entry.taxon] ?? []).find((item) => item.beeld === entry.beeld);
+
+    return {
+        level : entry.overeenkomst,
+        isRelated : entry.overeenkomst === 'verwante-soort',
+        badge : level.badge,
+        title : level.titel,
+        explanation : level.uitleg,
+        label : entry.label,
+        note : entry.kanttekening,
+        reasoning : taxonEntry?.toelichting ?? null,
+        isMostSpecific : entry.meest_specifiek,
+        mostSpecificName : entry.naam_specifiekst,
+        depicted : image.afgebeeld_taxon,
+        src : mediaUrl(image.src),
+        thumb : mediaUrl(image.thumb ?? image.src),
+        credit : image.bronvermelding,
+        maker : image.maker,
+        license : image.licentie,
+        licenseUrl : image.licentie_url,
+        source : image.bron,
+        sourceUrl : image.pagina,
+        date : image.datum,
+        place : image.plaats
+    };
 }
 
 function rows(table) {
@@ -92,12 +148,17 @@ function identificationsOf(row, extra, people) {
 }
 
 function buildSpecimen(row, context) {
-    const { extras, gold, lists, museums, names, station } = context;
+    const { extras, gold, illustrations, lists, museums, names, station } = context;
     const museum = museums[row.museum] ?? null;
     const isNaturalis = museum?.organisatie === 'Naturalis Biodiversity Center' && row.catalogus;
     const people = (list) => (list ?? []).map((i) => names[i]?.naam).filter(Boolean);
     const extra = extras[String(row.gbif)] ?? null;
     const dataset = gold.datasets.rijen[row.dataset];
+    const illustration = illustrationOf(row.gbif, illustrations);
+    const image = extra?.image ? {
+        ...extra.image,
+        src : mediaUrl(extra.image.src)
+    } : null;
 
     return {
         id : row.gbif,
@@ -121,10 +182,11 @@ function buildSpecimen(row, context) {
         license : lists.licentie[row.licentie] ?? null,
         dataset : dataset ? Object.fromEntries(gold.datasets.velden.map((field, i) => [field, dataset[i]])) : null,
         evidence : evidence(row.bewijs_station, lists),
-        image : extra?.image ? {
-            ...extra.image,
-            src : mediaUrl(extra.image.src)
-        } : null,
+        // The museum's own photo of the specimen (often its box or label)
+        image,
+        illustration,
+        // The small round photo in the dive and the net: the illustration if there is one, else the own photo
+        thumb : illustration?.thumb ?? image?.src ?? null,
         gbifUrl : gold.url.gbif + row.gbif,
         naturalisUrl : isNaturalis ? NATURALIS_URL + encodeURIComponent(row.catalogus) : null,
         station
@@ -132,10 +194,11 @@ function buildSpecimen(row, context) {
 }
 
 export async function loadExplorer() {
-    const [gold, route, extra] = await Promise.all([
+    const [gold, route, extra, illustrations] = await Promise.all([
         fetchJson(GOLD_URL),
         fetchJson(ROUTE_URL),
-        fetchExtra()
+        fetchExtra(),
+        fetchIllustrations()
     ]);
     const lists = gold.lijsten;
     const museums = rows(gold.musea);
@@ -172,6 +235,7 @@ export async function loadExplorer() {
         const specimen = buildSpecimen(row, {
             extras : extra.specimens ?? {},
             gold,
+            illustrations,
             lists,
             museums,
             names,

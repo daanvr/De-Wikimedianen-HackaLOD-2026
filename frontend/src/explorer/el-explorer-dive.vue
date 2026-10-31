@@ -6,6 +6,7 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElExplorerBadge from './el-explorer-badge.vue';
     import ElExplorerIcon from './el-explorer-icon.vue';
+    import ElExplorerLikeness from './el-explorer-likeness.vue';
     import { seeded } from './data.js';
     import { GEAR, GEAR_DRAWINGS, PHOTO_CREDIT, gearsOf } from './gear.js';
     import { BOTTOM_GROUPS, groupName } from './groups.js';
@@ -277,7 +278,7 @@
             const row = Math.floor(i / BOTTOM_ROW);
             const inRow = Math.min(BOTTOM_ROW, bottom.length - row * BOTTOM_ROW);
             const column = i % BOTTOM_ROW;
-            const size = specimen.image ? 64 : 46;
+            const size = specimen.thumb ? 64 : 46;
 
             result.push({
                 specimen,
@@ -308,7 +309,7 @@
             .sort((a, b) => a.y - b.y)
             .forEach(({ specimen, y }, i) => {
                 const placedY = Math.max(y, lastY + 70);
-                const size = specimen.image ? 72 : 48;
+                const size = specimen.thumb ? 72 : 48;
 
                 if (placedY > floor) {
                     return;
@@ -772,16 +773,16 @@
                     v-bind:place="item.place"
                     v-bind:motion="item.motion"
                     v-bind:is-seen="seen.has(String(item.specimen.id)) ? '' : null"
-                    v-bind:has-image="item.specimen.image ? '' : null"
+                    v-bind:has-image="item.specimen.thumb ? '' : null"
                     v-bind:aria-label="item.specimen.name"
                     v-bind:style="{ left : `${item.left}px`, top : `${item.top}px`, width : `${item.size}px`, height : `${item.size}px` }"
                     v-on:click="emit('select-specimen', item.specimen)">
                     <img
-                        v-if="item.specimen.image"
+                        v-if="item.specimen.thumb"
                         class="specimen__image"
                         alt=""
                         loading="lazy"
-                        v-bind:src="item.specimen.image.src">
+                        v-bind:src="item.specimen.thumb">
                     <el-explorer-icon
                         v-else
                         v-bind:group="item.specimen.group"
@@ -790,6 +791,10 @@
                         v-if="item.specimen.isNameBearer"
                         class="specimen__badge"
                         v-bind:size="22" />
+                    <el-explorer-likeness
+                        v-if="item.specimen.illustration"
+                        class="specimen__likeness"
+                        v-bind:illustration="item.specimen.illustration" />
                 </button>
 
                 <div
@@ -840,10 +845,10 @@
                                     v-on:click="emit('select-specimen', specimen)">
                                     <span class="catch__visual">
                                         <img
-                                            v-if="specimen.image"
+                                            v-if="specimen.thumb"
                                             alt=""
                                             loading="lazy"
-                                            v-bind:src="specimen.image.src">
+                                            v-bind:src="specimen.thumb">
                                         <el-explorer-icon
                                             v-else
                                             v-bind:group="specimen.group"
@@ -852,6 +857,10 @@
                                             v-if="specimen.isNameBearer"
                                             class="catch__badge"
                                             v-bind:size="22" />
+                                        <el-explorer-likeness
+                                            v-if="specimen.illustration"
+                                            class="catch__likeness"
+                                            v-bind:illustration="specimen.illustration" />
                                     </span>
                                     <em class="catch__name">{{ specimen.name }}</em>
                                     <span class="catch__meta">{{ groupName(specimen.group) }}</span>
@@ -1226,6 +1235,16 @@
         position: absolute;
         top: -0.6rem;
         right: -0.6rem;
+    }
+
+    // "verwant" under the round photo of a related species
+    .specimen__likeness,
+    .catch__likeness {
+        position: absolute;
+        left: 50%;
+        bottom: -0.9rem;
+        translate: -50% 0;
+        pointer-events: none;
     }
 
     .seabed {

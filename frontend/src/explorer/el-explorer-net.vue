@@ -4,6 +4,7 @@
     import ElIcon from '@/components/el-icon.vue';
     import ElExplorerBadge from './el-explorer-badge.vue';
     import ElExplorerIcon from './el-explorer-icon.vue';
+    import ElExplorerLikeness from './el-explorer-likeness.vue';
 
     const emit = defineEmits(['close', 'select-specimen', 'select-station']);
 
@@ -78,10 +79,10 @@
                         v-on:click="emit('select-specimen', specimen)">
                         <span class="tile__icon">
                             <img
-                                v-if="specimen.image"
+                                v-if="specimen.thumb"
                                 alt=""
                                 loading="lazy"
-                                v-bind:src="specimen.image.src">
+                                v-bind:src="specimen.thumb">
                             <el-explorer-icon
                                 v-else
                                 v-bind:group="specimen.group"
@@ -90,6 +91,10 @@
                                 v-if="specimen.isNameBearer"
                                 class="tile__badge"
                                 v-bind:size="22" />
+                            <el-explorer-likeness
+                                v-if="specimen.illustration"
+                                class="tile__likeness"
+                                v-bind:illustration="specimen.illustration" />
                         </span>
                         <em class="tile__name">{{ specimen.name }}</em>
                     </button>
@@ -238,6 +243,12 @@
         position: absolute;
         top: 0.4rem;
         right: 0.4rem;
+    }
+
+    .tile__likeness {
+        position: absolute;
+        left: 0.4rem;
+        bottom: 0.4rem;
     }
 
     .tile__name {
