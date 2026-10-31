@@ -86,7 +86,9 @@ Staat zo'n link in een eigen alinea, dan toont de site de plugin in de tekst, me
 
 | Plugin | Argument                                                         |
 | ------ | ---------------------------------------------------------------- |
-| `iiif` | Een IIIF Image API-URL, een `info.json` of een manifest (`…/manifest.json`, daarvan het eerste plaatje); anders een gewoon plaatje |
+| `iiif` | Een IIIF Image API-URL, een `info.json` of een manifest (`…/manifest.json`); anders een gewoon plaatje. Bij een manifest met meer pagina's kun je bladeren |
+
+Een manifest kan ook zonder `[[IIIF#...]]`: een alinea met alleen de URL van een IIIF-manifest wordt vanzelf de IIIF-viewer.
 
 ## Obsidian-markdown
 De pipeline moet in elk geval dit herkennen:

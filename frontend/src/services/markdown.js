@@ -1,5 +1,6 @@
 import { Marked, Parser } from 'marked';
 import { mediaUrl } from '@/services/data.js';
+import { MANIFEST_URL } from '@/services/iiif.js';
 
 // ::: gallery ... ::: (not indented). Without the closing ::: it is no gallery,
 // and the images inside are shown as ordinary images.
@@ -137,16 +138,25 @@ function gallerySegment(token, marked) {
 }
 
 // A paragraph with nothing but a link to a plugin, as the pipeline writes
-// [[IIIF#argument]], is shown as the plugin itself.
+// [[IIIF#argument]], is shown as the plugin itself. So is a paragraph with
+// nothing but the URL of a IIIF manifest, so editors can just paste one.
 function pluginSegment(token) {
     if (token.type !== 'paragraph') {
         return null;
     }
 
     const children = contentTokens(token.tokens);
-    const match = children.length === 1 && children[0].type === 'link'
-        ? children[0].href.match(PLUGIN_HREF)
-        : null;
+    const link = children.length === 1 && children[0].type === 'link' ? children[0] : null;
+
+    if (link && MANIFEST_URL.test(link.href)) {
+        return {
+            type : 'plugin',
+            id : 'iiif',
+            argument : link.href
+        };
+    }
+
+    const match = link?.href.match(PLUGIN_HREF);
 
     if (!match) {
         return null;
