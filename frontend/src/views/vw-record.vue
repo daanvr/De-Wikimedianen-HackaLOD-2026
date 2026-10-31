@@ -108,7 +108,9 @@
                 ? {
                     lon : coordinates.lon,
                     lat : coordinates.lat,
-                    zoom : 7
+                    zoom : 7,
+                    label : name.value,
+                    kicker : t('content_type_single_' + type.value)
                 }
                 : store.map.focus
         });
