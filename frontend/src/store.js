@@ -127,6 +127,10 @@ export const useStore = defineStore('data', {
                 return 'plugin';
             }
 
+            if (kind === 'pages') {
+                return 'page';
+            }
+
             return kind === 'chapters' ? 'chapter' : 'internal';
         },
 
