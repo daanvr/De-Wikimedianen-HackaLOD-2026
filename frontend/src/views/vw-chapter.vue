@@ -2,6 +2,7 @@
     import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import ElChapterNav from '@/components/el-chapter-nav.vue';
+    import ElLayerButton from '@/components/el-layer-button.vue';
     import ElMapButton from '@/components/el-map-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
     import ElSheet from '@/components/el-sheet.vue';
@@ -72,6 +73,12 @@
         store.markChapterRead(chapter.value.id);
     }
 
+    function setLayer(layer) {
+        store.setMap({
+            base : layer
+        });
+    }
+
     function recenter() {
         if (!chapter.value) {
             return;
@@ -112,11 +119,16 @@
             {{ t('on_the_way') }}
         </p>
 
-        <el-map-button
-            class="to-boat"
-            icon="anchor"
-            v-bind:label="t('to_boat')"
-            v-on:click="recenter()" />
+        <div class="map-buttons">
+            <el-layer-button
+                v-bind:layer="store.map.base"
+                v-on:change="setLayer($event)" />
+
+            <el-map-button
+                icon="anchor"
+                v-bind:label="t('to_boat')"
+                v-on:click="recenter()" />
+        </div>
 
         <el-sheet
             ref="sheet"
@@ -199,10 +211,14 @@
         z-index: 10;
     }
 
-    .to-boat {
+    // The anchor keeps its place; the layer button sits on top of it (4.8rem button + 1rem gap)
+    .map-buttons {
         position: absolute;
         right: 1.6rem;
-        top: calc(48% - 6.4rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        top: calc(48% - 6.4rem - 5.8rem);
         transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
         z-index: 15;
 
@@ -212,8 +228,8 @@
         }
     }
 
-    .vw-chapter[sheet="peek"] .to-boat {
-        top: calc(100% - 14rem - 6.4rem);
+    .vw-chapter[sheet="peek"] .map-buttons {
+        top: calc(100% - 14rem - 6.4rem - 5.8rem);
 
         @include mixins.respond-from(900px) {
             top: auto;

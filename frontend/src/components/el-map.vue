@@ -23,6 +23,27 @@
     // Historical map, georeferenced with Allmaps; loaded live, the vector layers stay underneath as a fallback
     const HISTORIC_MAP_TILES = 'https://allmaps.xyz/images/1fd0accb445d424e/{z}/{x}/{y}@2x.png';
     const HISTORIC_MAP_BOUNDS = [111.67, -12.29, 135.37, 7.33];
+    const SATELLITE_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+
+    // What each base map shows on top of the vector layers, which are always drawn as a fallback
+    const BASES = {
+        historic : {
+            historic : 1,
+            satellite : false
+        },
+        historicHalf : {
+            historic : 0.5,
+            satellite : true
+        },
+        chart : {
+            historic : 0,
+            satellite : false
+        },
+        satellite : {
+            historic : 0,
+            satellite : true
+        }
+    };
 
     const SEA_LABELS = [
         {
@@ -106,6 +127,10 @@
     ];
 
     const props = defineProps({
+        base : {
+            type : String,
+            default : 'historic'
+        },
         layers : {
             type : Object,
             default : null
@@ -137,6 +162,7 @@
     const isReady = ref(false);
 
     let map = null;
+    let labels = [];
     let boatMarker = null;
     let boatPosition = null;
     let boatAnimation = null;
@@ -176,6 +202,23 @@
         }
 
         boatAnimation = requestAnimationFrame(step);
+    }
+
+    function applyBase() {
+        if (!map || !isReady.value) {
+            return;
+        }
+
+        const base = currentBase();
+
+        map.setLayoutProperty('satellite', 'visibility', base.satellite ? 'visible' : 'none');
+        map.setLayoutProperty('historic-map', 'visibility', base.historic ? 'visible' : 'none');
+        map.setPaintProperty('historic-map', 'raster-opacity', base.historic || 1);
+
+        // The historical map prints its own names, so hide ours where they would overlap
+        for (const label of labels) {
+            label.marker.getElement().hidden = Boolean(base.historic) && label.onHistoricMap;
+        }
     }
 
     function applyFocus(animate = true) {
@@ -218,6 +261,7 @@
     }
 
     function buildStyle() {
+        const base = currentBase();
         const empty = {
             type : 'FeatureCollection',
             features : []
@@ -234,6 +278,12 @@
                 land : {
                     type : 'geojson',
                     data : layers.land ?? empty
+                },
+                satellite : {
+                    type : 'raster',
+                    tiles : [SATELLITE_TILES],
+                    tileSize : 256,
+                    maxzoom : 19
                 },
                 historicMap : {
                     type : 'raster',
@@ -293,11 +343,26 @@
                     }
                 },
                 {
+                    id : 'satellite',
+                    type : 'raster',
+                    source : 'satellite',
+                    layout : {
+                        visibility : base.satellite ? 'visible' : 'none'
+                    },
+                    paint : {
+                        'raster-fade-duration' : 200
+                    }
+                },
+                {
                     id : 'historic-map',
                     type : 'raster',
                     source : 'historicMap',
+                    layout : {
+                        visibility : base.historic ? 'visible' : 'none'
+                    },
                     paint : {
-                        'raster-fade-duration' : 200
+                        'raster-fade-duration' : 200,
+                        'raster-opacity' : base.historic || 1
                     }
                 },
                 {
@@ -356,13 +421,19 @@
         element.className = `map-label map-label--${kind}`;
         element.textContent = label.text;
 
-        return new maplibregl.Marker({
-            element,
-            anchor : 'center'
-        }).setLngLat([label.lon, label.lat]).addTo(map);
+        labels.push({
+            marker : new maplibregl.Marker({
+                element,
+                anchor : 'center'
+            }).setLngLat([label.lon, label.lat]).addTo(map),
+            onHistoricMap : isOnHistoricMap(label)
+        });
     }
 
-    // The historical map prints its own names, so only label what lies outside it
+    function currentBase() {
+        return BASES[props.base] ?? BASES.historic;
+    }
+
     function isOnHistoricMap(label) {
         const [west, south, east, north] = HISTORIC_MAP_BOUNDS;
         const margin = 0.5;
@@ -420,6 +491,7 @@
         map.setPaintProperty('route', 'line-opacity', explore ? 0.8 : 1);
     }
 
+    watch(() => props.base, applyBase);
     watch(() => props.layers, setLayerData);
     watch(() => props.mode, updateMode);
     watch(() => props.boat, updateBoat, {
@@ -458,13 +530,15 @@
             updateBoat();
             applyFocus(false);
 
-            for (const label of SEA_LABELS.filter((label) => !isOnHistoricMap(label))) {
+            for (const label of SEA_LABELS) {
                 createLabel(label, 'sea');
             }
 
-            for (const label of LAND_LABELS.filter((label) => !isOnHistoricMap(label))) {
+            for (const label of LAND_LABELS) {
                 createLabel(label, 'land');
             }
+
+            applyBase();
         });
     });
 
@@ -472,6 +546,7 @@
         cancelAnimationFrame(boatAnimation);
         map?.remove();
         map = null;
+        labels = [];
     });
 
     defineExpose({
@@ -483,7 +558,8 @@
     <div
         ref="container"
         class="el-map"
-        v-bind:mode="mode"></div>
+        v-bind:mode="mode"
+        v-bind:base="base"></div>
 </template>
 
 <style lang="scss" scoped>
@@ -513,6 +589,17 @@
             font-size: 1rem;
             letter-spacing: 0.24em;
             color: #6E6248;
+        }
+
+        // Light names with a shadow stay readable on the photo
+        &[base="satellite"] {
+            :deep(.map-label) {
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+            }
+
+            :deep(.map-label--land) {
+                color: #F2ECDB;
+            }
         }
 
         :deep(.map-boat) {

@@ -34,6 +34,7 @@ export const useStore = defineStore('data', {
             loading : true,
             map : {
                 mode : 'home',
+                base : 'historic',
                 chapterId : null,
                 focus : null,
                 travelling : false

@@ -47,6 +47,8 @@ Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via d
 ## Kaart
 Eén kaart (`el-map.vue`) blijft staan onder alle views, zodat de boot van hoofdstuk naar hoofdstuk kan varen. Views zetten de kaartstand in de store (`store.setMap()`); `app.vue` geeft die als props door. De onderlaag is eigen werk, met vlakke dieptebanden uit `public/map/`, die lokaal staan. Daarop ligt als hoofdlaag de "Kaart van den Trek v. H.M. Siboga 1899-1900" (Stadsarchief Amsterdam), gegeorefereerd met [Allmaps](https://allmaps.org) en live geladen als rastertegels van `allmaps.xyz`. Valt Allmaps uit, dan blijft de eigen onderlaag zichtbaar. Zee- en landnamen zijn HTML-labels, zodat er geen glyph-server nodig is; op de historische kaart staan ze niet, want die heeft zijn eigen namen.
 
+Rechtsonder zit een knop voor de kaartlaag (`el-layer-button.vue`): in een hoofdstuk boven het anker, en ook in de ontdekmodus. Elke tik gaat naar de volgende stand: oude kaart, oude kaart half doorzichtig boven de satellietfoto, zeekaart (alleen de eigen onderlaag) en satelliet. De stand staat in de store als `map.base` en blijft staan als je van view wisselt. De satellietfoto is [Esri World Imagery](https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9), live geladen; ook daaronder blijft de eigen onderlaag als vangnet.
+
 De boot staat op `coordinates` van een hoofdstuk, uit `location` in de content-repo. Heeft een hoofdstuk geen coördinaten, dan ligt de boot bij Soerabaja, waar de reis begon.
 
 ## Data en store
@@ -68,4 +70,4 @@ Een nieuwe plugin: maak `src/plugins/el-plugin-<id>.vue` en voeg één regel toe
 De IIIF-plugin (`el-plugin-iiif.vue`) gebruikt [OpenSeadragon](https://openseadragon.github.io/) en laadt de tegels live van de IIIF-server (`services/iiif.js`). Dat is een bewuste uitzondering op "alles lokaal": lukt het laden niet, dan toont de plugin een melding met een link naar de bron.
 
 ## Live bronnen
-Elke live bron is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. Er zijn nu twee live bronnen: `services/iiif.js`, voor de [IIIF-plugin](#plugins), en de Allmaps-tegels van de historische [kaart](#kaart). Die laatste staan als URL in `el-map.vue`, omdat MapLibre ze zelf ophaalt.
+Elke live bron is één module in `services/`. Valt hij uit, dan werkt de rest van de site door. Er zijn nu drie live bronnen: `services/iiif.js`, voor de [IIIF-plugin](#plugins), en de Allmaps-tegels van de historische [kaart](#kaart) en de satelliettegels van Esri. Die laatste twee staan als URL in `el-map.vue`, omdat MapLibre ze zelf ophaalt.

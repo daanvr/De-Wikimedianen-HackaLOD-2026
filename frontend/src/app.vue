@@ -71,6 +71,7 @@
 <template>
     <main class="app__main">
         <el-map
+            v-bind:base="store.map.base"
             v-bind:layers="store.mapLayers"
             v-bind:mode="store.map.mode"
             v-bind:focus="store.map.focus"

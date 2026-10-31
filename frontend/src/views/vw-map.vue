@@ -1,8 +1,15 @@
 <script setup>
     import { inject, onMounted } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
+    import ElLayerButton from '@/components/el-layer-button.vue';
 
     const store = inject('store');
+
+    function setLayer(layer) {
+        store.setMap({
+            base : layer
+        });
+    }
 
     onMounted(() => {
         const settings = {
@@ -41,6 +48,11 @@
                 </span>
             </router-link>
         </div>
+
+        <el-layer-button
+            class="layers"
+            v-bind:layer="store.map.base"
+            v-on:change="setLayer($event)" />
     </div>
 </template>
 
@@ -51,6 +63,13 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
+    }
+
+    .layers {
+        position: absolute;
+        right: 1.6rem;
+        bottom: 2.4rem;
+        z-index: 30;
     }
 
     .top {
