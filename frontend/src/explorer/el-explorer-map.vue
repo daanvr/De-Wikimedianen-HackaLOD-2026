@@ -15,6 +15,9 @@
     const TOP_STATIONS = 5;
     // Zoomed out further than this, the photos of the stations would cover the whole map
     const PHOTO_MIN_ZOOM = 4.5;
+    // A station photo grows while the ship is within this many route kilometres, up to this factor
+    const PHOTO_GROW_KM = 60;
+    const PHOTO_GROW = 3;
     // The compass lies down with the camera, but only partly, so it stays readable
     const COMPASS_TILT = 0.6;
     const EMPTY = {
@@ -79,6 +82,8 @@
     let trailKm = -1;
     let topMarkers = [];
     let photoMarkers = [];
+    let photoStations = [];
+    let photoScales = [];
     let labels = [];
     let resizeObserver = null;
 
@@ -198,8 +203,9 @@
 
     // A round photo above the stations that have one on Wikidata, as an invitation to tap
     function createPhotoMarkers() {
-        photoMarkers = props.stations
-            .filter((station) => station.photo)
+        photoStations = props.stations.filter((station) => station.photo);
+        photoScales = photoStations.map(() => 1);
+        photoMarkers = photoStations
             .map((station) => {
                 const element = document.createElement('button');
                 const image = document.createElement('img');
@@ -220,6 +226,25 @@
                     offset : [0, -4]
                 }).setLngLat([station.lon, station.lat]).addTo(map);
             });
+    }
+
+    // The photo of a station swells as the ship comes by and shrinks again behind it
+    function updatePhotoSizes(km) {
+        photoMarkers.forEach((marker, i) => {
+            const near = Math.max(0, 1 - Math.abs(photoStations[i].km - km) / PHOTO_GROW_KM);
+            const eased = near * near * (3 - 2 * near);
+            const scale = 1 + (PHOTO_GROW - 1) * eased;
+
+            if (Math.abs(scale - photoScales[i]) < 0.01) {
+                return;
+            }
+
+            const element = marker.getElement();
+
+            photoScales[i] = scale;
+            element.style.setProperty('--grow', scale.toFixed(3));
+            element.toggleAttribute('is-near', scale > 1.05);
+        });
     }
 
     function createTopMarkers() {
@@ -522,6 +547,7 @@
     }
 
     watch(() => props.position, updatePosition);
+    watch(() => props.position, updatePhotoSizes);
     watch(() => props.padding, (padding) => map?.setPadding(padding), {
         deep : true
     });
@@ -592,6 +618,7 @@
         map.on('load', () => {
             createLabels();
             createPhotoMarkers();
+            updatePhotoSizes(props.position);
             createTopMarkers();
             updatePhotoZoom();
             updatePosition();
@@ -700,8 +727,8 @@
         // Round like a pin, with a small point towards the station
         :deep(.photo-marker) {
             position: relative;
-            width: 4.2rem;
-            height: 4.2rem;
+            width: calc(4.2rem * var(--grow, 1));
+            height: calc(4.2rem * var(--grow, 1));
             padding: 0;
             border: 2px solid #FBF8F1;
             border-radius: 50%;
@@ -723,6 +750,12 @@
             // MapLibre places the marker with an inline transform, so hover changes the border instead
             &:hover {
                 border-color: var(--c-terracotta);
+            }
+
+            // Near the ship: above the other markers
+            &[is-near] {
+                z-index: 2;
+                border-width: 3px;
             }
 
             img {
