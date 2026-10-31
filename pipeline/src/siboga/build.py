@@ -15,6 +15,7 @@ from siboga.cache import Cache
 from siboga.config import Config
 from siboga.content import (
     LinkIndex,
+    body_images,
     build_link_index,
     chapter_coordinates,
     chapter_number,
@@ -190,6 +191,7 @@ def run_build(
     finally:
         cache.close()
     _add_backlinks([*pages.values(), *plugins.values(), *chapters, *records.values()])
+    _check_image_licenses(items, [*pages.values(), *plugins.values(), *chapters, *records.values()], records, report)
     data = FrontendData(
         meta = Meta(
             schema_version = SCHEMA_VERSION,
@@ -408,6 +410,25 @@ def _content_commit(content_path: Path) -> str | None:
     except (OSError, subprocess.CalledProcessError):
         return None
     return result.stdout.strip() or None
+
+def _check_image_licenses(
+    items: list[ContentItem],
+    outputs: list[PageOut | PluginOut | ChapterOut | RecordOut],
+    records: dict[str, RecordOut],
+    report: Report
+) -> None:
+    """Warns about every image in a body that gets no credit and license on the site.
+
+    Those come from the record that the caption below the image links to, so that record must have an image.
+    """
+    paths = {item.ref: item.path for item in items}
+    for output in outputs:
+        for image in body_images(output.body or ""):
+            record = records.get(image.record_id) if image.record_id else None
+            if record is None:
+                report.warn(f"image without license: {image.src}; give it a caption that links to a record of the image", paths.get(output.ref))
+            elif record.image is None:
+                report.warn(f"image without license: {image.src}; its caption links to records/{record.id}, which has no image with a license", paths.get(output.ref))
 
 def _copy_attachments(
     attachments: dict[str, Path],

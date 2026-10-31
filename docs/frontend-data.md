@@ -171,7 +171,7 @@ Sleutels in camelCase.
 - een link naar iets wat niet bestaat wordt gewone tekst, met een waarschuwing.
 
 Drie schrijfwijzen gaan ongewijzigd door; de frontend maakt ze op ([content-repo.md](content-repo.md#plaatjes-bijschriften-en-galerijen)):
-- een plaatje met direct eronder een regel helemaal in cursief wordt een plaatje met bijschrift;
+- een plaatje met direct eronder een regel helemaal in cursief wordt een plaatje met bijschrift. Linkt dat bijschrift naar een record, dan zet de frontend `credit` en `license` van het `image` van dat record eronder. `build` waarschuwt bij elk plaatje in een body waarvoor dat niet lukt;
 - `::: gallery` ... `:::` wordt een galerij. Dat is geen standaard-markdown: een andere parser toont de twee regels als tekst, met de plaatjes ertussen;
 - `:::details Tekst` ... `:::` wordt een inklapblok (`<details>`) met `Tekst` als kopje. Ook dat is geen standaard-markdown.
 

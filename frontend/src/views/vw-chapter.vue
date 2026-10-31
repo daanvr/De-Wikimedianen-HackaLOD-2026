@@ -163,6 +163,7 @@
             <el-markdown
                 v-bind:body="chapter.body"
                 v-bind:lookup-kind="store.kindForHref"
+                v-bind:lookup-image="store.imageForHref"
                 v-bind:highlight="mention"
                 drop-cap />
 

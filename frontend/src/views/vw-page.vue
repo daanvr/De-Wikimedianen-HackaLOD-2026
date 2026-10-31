@@ -39,6 +39,7 @@
             <el-markdown
                 v-bind:body="body"
                 v-bind:lookup-kind="store.kindForHref"
+                v-bind:lookup-image="store.imageForHref"
                 v-bind:highlight="mention" />
         </el-sheet>
     </div>

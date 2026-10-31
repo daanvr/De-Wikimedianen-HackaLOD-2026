@@ -117,6 +117,12 @@ export const useStore = defineStore('data', {
             return null;
         },
 
+        imageForHref(href) {
+            const [kind, id] = href.replace(/^\//, '').split('/');
+
+            return kind === 'records' ? this.records[id]?.image ?? null : null;
+        },
+
         kindForHref(href) {
             const [kind, id] = href.replace(/^\//, '').split('/');
 

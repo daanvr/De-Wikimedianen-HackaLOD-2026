@@ -10,6 +10,11 @@ import yaml
 
 from siboga.models import ContentItem, ContentType, Coordinates, ItemKind, Report
 
+_BLOCK_CLOSE = re.compile(r"^:::[ \t]*$")
+# ::: gallery and :::details Summary; the frontend makes a gallery and a collapsible block of them.
+_BLOCK_OPEN = re.compile(r"^:::[ \t]*(gallery[ \t]*$|details\b)")
+# A line entirely in italics directly below an image is its caption (see frontend/src/services/markdown.js).
+_CAPTION_LINE = re.compile(r"^\*(?!\*).+\*[ \t]*$")
 _CONTENT_TYPES = {content_type.value for content_type in ContentType}
 _EXTENSION = re.compile(r"\.[A-Za-z0-9]{1,5}$")
 _FALSE_VALUES = {"false", "no", "0", ""}
@@ -18,10 +23,9 @@ _FRONTMATTER = re.compile(
     r"\A﻿?---[ \t]*\n(.*?)^(?:---|\.\.\.)[ \t]*(?:\n|\Z)",
     re.DOTALL | re.MULTILINE
 )
-_BLOCK_CLOSE = re.compile(r"^:::[ \t]*$")
-# ::: gallery and :::details Summary; the frontend makes a gallery and a collapsible block of them.
-_BLOCK_OPEN = re.compile(r"^:::[ \t]*(gallery[ \t]*$|details\b)")
 _I18N_TYPE = "i18n"
+_IMAGE = re.compile(r"!\[[^\]\n]*\]\((?P<src>(?:[^()\s]|\([^()\s]*\))+)")
+_IMAGE_LINE = re.compile(r"^!\[[^\]\n]*\]\((?:[^()\n]|\([^()\n]*\))*\)[ \t]*$")
 _KINDS = {
     "chapter": ItemKind.CHAPTER,
     "page": ItemKind.PAGE,
@@ -34,6 +38,7 @@ _MAP_BOUNDS = {
     "lat": (-16.0, 10.0),
     "lon": (104.0, 142.0)
 }
+_RECORD_LINK = re.compile(r"\]\(/records/(?P<id>[^()\s/?#]+)\)")
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _TRUE_VALUES = {"true", "yes", "1"}
 # A single scan over the text. Code blocks and inline code are matched first,
@@ -46,6 +51,12 @@ _TOKEN = re.compile(
     r"|(?P<mdlink>(?P<image>!?)\[(?P<label>[^\[\]\n]*)\]\((?P<target>(?:[^()\n]|\([^()\n]*\))*)\))",
     re.DOTALL | re.MULTILINE
 )
+
+@dataclass
+class BodyImage:
+    """An image in a converted body, and the id of the record its caption links to, if any."""
+    record_id: str | None
+    src: str
 
 @dataclass
 class ConvertedBody:
@@ -143,6 +154,34 @@ class _BodyConverter:
         if match.group("mdlink"):
             return self._markdown_link(match)
         return match.group(0)
+
+def body_images(markdown: str) -> list[BodyImage]:
+    """All images in a converted body, outside code blocks.
+
+    Only an image alone on its line, with a caption directly below it, can have a record:
+    the frontend shows the credit and license of the first record that caption links to.
+    """
+    images = []
+    lines = markdown.splitlines()
+    fence = None
+    for number, line in enumerate(lines):
+        match = _FENCE_LINE.match(line)
+        if match:
+            mark = match.group(1)
+            if fence is None:
+                fence = mark
+            elif mark[0] == fence[0] and len(mark) >= len(fence):
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        caption = lines[number + 1] if number + 1 < len(lines) else ""
+        record = None
+        if _IMAGE_LINE.match(line.strip()) and _CAPTION_LINE.match(caption.strip()):
+            record = _RECORD_LINK.search(caption)
+        for image in _IMAGE.finditer(line):
+            images.append(BodyImage(record_id = record.group("id") if record else None, src = image.group("src")))
+    return images
 
 def build_link_index(items: list[ContentItem], content_path: Path) -> LinkIndex:
     attachments = {}

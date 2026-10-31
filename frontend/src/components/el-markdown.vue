@@ -19,6 +19,11 @@
             type : Function,
             default : null
         },
+        // A record href to its image, for the credit and license under images in the body
+        lookupImage : {
+            type : Function,
+            default : null
+        },
         dropCap : {
             type : Boolean,
             default : false
@@ -35,7 +40,11 @@
 
     const root = ref(null);
     const zoomedImage = ref(null);
-    const segments = computed(() => renderSegments(props.body, props.lookupKind, t('image_fullscreen')));
+    const segments = computed(() => renderSegments(props.body, {
+        lookupImage : props.lookupImage,
+        lookupKind : props.lookupKind,
+        zoomLabel : t('image_fullscreen')
+    }));
 
     let scrollTimer = null;
 

@@ -14,6 +14,7 @@ const FENCE_OPEN = /^:::[ \t]*\S/;
 const GALLERY = /^:::[ \t]*gallery[ \t]*\n([\s\S]*?)\n:::[ \t]*(?:\n+|$)/;
 const GALLERY_START = /^:::[ \t]*gallery/m;
 const PLUGIN_HREF = /^\/plugins\/([^/?#]+)(?:\?([^#]*))?/;
+const RECORD_HREF = /^\/records\//;
 
 function escapeHtml(value) {
     return String(value)
@@ -21,6 +22,41 @@ function escapeHtml(value) {
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;');
+}
+
+// The first link to a record in a list of inline tokens, also inside italics
+function recordLink(tokens) {
+    for (const token of tokens ?? []) {
+        if (token.type === 'link' && RECORD_HREF.test(token.href)) {
+            return token;
+        }
+
+        const link = recordLink(token.tokens);
+
+        if (link) {
+            return link;
+        }
+    }
+
+    return null;
+}
+
+// Credit and license of an image, taken from the record its caption links to,
+// so they are always shown with the image. Empty if there is no such record.
+function creditHtml(captionTokens, lookupImage) {
+    const link = recordLink(captionTokens);
+    const image = link && lookupImage ? lookupImage(link.href) : null;
+
+    if (!image?.license) {
+        return '';
+    }
+
+    const license = image.licenseUrl
+        ? `<a href="${escapeHtml(image.licenseUrl)}" target="_blank" rel="noopener">${escapeHtml(image.license)}</a>`
+        : escapeHtml(image.license);
+    const credit = image.credit ? `${escapeHtml(image.credit)} · ` : '';
+
+    return `<span class="image-credit">${credit}${license}</span>`;
 }
 
 // The inline tokens of a paragraph without line breaks and whitespace
@@ -135,8 +171,8 @@ const galleryExtension = {
 // Internal links ("/records/anna-weber") get data-internal and data-kind, so
 // el-markdown can route them and show an icon. Images are wrapped in a button
 // (data-zoom) that el-markdown opens fullscreen, and an image with a caption
-// becomes a <figure>.
-function createMarked(lookupKind, zoomLabel) {
+// becomes a <figure>, with the credit and license from lookupImage.
+function createMarked({ lookupImage, lookupKind, zoomLabel }) {
     const marked = new Marked({
         gfm : true,
         breaks : false
@@ -174,7 +210,7 @@ function createMarked(lookupKind, zoomLabel) {
                 }
 
                 const image = this.parser.parseInline([figure.image]);
-                const caption = this.parser.parseInline(figure.caption.tokens);
+                const caption = this.parser.parseInline(figure.caption.tokens) + creditHtml(figure.caption.tokens, lookupImage);
 
                 return `<figure class="figure">${image}<figcaption>${caption}</figcaption></figure>\n`;
             }
@@ -185,12 +221,12 @@ function createMarked(lookupKind, zoomLabel) {
 }
 
 // A gallery as a segment: { type : 'gallery', images : [{ src, alt, caption }] },
-// where caption is HTML or null.
-function gallerySegment(token, marked) {
+// where caption is HTML (with credit and license) or null.
+function gallerySegment(token, marked, lookupImage) {
     const images = token.tokens.map(figureTokens).filter(Boolean).map(({ image, caption }) => ({
         src : mediaUrl(image.href),
         alt : image.text || '',
-        caption : caption ? Parser.parseInline(caption.tokens, marked.defaults) : null
+        caption : caption ? Parser.parseInline(caption.tokens, marked.defaults) + creditHtml(caption.tokens, lookupImage) : null
     }));
 
     return images.length ? {
@@ -233,14 +269,15 @@ function pluginSegment(token) {
 
 // Renders a body from siboga.json as a list of segments: blocks of HTML
 // ({ type : 'html', html }), plugins ({ type : 'plugin', id, argument }) and
-// galleries ({ type : 'gallery', images }). zoomLabel is the accessible name
-// of the button around each image.
-export function renderSegments(body, lookupKind, zoomLabel = null) {
+// galleries ({ type : 'gallery', images }). Options: lookupKind gives the kind
+// of an internal href, lookupImage the image of a record href, and zoomLabel
+// is the accessible name of the button around each image.
+export function renderSegments(body, options = {}) {
     if (!body) {
         return [];
     }
 
-    const marked = createMarked(lookupKind, zoomLabel);
+    const marked = createMarked(options);
     const segments = [];
     let tokens = [];
 
@@ -255,7 +292,7 @@ export function renderSegments(body, lookupKind, zoomLabel = null) {
     }
 
     for (const token of marked.lexer(body)) {
-        const segment = token.type === 'gallery' ? gallerySegment(token, marked) : pluginSegment(token);
+        const segment = token.type === 'gallery' ? gallerySegment(token, marked, options.lookupImage) : pluginSegment(token);
 
         if (segment) {
             flush();

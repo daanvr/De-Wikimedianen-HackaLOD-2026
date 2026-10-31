@@ -234,3 +234,18 @@ def test_build_copies_audio(config: Config):
     assert data["records"]["anna-weber"]["audio"] is None
     assert (config.output_path / "media" / "kat.ogg").read_bytes() == b"OggS"
 
+def test_build_warns_about_images_without_license(config: Config):
+    _cache_image(config)
+    _write(
+        config.content_path / "chapters" / "Plaatjes.md",
+        "---\ntype: chapter\nlocation: -6.12, 106.81\n---\n"
+        "![Anna](https://example.org/anna.jpg)\n*[[Anna Weber|Anna aan boord]]*\n\n"
+        "![Zonder](https://example.org/zonder.jpg)\n*[[Zonder licentie]]*\n"
+    )
+    report = Report()
+    run_build(config, report)
+    warnings = [warning for warning in report.warnings if "image without license" in warning]
+    assert len(warnings) == 2
+    assert "media/kaart.png" in warnings[0]
+    assert "records/zonder-licentie" in warnings[1]
+    assert not any("anna.jpg" in warning for warning in warnings)

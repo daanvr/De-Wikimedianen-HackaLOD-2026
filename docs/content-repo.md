@@ -108,6 +108,17 @@ Een bijschrift is een regel helemaal in cursief, **direct** onder het plaatje (z
 
 Dat werkt ook met een embed: `![[siboga.jpg]]` met de cursieve regel eronder.
 
+### Licentie
+Bij elk plaatje op de site staan de maker en de licentie. Die komen uit het record waar het bijschrift naar linkt: maak voor het plaatje een record (bijvoorbeeld met de Commons-pagina als `uri`) en link er in het bijschrift naar. De site zet de maker en licentie van dat record dan onder het bijschrift, ook in een galerij en schermvullend.
+
+```markdown
+![De Siboga in dok](https://commons.wikimedia.org/wiki/Special:FilePath/....jpg?width=1200)
+*[[Foto van de Siboga in dok|De Siboga ligt in dok (1899-1900)]]*
+```
+
+- De eerste link naar een record in het bijschrift telt. Dat record moet zelf een plaatje met licentie hebben.
+- Een plaatje zonder bijschrift, of met een bijschrift zonder link naar zo'n record, geeft een waarschuwing in de pipeline: `image without license`.
+
 Meer plaatjes in een galerij (een carrousel om doorheen te bladeren) zet je tussen `::: gallery` en `:::`. Elk plaatje met zijn bijschrift is een eigen alinea, dus met een lege regel ertussen:
 
 ```markdown

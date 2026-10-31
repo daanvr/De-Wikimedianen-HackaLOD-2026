@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 
 from siboga.content import (
+    BodyImage,
+    body_images,
     build_link_index,
     chapter_coordinates,
     chapter_number,
@@ -389,3 +391,20 @@ def test_convert_details_unclosed(index):
     assert len(report.warnings) == 1
     assert "details without a closing" in report.warnings[0]
 
+def test_body_images():
+    markdown = (
+        "![Siboga](https://commons.wikimedia.org/wiki/Special:FilePath/Siboga_(1898).jpg?width=1200)\n"
+        "*[De Siboga](/records/foto-van-de-siboga), 1898*\n\n"
+        "![](media/kaart.png)\n"
+        "*Een kaart zonder record*\n\n"
+        "Tekst met ![los](media/los.png) erin.\n\n"
+        "```\n![code](media/code.png)\n```\n"
+    )
+    assert body_images(markdown) == [
+        BodyImage(record_id = "foto-van-de-siboga", src = "https://commons.wikimedia.org/wiki/Special:FilePath/Siboga_(1898).jpg?width=1200"),
+        BodyImage(record_id = None, src = "media/kaart.png"),
+        BodyImage(record_id = None, src = "media/los.png")
+    ]
+
+def test_body_images_caption_must_follow_directly():
+    assert body_images("![](media/a.png)\n\n*[A](/records/a)*\n") == [BodyImage(record_id = None, src = "media/a.png")]

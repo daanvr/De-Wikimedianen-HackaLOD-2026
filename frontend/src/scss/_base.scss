@@ -35,3 +35,17 @@ input {
     outline: 3px solid var(--c-terracotta-light);
     outline-offset: 2px;
 }
+
+// Credit and license under an image in a body, see services/markdown.js. Global,
+// because the caption also appears in galleries and the teleported lightbox.
+.image-credit {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 1.3rem;
+    font-style: normal;
+    opacity: 0.85;
+
+    a {
+        color: inherit;
+    }
+}
