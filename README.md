@@ -1,7 +1,7 @@
 # De Wikimedianen (HackaLOD 2026)
-Dit is de Github repository van team De Wikimedianen voor hun bijdragen aan de HackaLOD 2026. Een hackathon met erfgoeddata van het Netwerk Digitaal Erfgoed op vrijdag 30 oktober 2026 in de Nieuwe Kerk in Middelburg.
+Dit is de GitHub repository van team De Wikimedianen tijdens de [HackaLOD 2026, 30-31 oktober 2026, Middelburg](https://netwerkdigitaalerfgoed.nl/hackalod/).
 
-Het resultaat is de website **[De Siboga Expeditie](https://siboga.nl)**: het verhaal van de Nederlandse zee-expeditie van 1899–1900 naar de Indonesische archipel, verteld met Linked Data uit erfgoed- en natuurhistorische collecties.
+Het resultaat van ons hackathon-project is de website **[De Siboga Expeditie](https://siboga.nl)**: het verhaal over een grote Nederlandse zee-expeditie van 1899–1900 naar de Indonesische archipel, verteld met Linked Data uit erfgoed- en natuurhistorische collecties.
 
 # Wat we gedaan hebben
 ## Het idee
