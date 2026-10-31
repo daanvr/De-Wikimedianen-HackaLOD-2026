@@ -37,6 +37,10 @@
 
     // Waits for the sheet to finish opening, so the link ends up where we scrolled to
     const SCROLL_DELAY_MS = 400;
+    // How long the highlighted link is kept in view while images above it load
+    const SETTLE_MS = 4000;
+    // Any of these means the reader takes over, so we stop scrolling for them
+    const READER_EVENTS = ['keydown', 'pointerdown', 'touchstart', 'wheel'];
 
     const root = ref(null);
     const zoomedImage = ref(null);
@@ -47,9 +51,12 @@
     }));
 
     let scrollTimer = null;
+    let settleObserver = null;
+    let settleTimer = null;
 
     function highlightLink() {
         clearTimeout(scrollTimer);
+        stopSettling();
 
         if (!root.value) {
             return;
@@ -69,11 +76,24 @@
 
         link.setAttribute('is-highlighted', '');
         scrollTimer = setTimeout(() => {
-            link.scrollIntoView({
-                behavior : 'smooth',
-                block : 'center'
-            });
+            scrollToLink(link);
+            keepInView(link);
         }, SCROLL_DELAY_MS);
+    }
+
+    // Images get their height only once they have loaded, which pushes the link
+    // down after we scrolled to it. So while the body still grows, scroll again.
+    function keepInView(link) {
+        stopSettling();
+        settleObserver = new ResizeObserver(() => scrollToLink(link));
+        settleObserver.observe(root.value);
+        settleTimer = setTimeout(stopSettling, SETTLE_MS);
+
+        for (const name of READER_EVENTS) {
+            window.addEventListener(name, stopSettling, {
+                passive : true
+            });
+        }
     }
 
     function onClick(event) {
@@ -100,6 +120,23 @@
         router.push(link.getAttribute('href'));
     }
 
+    function scrollToLink(link) {
+        link.scrollIntoView({
+            behavior : 'smooth',
+            block : 'center'
+        });
+    }
+
+    function stopSettling() {
+        settleObserver?.disconnect();
+        settleObserver = null;
+        clearTimeout(settleTimer);
+
+        for (const name of READER_EVENTS) {
+            window.removeEventListener(name, stopSettling);
+        }
+    }
+
     watch([segments, () => props.highlight], highlightLink, {
         flush : 'post'
     });
@@ -108,6 +145,7 @@
 
     onBeforeUnmount(() => {
         clearTimeout(scrollTimer);
+        stopSettling();
     });
 </script>
 
