@@ -4,19 +4,26 @@ Reads Natural Earth bathymetry shapefiles, Natural Earth land and the route
 drawn from station to station (one LineString per leg), clips them to the
 archipelago, simplifies them and writes small GeoJSON files to public/map/.
 The route file also gets one Point per station, so the map can draw the stops.
+Coarse world versions of the land and depth layers (Natural Earth 50m land)
+fill in the rest of the world, outside the archipelago.
 
 Usage:
-    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-geojson> <land-geojson> <output-dir>
+    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-geojson> <land-geojson> <world-land-shp> <output-dir>
 """
 import json
 import sys
 from pathlib import Path
 
 import shapefile
-from shapely.geometry import box, mapping, shape
+from shapely.geometry import MultiPolygon, Polygon, box, mapping, shape
 from shapely.ops import unary_union
 
 BBOX = box(104.0, -16.0, 142.0, 10.0)
+# The world layers are only seen zoomed out, so they can be much coarser
+WORLD_TOLERANCE = 0.1
+# Coastlines are seen up to about province level, so the land needs more detail than the depths
+WORLD_LAND_TOLERANCE = 0.02
+WORLD_DIGITS = 2
 BATHYMETRY_LAYERS = [
     ("K_200", 200),
     ("J_1000", 1000),
@@ -28,19 +35,40 @@ BATHYMETRY_LAYERS = [
     ("D_7000", 7000)
 ]
 
+def bathymetry_shapes(natural_earth_dir: Path, layer: str) -> list:
+    # Natural Earth ships the layers both as one zip per layer (a folder each) and as one flat zip
+    name = f"ne_10m_bathymetry_{layer}.shp"
+    path = natural_earth_dir / layer / name
+    if not path.exists():
+        path = natural_earth_dir / name
+    return [shape(record.__geo_interface__) for record in shapefile.Reader(str(path)).shapes()]
+
 def clip_and_simplify(geometries: list, tolerance: float):
     merged = unary_union([geometry.buffer(0) for geometry in geometries])
     clipped = merged.intersection(BBOX)
     return clipped.simplify(tolerance, preserve_topology = True)
+
+def drop_small_parts(geometry, min_area: float):
+    polygons = [part for part in getattr(geometry, "geoms", [geometry]) if part.area >= min_area]
+    return MultiPolygon([
+        Polygon(polygon.exterior, [ring for ring in polygon.interiors if Polygon(ring).area >= min_area])
+        for polygon in polygons
+    ])
 
 def round_coordinates(value, digits: int = 4):
     if isinstance(value, (list, tuple)):
         return [round_coordinates(item, digits) for item in value]
     return round(value, digits)
 
-def write_geojson(path: Path, features: list):
+def world_geometry(geometries: list, tolerance: float):
+    # Everything outside the archipelago, which has its own detailed layers
+    merged = unary_union([geometry.buffer(0) for geometry in geometries])
+    simplified = merged.difference(BBOX).simplify(tolerance, preserve_topology = True)
+    return drop_small_parts(simplified, tolerance * tolerance * 20)
+
+def write_geojson(path: Path, features: list, digits: int = 4):
     for feature in features:
-        feature["geometry"]["coordinates"] = round_coordinates(feature["geometry"]["coordinates"])
+        feature["geometry"]["coordinates"] = round_coordinates(feature["geometry"]["coordinates"], digits)
     collection = {
         "type" : "FeatureCollection",
         "features" : features
@@ -51,9 +79,7 @@ def write_geojson(path: Path, features: list):
 def prepare_bathymetry(natural_earth_dir: Path, output_dir: Path):
     features = []
     for layer, depth in BATHYMETRY_LAYERS:
-        reader = shapefile.Reader(str(natural_earth_dir / layer / f"ne_10m_bathymetry_{layer}.shp"))
-        geometries = [shape(record.__geo_interface__) for record in reader.shapes()]
-        geometry = clip_and_simplify(geometries, 0.01)
+        geometry = clip_and_simplify(bathymetry_shapes(natural_earth_dir, layer), 0.01)
         if geometry.is_empty:
             continue
         features.append({
@@ -118,12 +144,31 @@ def prepare_route(route_path: Path, output_dir: Path):
             })
     write_geojson(output_dir / "route.geojson", legs + list(stations.values()))
 
+def prepare_world(natural_earth_dir: Path, world_land_path: Path, output_dir: Path):
+    features = []
+    for layer, depth in BATHYMETRY_LAYERS:
+        features.append({
+            "type" : "Feature",
+            "properties" : {
+                "depth" : depth
+            },
+            "geometry" : mapping(world_geometry(bathymetry_shapes(natural_earth_dir, layer), WORLD_TOLERANCE))
+        })
+    write_geojson(output_dir / "world-bathymetry.geojson", features, WORLD_DIGITS)
+    geometries = [shape(record.__geo_interface__) for record in shapefile.Reader(str(world_land_path)).shapes()]
+    write_geojson(output_dir / "world-land.geojson", [{
+        "type" : "Feature",
+        "properties" : {},
+        "geometry" : mapping(world_geometry(geometries, WORLD_LAND_TOLERANCE))
+    }], WORLD_DIGITS)
+
 def main():
-    natural_earth_dir, route_path, land_path, output_dir = [Path(arg) for arg in sys.argv[1:5]]
+    natural_earth_dir, route_path, land_path, world_land_path, output_dir = [Path(arg) for arg in sys.argv[1:6]]
     output_dir.mkdir(parents = True, exist_ok = True)
     prepare_bathymetry(natural_earth_dir, output_dir)
     prepare_land(land_path, output_dir)
     prepare_route(route_path, output_dir)
+    prepare_world(natural_earth_dir, world_land_path, output_dir)
 
 if __name__ == "__main__":
     main()

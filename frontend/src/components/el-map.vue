@@ -16,9 +16,13 @@
 
     const SHALLOW_COLOR = '#A3D3D2';
     const ARCHIPELAGO_BOUNDS = [[106, -12], [136, 6]];
-    // The extent of the layers in public/map/. The map never shows anything outside
-    // it, so there are no empty bands at the edges of the screen.
+    // The research area: the extent of the detailed layers in public/map/. Outside it the
+    // coarse world layers take over, and you can only zoom in to about province level.
     const LAYER_BOUNDS = [[104, -16], [142, 10]];
+    const MAX_ZOOM = 11;
+    const OUTSIDE_MAX_ZOOM = 6;
+    // How fast the zoom limit drops when you pan out of the research area, in zoom levels per degree
+    const ZOOM_DROP_PER_DEGREE = 2;
     const TRAVEL_MS = 2600;
     // Historical map, georeferenced with Allmaps; loaded live, the vector layers stay underneath as a fallback
     const HISTORIC_MAP_TILES = 'https://allmaps.xyz/images/1fd0accb445d424e/{z}/{x}/{y}@2x.png';
@@ -279,6 +283,15 @@
                     type : 'geojson',
                     data : layers.land ?? empty
                 },
+                // Coarse layers for the rest of the world; MapLibre loads them itself, so the site does not wait for them
+                worldBathymetry : {
+                    type : 'geojson',
+                    data : '/map/world-bathymetry.geojson'
+                },
+                worldLand : {
+                    type : 'geojson',
+                    data : '/map/world-land.geojson'
+                },
                 satellite : {
                     type : 'raster',
                     tiles : [SATELLITE_TILES],
@@ -303,6 +316,15 @@
                     type : 'background',
                     paint : {
                         'background-color' : SHALLOW_COLOR
+                    }
+                },
+                {
+                    id : 'world-depth',
+                    type : 'fill',
+                    source : 'worldBathymetry',
+                    paint : {
+                        'fill-color' : ['match', ['get', 'depth'], ...DEPTH_COLORS, '#1F5280'],
+                        'fill-antialias' : false
                     }
                 },
                 {
@@ -331,6 +353,23 @@
                     source : 'land',
                     paint : {
                         'fill-color' : '#F2ECDB'
+                    }
+                },
+                {
+                    id : 'world-land',
+                    type : 'fill',
+                    source : 'worldLand',
+                    paint : {
+                        'fill-color' : '#F2ECDB'
+                    }
+                },
+                {
+                    id : 'world-land-outline',
+                    type : 'line',
+                    source : 'worldLand',
+                    paint : {
+                        'line-color' : '#7C6E52',
+                        'line-width' : 0.5
                     }
                 },
                 {
@@ -456,6 +495,20 @@
         return label.lon > west - margin && label.lon < east + margin && label.lat > south - margin && label.lat < north + margin;
     }
 
+    // Allows deep zoom only in the research area: the farther the centre is outside it, the lower the limit
+    function limitZoom({ center, zoom }) {
+        const [[west, south], [east, north]] = LAYER_BOUNDS;
+        const lon = ((center.lng + 540) % 360) - 180;
+        const dx = Math.max(west - lon, 0, lon - east);
+        const dy = Math.max(south - center.lat, 0, center.lat - north);
+        const distance = Math.hypot(dx, dy);
+        const limit = Math.max(OUTSIDE_MAX_ZOOM, MAX_ZOOM - distance * ZOOM_DROP_PER_DEGREE);
+
+        return {
+            zoom : Math.min(zoom, limit)
+        };
+    }
+
     function setLayerData() {
         if (!map || !isReady.value || !props.layers) {
             return;
@@ -521,10 +574,9 @@
             container : container.value,
             style : buildStyle(),
             bounds : ARCHIPELAGO_BOUNDS,
-            minZoom : 3.2,
-            maxZoom : 11,
-            maxBounds : LAYER_BOUNDS,
-            renderWorldCopies : false,
+            minZoom : 1.5,
+            maxZoom : MAX_ZOOM,
+            transformCameraUpdate : limitZoom,
             dragRotate : false,
             pitchWithRotate : false,
             touchPitch : false,
