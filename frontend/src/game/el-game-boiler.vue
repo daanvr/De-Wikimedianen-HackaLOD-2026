@@ -18,6 +18,11 @@
         isVenting : {
             type : Boolean,
             default : false
+        },
+        // The boiler has cooled down for a while: the shovel asks for coal
+        isHinting : {
+            type : Boolean,
+            default : false
         }
     });
 
@@ -74,7 +79,11 @@
     <div
         class="el-game-boiler"
         v-bind:is-hot="isHot ? '' : null"
-        v-bind:is-venting="isVenting ? '' : null">
+        v-bind:is-venting="isVenting ? '' : null"
+        v-bind:is-hinting="isHinting ? '' : null">
+        <p
+            v-if="isHinting"
+            class="hint">De ketel is afgekoeld. Gooi kolen op!</p>
         <svg
             class="gauge"
             viewBox="-40 -40 80 80"
@@ -308,6 +317,37 @@
         letter-spacing: 0.06em;
     }
 
+    [is-hinting] .shovel {
+        animation: pulse 1.1s ease-in-out infinite;
+    }
+
+    // A speech bubble above the shovel
+    .hint {
+        position: absolute;
+        left: 0;
+        bottom: calc(100% + 1rem);
+        width: 18rem;
+        margin: 0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 0.8rem;
+        background: var(--c-paper);
+        box-shadow: var(--shadow-float);
+        color: var(--c-ink);
+        font-size: 1.4rem;
+        line-height: 1.3;
+        animation: appear 0.3s ease-out;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 13rem;
+            bottom: -0.7rem;
+            border-left: 0.7rem solid transparent;
+            border-right: 0.7rem solid transparent;
+            border-top: 0.8rem solid var(--c-paper);
+        }
+    }
+
     .steam {
         position: absolute;
         left: 2.4rem;
@@ -344,6 +384,26 @@
 
         100% {
             transform: rotate(0deg) translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 2px 4px 8px rgba(8, 26, 44, 0.45), 0 0 0 0 rgba(216, 138, 99, 0.8);
+        }
+
+        50% {
+            transform: scale(1.06);
+            box-shadow: 2px 4px 8px rgba(8, 26, 44, 0.45), 0 0 0 1rem rgba(216, 138, 99, 0);
+        }
+    }
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(0.6rem);
         }
     }
 

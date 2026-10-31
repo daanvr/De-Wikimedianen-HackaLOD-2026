@@ -1,7 +1,7 @@
 <script setup>
     // Everything on top of the map that is not a control: the net with the score, the mission card,
     // the compass arrow, buttons for sound and help, and short messages. Catches fly into the net.
-    import { computed, ref } from 'vue';
+    import { computed, onBeforeUnmount, ref, watch } from 'vue';
     import ElIcon from '@/components/el-icon.vue';
     import ElExplorerIcon from '@/explorer/el-explorer-icon.vue';
     import { RARITIES } from './rarity.js';
@@ -43,14 +43,19 @@
         }
     });
 
+    // A new mission shows its card for a while, then folds into a small arrow with the distance
+    const MISSION_OPEN_MS = 7000;
+
     const root = ref(null);
     const net = ref(null);
     const isBumping = ref(false);
+    const isMissionOpen = ref(false);
 
     const scoreText = computed(() => props.score.toLocaleString('nl-NL'));
     const discoveredText = computed(() => `${Math.floor(props.discovered * 100)}%`);
 
     let bumpTimer = null;
+    let foldTimer = null;
 
     function bump() {
         clearTimeout(bumpTimer);
@@ -114,6 +119,27 @@
         label.addEventListener('animationend', () => label.remove());
     }
 
+    function openMission() {
+        isMissionOpen.value = true;
+        clearTimeout(foldTimer);
+        foldTimer = setTimeout(() => {
+            isMissionOpen.value = false;
+        }, MISSION_OPEN_MS);
+    }
+
+    watch(() => props.mission?.text, (text, previous) => {
+        if (text && text !== previous) {
+            openMission();
+        }
+    }, {
+        immediate : true
+    });
+
+    onBeforeUnmount(() => {
+        clearTimeout(foldTimer);
+        clearTimeout(bumpTimer);
+    });
+
     defineExpose({
         fly
     });
@@ -154,7 +180,7 @@
             </div>
 
             <div
-                v-if="mission"
+                v-if="mission && isMissionOpen"
                 class="mission">
                 <img
                     v-if="mission.person.portrait"
@@ -173,9 +199,31 @@
                             class="mission__skip"
                             type="button"
                             v-on:click="emit('skip')">Andere missie</button>
+                        <button
+                            class="mission__fold"
+                            type="button"
+                            aria-label="Missie inklappen"
+                            v-on:click="isMissionOpen = false">▴</button>
                     </div>
                 </div>
             </div>
+
+            <button
+                v-else-if="mission"
+                class="mission-pill"
+                type="button"
+                aria-label="Missie openklappen"
+                v-on:click="openMission()">
+                <img
+                    v-if="mission.person.portrait"
+                    class="mission-pill__portrait"
+                    v-bind:src="mission.person.portrait"
+                    alt="">
+                <span
+                    class="mission-pill__arrow"
+                    v-bind:style="{ transform : `rotate(${mission.bearing}deg)` }">↑</span>
+                <span>{{ mission.inside ? 'Hier!' : `${mission.distance} km` }}</span>
+            </button>
 
             <div
                 v-if="compass"
@@ -236,11 +284,13 @@
             tag="div"
             class="toasts">
             <button
-                v-for="toast in toasts"
+                v-for="(toast, index) in toasts"
                 v-bind:key="toast.id"
                 class="toast"
                 type="button"
                 v-bind:data-kind="toast.kind"
+                v-bind:is-behind="index < toasts.length - 1 ? '' : null"
+                v-bind:style="{ '--depth' : toasts.length - 1 - index }"
                 v-on:click="emit('toast', toast)">
                 <img
                     v-if="toast.portrait"
@@ -489,6 +539,49 @@
         color: var(--c-terracotta);
     }
 
+    .mission__fold {
+        padding: 0.2rem 0.8rem;
+        border: 0;
+        background: none;
+        font: inherit;
+        color: var(--c-ink-soft);
+        cursor: pointer;
+    }
+
+    .mission-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.3rem 1.2rem 0.3rem 0.3rem;
+        border: 0;
+        border-radius: 2.4rem;
+        background: rgba(251, 248, 241, 0.95);
+        box-shadow: var(--shadow-float);
+        color: var(--c-ink);
+        font: inherit;
+        font-size: 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        animation: appear 0.3s ease-out;
+    }
+
+    .mission-pill__portrait {
+        width: 3.6rem;
+        height: 3.6rem;
+        border-radius: 50%;
+        object-fit: cover;
+        filter: sepia(0.25);
+    }
+
+    .mission-pill__arrow {
+        display: inline-block;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--c-terracotta);
+        transition: transform 0.4s ease-out;
+    }
+
     .mission__skip {
         margin-left: auto;
         padding: 0.2rem 0.6rem;
@@ -527,19 +620,20 @@
         }
     }
 
+    // A small pile: the newest message on top, the older ones peek out behind it
     .toasts {
         position: absolute;
         left: 50%;
-        bottom: 16rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.6rem;
+        bottom: 18rem;
+        display: grid;
+        align-items: end;
         width: min(34rem, calc(100% - 3.2rem));
         transform: translateX(-50%);
     }
 
     .toast {
+        grid-area: 1 / 1;
+        z-index: calc(10 - var(--depth));
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -547,7 +641,7 @@
         padding: 0.8rem 1.2rem;
         border: 0;
         border-radius: 0.8rem;
-        background: rgba(251, 248, 241, 0.96);
+        background: rgba(251, 248, 241, 0.98);
         box-shadow: var(--shadow-float);
         color: var(--c-ink);
         font: inherit;
@@ -555,9 +649,17 @@
         line-height: 1.3;
         text-align: left;
         cursor: pointer;
+        transform: translateY(calc(var(--depth) * -0.9rem)) scale(calc(1 - var(--depth) * 0.06));
+        transform-origin: 50% 0;
+        transition: transform 0.3s ease-out, filter 0.3s;
 
         &[data-kind="achievement"] {
             background: #F6E7C1;
+        }
+
+        &[is-behind] {
+            filter: brightness(0.9);
+            pointer-events: none;
         }
     }
 

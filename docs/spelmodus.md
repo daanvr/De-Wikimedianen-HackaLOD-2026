@@ -11,14 +11,15 @@ De disclaimer blijft bereikbaar via de i-knop. In het album staat bij elk specim
 
 ## Spelen
 - **Stuurwiel** (rechtsonder). Pak het vast en draai; een halve slag is vol roer. Laat je los, dan veert het wiel terug naar het midden, met een klein nadeinen. Met een toetsenbord gaat het met ← en → (of A en D).
-- **Ketel** (linksonder). Elke schep kolen geeft stoom, en stoom geeft vaart. De druk zakt vanzelf, maar nooit helemaal: het schip vaart altijd. Blijft de druk te lang in het rood, dan springt de veiligheidsklep en verlies je stoom. Met een toetsenbord gaat het met de spatiebalk of ↑.
+- **Ketel** (linksonder). Elke schep kolen geeft stoom, en stoom geeft vaart. De druk zakt vanzelf, maar nooit helemaal: het schip vaart altijd. Blijft de druk te lang in het rood, dan springt de veiligheidsklep en verlies je stoom. Is de ketel afgekoeld en stook je 8 seconden niet, dan gaat de schep pulseren met "Gooi kolen op!" en zegt de stoker er iets van. Met een toetsenbord gaat het met de spatiebalk of ↑.
 - **Land.** Vaar je tegen de kust, dan ketst het schip af en houdt het het grootste deel van zijn vaart. De rand van het onderzoeksgebied werkt net zo.
 - **Verzamelen.** Vaar over de specimens die in zee drijven. Dichtbij drijven ze naar het schip toe, en ze vliegen in het netje. Elk specimen telt punten naar zijn zeldzaamheid.
 - **Stations.** De stations van de Siboga zijn boeien. Vaar je erlangs, dan luidt de scheepsbel, krijgt het station een stempel in het logboek en drijft de echte vangst van dat station naar je toe.
 - **Mist.** De kaart is eerst een oud perkament. Waar je vaart, gaat het open, en wat je ontdekt hebt, blijft open.
 - **Kompas.** Ben je ver van elk station, of vang je een tijd niets, dan wijst een kompas naar het dichtstbijzijnde station dat je nog niet bezocht hebt.
-- **Missies.** Iemand van de bemanning vraagt om een specimen dat je nog niet hebt, binnen een gestippelde cirkel. Een gevangen missiespecimen telt dubbel. "Andere missie" geeft een nieuwe; in het album zoekt "Zoek er een" een missie voor een groep die je nog mist.
+- **Missies.** Iemand van de bemanning vraagt om een specimen dat je nog niet hebt, binnen een gestippelde cirkel. Een nieuwe missie staat even open en klapt dan in tot een portret met een pijl en de afstand; een tik klapt hem weer open. Een gevangen missiespecimen telt dubbel. "Andere missie" geeft een nieuwe; in het album zoekt "Zoek er een" een missie voor een groep die je nog mist.
 - **Linedoop.** De eerste keer dat je de evenaar oversteekt, komt Neptunus boven met een oorkonde, die je als plaatje kunt bewaren.
+- **Meldingen.** Vangsten, insignes en de bemanning liggen als een stapeltje onderin: de nieuwste bovenop, de oudere steken er net achter uit.
 - **Album.** Tik op het netje. Daar staan je specimens per groep, de stations als stempels en de insignes.
 
 Het spel heeft geen einde. De doelen zijn het album, de insignes en hoeveel van de zee je ontdekt.

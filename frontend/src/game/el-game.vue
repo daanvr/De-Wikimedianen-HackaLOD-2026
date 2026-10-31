@@ -37,6 +37,7 @@
     const OFF_COURSE_KM = 120;
     const QUIET_SECONDS = 20;
     const IDLE_SECONDS = 30;
+    const COAL_HINT_SECONDS = 8;
     const SAVE_SECONDS = 5;
     const MILESTONES = [25, 100, 250, 500, 1000, 2500];
     const ALGAE = new Set(['Roodwieren', 'Bruinwieren', 'Groenwieren', 'Blauwalgen']);
@@ -63,6 +64,7 @@
     const hud = ref(null);
     const pressure = ref(PRESSURE_FLOOR);
     const isVenting = ref(false);
+    const isCoalHint = ref(false);
     const score = ref(0);
     const collectedCount = ref(0);
     const discovered = ref(0);
@@ -99,6 +101,7 @@
     let lastCatchAt = 0;
     let lastRareToastAt = -Infinity;
     let lastInputAt = 0;
+    let lastShovelAt = 0;
     let isOffCourse = false;
     let toastId = 0;
     const sound = createSound();
@@ -475,6 +478,8 @@
         shovel(ship);
         stats.shovels++;
         lastInputAt = time;
+        lastShovelAt = time;
+        isCoalHint.value = false;
         sound.shovel();
 
         if (stats.shovels === 30) {
@@ -579,6 +584,15 @@
             updateCompass();
             checkAchievements();
 
+            // The boiler has cooled down to its lowest and nobody stokes it: the shovel asks for coal
+            const isCold = time - lastShovelAt > COAL_HINT_SECONDS && ship.pressure < PRESSURE_FLOOR + 0.02;
+
+            if (isCold && !isCoalHint.value) {
+                say('coalHint');
+            }
+
+            isCoalHint.value = isCold;
+
             if (time - lastInputAt > IDLE_SECONDS) {
                 lastInputAt = time;
                 say('idle');
@@ -637,6 +651,8 @@
         time = 0;
         lastCatchAt = 0;
         lastInputAt = 0;
+        lastShovelAt = 0;
+        isCoalHint.value = false;
 
         for (const specimen of data.specimens) {
             specimen.pull = 0;
@@ -847,6 +863,7 @@
                     class="controls__boiler"
                     v-bind:pressure="pressure"
                     v-bind:is-venting="isVenting"
+                    v-bind:is-hinting="isCoalHint"
                     v-on:shovel="onShovel()" />
                 <el-game-helm
                     class="controls__helm"

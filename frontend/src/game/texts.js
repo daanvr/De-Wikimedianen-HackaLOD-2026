@@ -105,6 +105,13 @@ export const LINES = {
             ['stoker', 'Pssst! Daar gaat je stoom. Niet zo hard stoken, dan blijft de klep dicht.']
         ]
     },
+    coalHint : {
+        priority : true,
+        lines : [
+            ['stoker', 'Het vuur gaat bijna uit en we varen nog maar langzaam. Schep er kolen op, dan krijgen we weer stoom!'],
+            ['stoker', 'De ketel koelt af. Een paar scheppen kolen en we varen weer op volle kracht.']
+        ]
+    },
     stoking : {
         lines : [
             ['stoker', 'Wij stokers scheppen dag in dag uit kolen in de ketels. Onderweg moest er zestien keer nieuwe kolen geladen worden.']
