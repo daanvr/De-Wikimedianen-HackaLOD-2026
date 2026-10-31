@@ -107,6 +107,7 @@ CREATE TABLE response (
 
 - Een mislukte poging overschrijft nooit een eerder goed antwoord of een eerder gedownload bestand.
 - Plaatjes staan in `pipeline/cache/media/`, met `body` leeg in de tabel. In de uitvoer komt een plaatje alleen met licentie en bronvermelding.
+- `build` maakt van elk plaatje van een record ook een thumbnail in `media/thumbs/` ([thumbnails.py](../pipeline/src/siboga/thumbnails.py)). Dat gebeurt elke build opnieuw en zonder internet; voor zo'n 60 plaatjes duurt het minder dan een seconde.
 - Antwoorden ouder dan `max_age_days` (standaard 30) worden bij `fetch` opnieuw opgehaald.
 
 ## Configuratie

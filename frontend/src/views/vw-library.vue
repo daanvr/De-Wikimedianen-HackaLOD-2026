@@ -74,7 +74,8 @@
                     to : `/records/${record.id}`,
                     name : record.label || record.title,
                     description : record.description,
-                    image : record.image ? mediaUrl(record.image.src) : null,
+                    // The small thumbnail if the pipeline could make one
+                    image : record.image ? mediaUrl(record.image.thumb ?? record.image.src) : null,
                     isSpecimen : type === 'specimen'
                 }));
 

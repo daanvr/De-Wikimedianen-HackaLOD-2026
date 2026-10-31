@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 
+from PIL import Image
 import pytest
 
 from siboga import build
@@ -107,9 +108,16 @@ def config(tmp_path: Path) -> Config:
 def fake_registry(monkeypatch):
     monkeypatch.setattr(build, "build_registry", lambda config: Registry([FakeAdapter()]))
 
-def _cache_image(config: Config) -> None:
+def _cache_image(
+    config: Config,
+    is_real: bool = False
+) -> None:
+    """Puts the image of the fake adapter in the cache: three bytes, or a real JPEG if is_real."""
     cache = Cache(config.cache_path, config.media_path)
-    cache.media_path(IMAGE_URL).write_bytes(b"\xff\xd8\xff")
+    if is_real:
+        Image.new("RGB", (1600, 1200), "navy").save(cache.media_path(IMAGE_URL), "JPEG")
+    else:
+        cache.media_path(IMAGE_URL).write_bytes(b"\xff\xd8\xff")
     cache.put(CachedResponse(
         adapter = "fake",
         body = None,
@@ -249,3 +257,24 @@ def test_build_warns_about_images_without_license(config: Config):
     assert "media/kaart.png" in warnings[0]
     assert "records/zonder-licentie" in warnings[1]
     assert not any("anna.jpg" in warning for warning in warnings)
+
+def test_build_makes_thumbnail(config: Config):
+    _cache_image(config, is_real = True)
+    report = Report()
+    data = json.loads(run_build(config, report).read_text(encoding = "utf-8"))
+    image = data["records"]["anna-weber"]["image"]
+    assert image["src"] == "media/anna-weber.jpg"
+    assert image["thumb"] == "media/thumbs/anna-weber.webp"
+    with Image.open(config.output_path / image["thumb"]) as thumbnail:
+        assert max(thumbnail.size) == 240
+    assert not any("no thumbnail" in warning for warning in report.warnings)
+    assert check_output(config.output_path) == []
+
+def test_build_without_thumbnail_keeps_image(config: Config):
+    _cache_image(config)
+    report = Report()
+    data = json.loads(run_build(config, report).read_text(encoding = "utf-8"))
+    image = data["records"]["anna-weber"]["image"]
+    assert image["src"] == "media/anna-weber.jpg"
+    assert image["thumb"] is None
+    assert any("no thumbnail for media/anna-weber.jpg" in warning for warning in report.warnings)

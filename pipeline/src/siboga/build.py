@@ -32,6 +32,7 @@ from siboga.content import (
 from siboga.fields import FieldCatalog, load_fields
 from siboga.models import AudioInfo, ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
 from siboga.sources import Registry, build_registry
+from siboga.thumbnails import make_thumbnail
 
 # The source of a value that an editor wrote in the frontmatter, such as description_nl.
 CONTENT_SOURCE = "content"
@@ -52,6 +53,8 @@ class CoordinatesOut(OutputModel):
 
 class ImageOut(OutputModel):
     src: str
+    # A small WebP for lists; None if it could not be made.
+    thumb: str | None = None
     credit: str
     license: str
     license_url: str | None
@@ -167,6 +170,9 @@ def check_output(output_path: Path) -> list[str]:
             media = getattr(item, kind, None)
             if media is not None and not (output_path / media.src).exists():
                 problems.append(f"{item.ref}: {kind} {media.src} is missing")
+        image = getattr(item, "image", None)
+        if image is not None and image.thumb is not None and not (output_path / image.thumb).exists():
+            problems.append(f"{item.ref}: thumbnail {image.thumb} is missing")
     return problems
 
 def run_build(
@@ -509,12 +515,28 @@ def _copy_image(
         return None
     return ImageOut(
         src = src,
+        thumb = _make_thumbnail(src, item, media_dir, report),
         credit = image.credit,
         license = image.license,
         license_url = image.license_url,
         source_url = image.source_url,
         source = image_source
     )
+
+def _make_thumbnail(
+    src: str,
+    item: ContentItem,
+    media_dir: Path,
+    report: Report
+) -> str | None:
+    """Makes media/thumbs/<item id>.webp from the copied image src; returns its src, or None with a warning."""
+    name = f"thumbs/{item.id}.webp"
+    try:
+        make_thumbnail(media_dir.parent / src, media_dir / name)
+    except (OSError, ValueError) as error:
+        report.warn(f"no thumbnail for {src}: {error}", item.path)
+        return None
+    return f"media/{name}"
 
 def _media_suffix(
     cached_file: Path,

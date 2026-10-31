@@ -98,6 +98,7 @@ Sleutels in camelCase.
             "body": null,
             "image": {
                 "src": "media/anna-weber.jpg",
+                "thumb": "media/thumbs/anna-weber.webp",
                 "credit": "University of Amsterdam, Artis Library",
                 "license": "Public domain",
                 "licenseUrl": null,
@@ -154,6 +155,7 @@ Sleutels in camelCase.
 - Velden zonder waarde staan er met `null` (of een lege lijst), zodat de frontend nooit hoeft te raden.
 - `audio` is een geluidsopname, nu alleen van Wikimedia Commons: `src`, `mimeType`, en net als een plaatje `credit`, `license`, `licenseUrl`, `sourceUrl` en `source`. Zonder geluid is het `null`. De frontend toont er een speler voor.
 - Een plaatje heeft altijd `credit` en `license`; zonder die twee laat de pipeline het weg. Dat geldt ook voor geluid. Voor een geluidsbestand zonder voorbeeld geeft Commons een algemeen icoon; dat neemt de pipeline niet over als plaatje. Paden in `src` en in de markdown zijn relatief aan de map met `siboga.json`.
+- `thumb` is een kleine versie van het plaatje (WebP, hoogstens 240 px aan de langste kant) voor lijsten zoals de bibliotheek. De pipeline maakt die bij `build` met Pillow. Lukt dat niet, dan is `thumb` `null`, met een waarschuwing; gebruik dan `src`.
 
 ## Velden per contenttype
 `fields` hangt af van het `contentType` van het record, niet van de bron. Welke velden bij welk contenttype horen en in welke volgorde, staat in [pipeline/fields.toml](../pipeline/fields.toml). Alleen velden met een waarde komen in de lijst.
