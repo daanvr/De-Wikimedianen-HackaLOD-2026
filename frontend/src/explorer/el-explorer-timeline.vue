@@ -10,9 +10,12 @@
     const MAX_DEPTH = 7200;
     const MAX_DOTS = 5;
     const MAX_FLIGHTS = 24;
-    // Playing sails this many kilometres per second at 1×; the whole route takes about three minutes
-    const PLAY_KM_PER_SECOND = 90;
-    const PLAY_SPEEDS = [1, 2, 4];
+    // Playing sails this many kilometres per second at 1×; the whole route takes about twenty minutes
+    const PLAY_KM_PER_SECOND = 12;
+    const PLAY_SPEEDS = [0.5, 1, 2, 4, 8, 16];
+    const SPEED_LABELS = {
+        0.5 : '½'
+    };
     // A fling slows down by this factor every 16 ms, and stops below this speed in px per ms
     const FLING_FRICTION = 0.95;
     const FLING_STOP = 0.02;
@@ -54,7 +57,7 @@
     const isBumping = ref(false);
     const isDragging = ref(false);
     const isPlaying = ref(false);
-    const speed = ref(PLAY_SPEEDS[0]);
+    const speed = ref(1);
 
     const dots = new Map();
 
@@ -593,8 +596,8 @@
                 <button
                     type="button"
                     class="speed"
-                    v-bind:aria-label="`Snelheid ${speed} keer, tik voor sneller`"
-                    v-on:click="toggleSpeed()">{{ speed }}×</button>
+                    v-bind:aria-label="`Snelheid ${speed} keer, tik voor een andere snelheid`"
+                    v-on:click="toggleSpeed()">{{ SPEED_LABELS[speed] ?? speed }}×</button>
             </div>
 
             <button
