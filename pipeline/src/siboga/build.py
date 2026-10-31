@@ -17,7 +17,7 @@ from siboga.content import (
     LinkIndex,
     body_images,
     build_link_index,
-    chapter_coordinates,
+    chapter_markers,
     chapter_number,
     content_type,
     convert_body,
@@ -31,13 +31,13 @@ from siboga.content import (
 )
 from siboga.explorer import build_explorer
 from siboga.fields import FieldCatalog, load_fields
-from siboga.models import AudioInfo, ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
+from siboga.models import AudioInfo, ContentItem, Coordinates, ImageInfo, ItemKind, Marker, Report, SourceData
 from siboga.sources import Registry, build_registry
 from siboga.thumbnails import make_thumbnail
 
 # The source of a value that an editor wrote in the frontmatter, such as description_nl.
 CONTENT_SOURCE = "content"
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
 
@@ -51,6 +51,13 @@ class OutputModel(BaseModel):
 class CoordinatesOut(OutputModel):
     lat: float
     lon: float
+
+class MarkerOut(OutputModel):
+    label: str | None
+    lat: float
+    lon: float
+    # The page a click on the marker opens; None if it opens nothing.
+    ref: str | None
 
 class ImageOut(OutputModel):
     src: str
@@ -104,7 +111,7 @@ class ChapterOut(OutputModel):
     id: str
     title: str
     number: int | None
-    coordinates: CoordinatesOut | None
+    markers: list[MarkerOut]
     body: str | None
     links: list[str]
     backlinks: list[str]
@@ -243,14 +250,17 @@ def _build_chapter(
 ) -> ChapterOut:
     converted = convert_body(item, index, report)
     _copy_attachments(converted.attachments, media_dir, item, report)
+    markers = chapter_markers(item, index, report)
+    # A marker that opens a page links to it, so the page names the chapter under "Genoemd in".
+    links = converted.links + [marker.ref for marker in markers if marker.ref]
     return ChapterOut(
         ref = item.ref,
         id = item.id,
         title = item.title,
         number = chapter_number(item, report),
-        coordinates = _coordinates_out(chapter_coordinates(item, report)),
+        markers = [_marker_out(marker) for marker in markers],
         body = _body_or_none(converted.markdown),
-        links = converted.links,
+        links = list(dict.fromkeys(links)),
         backlinks = []
     )
 
@@ -539,6 +549,14 @@ def _make_thumbnail(
         report.warn(f"no thumbnail for {src}: {error}", item.path)
         return None
     return f"media/{name}"
+
+def _marker_out(marker: Marker) -> MarkerOut:
+    return MarkerOut(
+        label = marker.label,
+        lat = marker.coordinates.lat,
+        lon = marker.coordinates.lon,
+        ref = marker.ref
+    )
 
 def _media_suffix(
     cached_file: Path,

@@ -84,7 +84,7 @@ def config(tmp_path: Path) -> Config:
     _write(vault / "records" / "Haven.md", "---\ntype: record\nuri: https://elders.example.com/haven\ncontenttype: location\n---\n")
     _write(
         vault / "chapters" / "Hoofdstuk 1 - Vertrek.md",
-        "---\ntype: chapter\nchapter: \"1\"\nlocation: -6.12, 106.81\n---\n"
+        "---\ntype: chapter\nchapter: \"1\"\ngeojson: \"[[vertrek.geojson]]\"\n---\n"
         "[[Anna Weber|Anna]] ging mee. Zie ook [[Bestaat niet]].\n\n![[kaart.png]]\n\n[[IIIF#https://example.org/iiif/1/full/max/0/default.jpg]]\n"
     )
     _write(vault / "pages" / "about.md", "---\ntype: page\ntitle: Over deze website\n---\nGemaakt door het team. Lees over [[Anna Weber]].\n")
@@ -93,6 +93,22 @@ def config(tmp_path: Path) -> Config:
     _write(vault / "plugins" / "Diep.md", "---\ntype: plugin\nid: deepdive\ndescription_nl: Specimens\nshow_in_explore: \"true\"\n---\n")
     _write(vault / "etc" / "i18n.md", "---\ntype: i18n\nabout_site: Over deze site\nfield_birth_date: Geboren\n---\n")
     (vault / "kaart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    _write(vault / "vertrek.geojson", json.dumps({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Haven",
+                    "link": "[[Haven]]"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [106.81, -6.12]
+                }
+            }
+        ]
+    }))
     return Config(
         cache_path = tmp_path / "cache" / "siboga.sqlite",
         content_path = vault,
@@ -135,7 +151,7 @@ def test_build_writes_frontend_data(config: Config):
     report = Report()
     json_path = run_build(config, report)
     data = json.loads(json_path.read_text(encoding = "utf-8"))
-    assert data["meta"]["schemaVersion"] == 3
+    assert data["meta"]["schemaVersion"] == 4
     assert data["meta"]["warnings"] == len(report.warnings)
     assert data["messages"] == {"about_site": "Over deze site", "field_birth_date": "Geboren"}
     about = data["pages"]["about"]
@@ -146,10 +162,10 @@ def test_build_writes_frontend_data(config: Config):
     chapter = data["chapters"][0]
     assert chapter["ref"] == "chapters/hoofdstuk-1-vertrek"
     assert chapter["number"] == 1
-    assert chapter["coordinates"] == {"lat": -6.12, "lon": 106.81}
+    assert chapter["markers"] == [{"label": "Haven", "lat": -6.12, "lon": 106.81, "ref": "records/haven"}]
     assert "[Anna](/records/anna-weber)" in chapter["body"]
     assert "![](media/kaart.png)" in chapter["body"]
-    assert chapter["links"] == ["records/anna-weber", "plugins/iiif"]
+    assert chapter["links"] == ["records/anna-weber", "plugins/iiif", "records/haven"]
     assert "[IIIF](/plugins/iiif?argument=https%3A%2F%2Fexample.org%2Fiiif%2F1%2Ffull%2Fmax%2F0%2Fdefault.jpg)" in chapter["body"]
     assert data["plugins"]["iiif"] == {
         "ref": "plugins/iiif",
@@ -248,7 +264,7 @@ def test_build_warns_about_images_without_license(config: Config):
     _cache_image(config)
     _write(
         config.content_path / "chapters" / "Plaatjes.md",
-        "---\ntype: chapter\nlocation: -6.12, 106.81\n---\n"
+        "---\ntype: chapter\n---\n"
         "![Anna](https://example.org/anna.jpg)\n*[[Anna Weber|Anna aan boord]]*\n\n"
         "![Zonder](https://example.org/zonder.jpg)\n*[[Zonder licentie]]*\n"
     )

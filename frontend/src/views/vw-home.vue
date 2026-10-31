@@ -14,8 +14,7 @@
         store.setMap({
             mode : 'home',
             focus : null,
-            sheet : 'half',
-            boat : firstChapter.value ? store.chapterPosition(firstChapter.value) : null
+            sheet : 'half'
         });
     });
 </script>

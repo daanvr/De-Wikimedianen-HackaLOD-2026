@@ -6,6 +6,11 @@
     const ARCHIPELAGO_BOUNDS = [[106, -12], [136, 6]];
     const MAX_ZOOM = 11;
     const TRAVEL_MS = 2600;
+    const OUTSIDE_MAX_ZOOM = 6;
+    // How fast the zoom limit drops when you pan out of the research area, in zoom levels per degree
+    const ZOOM_DROP_PER_DEGREE = 2;
+    // How far the map zooms in on the markers of a chapter, also when there is only one
+    const MARKERS_MAX_ZOOM = 8;
     // Historical map, georeferenced with Allmaps; loaded live, the vector layers stay underneath as a fallback
     const HISTORIC_MAP_TILES = 'https://allmaps.xyz/images/1fd0accb445d424e/{z}/{x}/{y}@2x.png';
     const HISTORIC_MAP_BOUNDS = [111.67, -12.29, 135.37, 7.33];
@@ -31,6 +36,89 @@
         }
     };
 
+    const SEA_LABELS = [
+        {
+            text : 'Java-zee',
+            lon : 111.5,
+            lat : -5.0
+        },
+        {
+            text : 'Flores-zee',
+            lon : 120.2,
+            lat : -7.4
+        },
+        {
+            text : 'Banda-zee',
+            lon : 127.0,
+            lat : -5.6
+        },
+        {
+            text : 'Molukse Zee',
+            lon : 126.0,
+            lat : 1.4
+        },
+        {
+            text : 'Celebes-zee',
+            lon : 121.6,
+            lat : 3.8
+        },
+        {
+            text : 'Indische Oceaan',
+            lon : 116.0,
+            lat : -12.6
+        },
+        {
+            text : 'Stille Oceaan',
+            lon : 133.0,
+            lat : 3.6
+        },
+        {
+            text : 'Arafura-zee',
+            lon : 135.5,
+            lat : -9.2
+        }
+    ];
+
+    const LAND_LABELS = [
+        {
+            text : 'Celebes',
+            lon : 120.3,
+            lat : -2.0
+        },
+        {
+            text : 'Borneo',
+            lon : 114.2,
+            lat : 0.4
+        },
+        {
+            text : 'Java',
+            lon : 110.2,
+            lat : -7.35
+        },
+        {
+            text : 'Nieuw-Guinea',
+            lon : 138.5,
+            lat : -4.6
+        },
+        {
+            text : 'Halmahera',
+            lon : 128.15,
+            lat : 0.9
+        },
+        {
+            text : 'Ceram',
+            lon : 129.5,
+            lat : -3.15
+        },
+        {
+            text : 'Timor',
+            lon : 125.0,
+            lat : -9.3
+        }
+    ];
+
+    const emit = defineEmits(['open']);
+
     const props = defineProps({
         base : {
             type : String,
@@ -48,9 +136,9 @@
             type : Object,
             default : null
         },
-        boat : {
-            type : Object,
-            default : null
+        markers : {
+            type : Array,
+            default : () => []
         },
         padding : {
             type : Object,
@@ -68,46 +156,7 @@
 
     let map = null;
     let labels = [];
-    let boatMarker = null;
-    let boatPosition = null;
-    let boatAnimation = null;
-
-    function animateBoat(target) {
-        if (!boatMarker) {
-            return;
-        }
-
-        if (!boatPosition) {
-            boatPosition = target;
-            boatMarker.setLngLat([target.lon, target.lat]);
-            return;
-        }
-
-        const start = boatPosition;
-        const bearing = Math.atan2(target.lon - start.lon, target.lat - start.lat) * 180 / Math.PI;
-        const startedAt = performance.now();
-
-        cancelAnimationFrame(boatAnimation);
-        boatMarker.setRotation(bearing - 90);
-
-        function step(now) {
-            const progress = Math.min(1, (now - startedAt) / TRAVEL_MS);
-            const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-            boatPosition = {
-                lon : start.lon + (target.lon - start.lon) * eased,
-                lat : start.lat + (target.lat - start.lat) * eased
-            };
-
-            boatMarker.setLngLat([boatPosition.lon, boatPosition.lat]);
-
-            if (progress < 1) {
-                boatAnimation = requestAnimationFrame(step);
-            }
-        }
-
-        boatAnimation = requestAnimationFrame(step);
-    }
+    let chapterMarkers = [];
 
     function applyBase() {
         if (!map || !isReady.value) {
@@ -133,36 +182,28 @@
 
         const padding = props.padding;
 
-        if (!props.focus) {
-            map.fitBounds(ARCHIPELAGO_BOUNDS, {
+        // A focus without a centre shows its bounds, or else the whole route
+        if (props.focus?.lon === undefined) {
+            map.fitBounds(props.focus?.bounds ?? ARCHIPELAGO_BOUNDS, {
                 padding : {
-                    top : padding.top + 24,
-                    right : padding.right + 24,
-                    bottom : padding.bottom + 24,
-                    left : padding.left + 24
+                    top : padding.top + 48,
+                    right : padding.right + 48,
+                    bottom : padding.bottom + 48,
+                    left : padding.left + 48
                 },
+                maxZoom : MARKERS_MAX_ZOOM,
                 duration : animate ? 1400 : 0
             });
             return;
         }
 
-        const options = {
+        map.easeTo({
             center : [props.focus.lon, props.focus.lat],
             zoom : props.focus.zoom ?? map.getZoom(),
             padding,
             duration : animate ? (props.focus.duration ?? 1600) : 0,
             essential : true
-        };
-
-        if (animate && props.focus.fly) {
-            map.flyTo({
-                ...options,
-                duration : TRAVEL_MS,
-                curve : 1.3
-            });
-        } else {
-            map.easeTo(options);
-        }
+        });
     }
 
     function buildStyle() {
@@ -267,22 +308,25 @@
         };
     }
 
-    function createBoatElement() {
-        const element = document.createElement('div');
+    function createChapterMarker(marker) {
+        const element = document.createElement(marker.ref ? 'button' : 'div');
+        const label = document.createElement('span');
 
-        element.className = 'map-boat';
-        element.setAttribute('aria-hidden', 'true');
-        // Placeholder: the hand drawn boat replaces this drawing later
-        element.innerHTML = `
-            <svg width="92" height="46" viewBox="-46 -23 92 46">
-                <ellipse rx="36" ry="18" fill="none" stroke="#FBF8F1" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.9"/>
-                <path d="M-27,0 L-44,-7 M-27,0 L-44,7" stroke="#FBF8F1" stroke-width="1.4" fill="none" opacity="0.7"/>
-                <path d="M-25,0 C-21,-6 8,-7 26,0 C8,7 -21,6 -25,0 Z" fill="#FBF8F1" stroke="#1B2433" stroke-width="1.3"/>
-                <path d="M-9,-6 L-9,6 M8,-5 L8,5" stroke="#1B2433" stroke-width="1.3" fill="none"/>
-                <circle r="2.4" fill="#A9512F"/>
-            </svg>`;
+        element.className = 'map-marker';
+        label.className = 'map-marker__label';
+        label.textContent = marker.label ?? '';
+        element.append(label);
 
-        return element;
+        if (marker.ref) {
+            element.type = 'button';
+            element.setAttribute('is-link', '');
+            element.addEventListener('click', () => emit('open', marker.ref));
+        }
+
+        return new maplibregl.Marker({
+            element,
+            anchor : 'center'
+        }).setLngLat([marker.lon, marker.lat]).addTo(map);
     }
 
     function createLabel(label, kind) {
@@ -323,32 +367,16 @@
         }
     }
 
-    function updateBoat() {
-        if (!map) {
+    function updateMarkers() {
+        if (!map || !isReady.value) {
             return;
         }
 
-        if (!props.boat) {
-            boatMarker?.remove();
-            boatMarker = null;
-            boatPosition = null;
-            return;
+        for (const marker of chapterMarkers) {
+            marker.remove();
         }
 
-        if (!boatMarker) {
-            boatMarker = new maplibregl.Marker({
-                element : createBoatElement(),
-                rotationAlignment : 'map'
-            }).setLngLat([props.boat.lon, props.boat.lat]).addTo(map);
-            boatMarker.setRotation(-20);
-            boatPosition = {
-                lon : props.boat.lon,
-                lat : props.boat.lat
-            };
-            return;
-        }
-
-        animateBoat(props.boat);
+        chapterMarkers = props.markers.map(createChapterMarker);
     }
 
     function updateMode() {
@@ -364,9 +392,7 @@
     watch(() => props.base, applyBase);
     watch(() => props.layers, setLayerData);
     watch(() => props.mode, updateMode);
-    watch(() => props.boat, updateBoat, {
-        deep : true
-    });
+    watch(() => props.markers, updateMarkers);
     watch(() => [props.focus, props.padding], () => applyFocus(true), {
         deep : true
     });
@@ -396,7 +422,7 @@
             isReady.value = true;
             setLayerData();
             updateMode();
-            updateBoat();
+            updateMarkers();
             applyFocus(false);
 
             for (const label of SEA_LABELS) {
@@ -412,10 +438,10 @@
     });
 
     onBeforeUnmount(() => {
-        cancelAnimationFrame(boatAnimation);
         map?.remove();
         map = null;
         labels = [];
+        chapterMarkers = [];
     });
 
     defineExpose({
@@ -460,20 +486,53 @@
             color: #6E6248;
         }
 
+        // A place from the chapter's GeoJSON; only clickable if it links to a page
+        :deep(.map-marker) {
+            position: relative;
+            width: 1.2rem;
+            height: 1.2rem;
+            padding: 0;
+            border: 2px solid var(--c-paper);
+            border-radius: 50%;
+            background: var(--c-terracotta);
+            box-shadow: 0 1px 3px rgba(8, 26, 44, 0.4);
+            pointer-events: none;
+        }
+
+        :deep(.map-marker[is-link]) {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        :deep(.map-marker__label) {
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 0.6rem);
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-family: var(--font-header);
+            font-style: italic;
+            font-size: 1.4rem;
+            color: var(--c-ink);
+            text-shadow: 0 0 3px var(--c-paper), 0 0 6px var(--c-paper);
+        }
+
+        :deep(.map-marker[is-link]:hover .map-marker__label),
+        :deep(.map-marker[is-link]:focus-visible .map-marker__label) {
+            text-decoration: underline;
+        }
+
         // Light names with a shadow stay readable on the photo
         &[base="satellite"] {
-            :deep(.map-label) {
+            :deep(.map-label),
+            :deep(.map-marker__label) {
                 text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
             }
 
-            :deep(.map-label--land) {
+            :deep(.map-label--land),
+            :deep(.map-marker__label) {
                 color: #F2ECDB;
             }
-        }
-
-        :deep(.map-boat) {
-            pointer-events: none;
-            filter: drop-shadow(0 2px 3px rgba(8, 26, 44, 0.35));
         }
     }
 </style>

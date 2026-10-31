@@ -86,7 +86,6 @@ export const DEFAULT_MESSAGES = {
     menu_close : 'Menu sluiten',
     menu_home : 'Startscherm',
     menu_open : 'Menu openen',
-    on_the_way : 'De Siboga vaart naar het volgende station…',
     plugin_fullscreen : 'Schermvullend tonen',
     plugin_not_ready : 'Hier wordt nog aan gewerkt.',
     plugin_source : 'Bekijk de bron',
@@ -101,6 +100,5 @@ export const DEFAULT_MESSAGES = {
     share_title : 'Deel deze pagina',
     site_title : 'De Siboga-Expeditie',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',
-    to_boat : 'Terug naar de boot',
     to_start : 'Terug naar het begin'
 };

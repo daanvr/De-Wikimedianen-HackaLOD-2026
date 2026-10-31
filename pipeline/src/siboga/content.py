@@ -2,13 +2,14 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import quote, unquote, urlparse
+import json
 import re
 import unicodedata
 
 from loguru import logger
 import yaml
 
-from siboga.models import ContentItem, ContentType, Coordinates, ItemKind, Report
+from siboga.models import ContentItem, ContentType, Coordinates, ItemKind, Marker, Report
 
 _BLOCK_CLOSE = re.compile(r"^:::[ \t]*$")
 # ::: gallery and :::details Summary; the frontend makes a gallery and a collapsible block of them.
@@ -193,25 +194,40 @@ def build_link_index(items: list[ContentItem], content_path: Path) -> LinkIndex:
         refs.setdefault(_key(item.title), item.ref)
     return LinkIndex(attachments = attachments, refs = refs)
 
-def chapter_coordinates(item: ContentItem, report: Report) -> Coordinates | None:
-    """`location` as "lat, lon", the order in which map sites copy coordinates."""
-    value = item.frontmatter.get("location")
+def chapter_markers(
+    item: ContentItem,
+    index: LinkIndex,
+    report: Report
+) -> list[Marker]:
+    """The points in the GeoJSON file of `geojson`. `name` or `label` is the text, `link` the page a click opens."""
+    value = item.frontmatter.get("geojson")
     if value is None or value == "":
-        report.warn("chapter without location (required)", item.path)
-        return None
-    parts = value if isinstance(value, list) else str(value).split(",")
+        return []
+    name = _frontmatter_link(value)
+    path = index.attachments.get(_key(_last_part(name)))
+    if path is None:
+        report.warn(f"geojson file does not exist: {name!r}", item.path)
+        return []
     try:
-        lat, lon = (float(str(part).strip()) for part in parts)
-    except ValueError:
-        report.warn(f"location is not \"lat, lon\": {value!r}", item.path)
-        return None
-    if _on_map(lat, lon):
-        return Coordinates(lat = lat, lon = lon)
-    if _on_map(lon, lat):
-        report.warn(f"location {value!r} is outside the map; latitude and longitude are probably swapped", item.path)
-    else:
-        report.warn(f"location {value!r} is outside the map", item.path)
-    return None
+        data = json.loads(path.read_text(encoding = "utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        report.warn(f"geojson file can't be read ({error})", item.path)
+        return []
+    markers = []
+    ignored = set()
+    for feature in _geojson_features(data):
+        geometry = feature.get("geometry") or {}
+        if geometry.get("type") != "Point":
+            ignored.add(str(geometry.get("type")))
+            continue
+        marker = _marker(feature, index, item, report)
+        if marker is not None:
+            markers.append(marker)
+    if ignored:
+        report.warn(f"geojson: only points become markers, ignored {', '.join(sorted(ignored))}", item.path)
+    if not markers:
+        report.warn(f"geojson file {name!r} has no points", item.path)
+    return markers
 
 def chapter_number(item: ContentItem, report: Report) -> int | None:
     value = item.frontmatter.get("chapter")
@@ -391,6 +407,25 @@ def _default_label(target: str) -> str:
         name = name[:-3]
     return name or heading.lstrip("^").strip()
 
+def _frontmatter_link(value: object) -> str:
+    """The file name in "[[name|alias]]"; unquoted in YAML that is a nested list."""
+    while isinstance(value, list) and value:
+        value = value[0]
+    text = str(value).strip()
+    if text.startswith("[[") and text.endswith("]]"):
+        text = text[2:-2]
+    return text.split("|", 1)[0].split("#", 1)[0].strip()
+
+def _geojson_features(data: object) -> list[dict]:
+    """The features of a FeatureCollection, a single Feature or a bare geometry."""
+    if not isinstance(data, dict):
+        return []
+    if data.get("type") == "FeatureCollection":
+        return [feature for feature in data.get("features") or [] if isinstance(feature, dict)]
+    if data.get("type") == "Feature":
+        return [data]
+    return [{"geometry": data, "properties": {}}]
+
 def _is_http_url(text: str) -> bool:
     if not text or any(char.isspace() for char in text):
         return False
@@ -402,6 +437,49 @@ def _key(text: str) -> str:
 
 def _last_part(path: str) -> str:
     return path.rsplit("/", 1)[-1].strip()
+
+def _marker(
+    feature: dict,
+    index: LinkIndex,
+    item: ContentItem,
+    report: Report
+) -> Marker | None:
+    coordinates = feature["geometry"].get("coordinates")
+    try:
+        # GeoJSON has longitude first; a third number is the altitude.
+        lon, lat = (float(number) for number in coordinates[:2])
+    except (TypeError, ValueError):
+        report.warn(f"geojson: point without valid coordinates: {coordinates!r}", item.path)
+        return None
+    if not _on_map(lat, lon):
+        report.warn(f"geojson: point {coordinates!r} is outside the map", item.path)
+        return None
+    properties = feature.get("properties") or {}
+    label = str(properties.get("name") or properties.get("label") or "").strip() or None
+    return Marker(
+        coordinates = Coordinates(lat = lat, lon = lon),
+        label = label,
+        ref = _marker_ref(properties.get("link"), index, item, report)
+    )
+
+def _marker_ref(
+    link: object,
+    index: LinkIndex,
+    item: ContentItem,
+    report: Report
+) -> str | None:
+    """`link` as "[[Ambon]]", "Ambon" or "/records/ambon"."""
+    if link is None or str(link).strip() == "":
+        return None
+    text = str(link).strip()
+    if text.startswith("/"):
+        ref = text[1:].split("?", 1)[0].split("#", 1)[0]
+        ref = ref if ref in index.refs.values() else None
+    else:
+        ref = resolve_link(_frontmatter_link(text), index)
+    if ref is None:
+        report.warn(f"geojson: marker links to unknown page {text!r}, is not clickable", item.path)
+    return ref
 
 def _on_map(lat: float, lon: float) -> bool:
     return _MAP_BOUNDS["lat"][0] <= lat <= _MAP_BOUNDS["lat"][1] and _MAP_BOUNDS["lon"][0] <= lon <= _MAP_BOUNDS["lon"][1]

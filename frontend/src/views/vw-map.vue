@@ -9,8 +9,7 @@
     onMounted(() => {
         const settings = {
             mode : 'explore',
-            sheet : 'none',
-            boat : null
+            sheet : 'none'
         };
 
         if (store.map.mode !== 'explore') {

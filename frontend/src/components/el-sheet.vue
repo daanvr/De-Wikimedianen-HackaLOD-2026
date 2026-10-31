@@ -2,9 +2,8 @@
     import { ref } from 'vue';
 
     defineProps({
-        // peek: folded in (mobile, while the boat sails), half: the lower half (mobile),
-        // screen: the whole screen on mobile. On desktop, every state is the same
-        // panel on the left, so the library lies where the chapter was.
+        // half: the lower half (mobile), screen: the whole screen on mobile. On desktop,
+        // every state is the same panel on the left, so the library lies where the chapter was.
         state : {
             type : String,
             default : 'half'
@@ -56,10 +55,6 @@
         transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
         z-index: 20;
 
-        &[state="peek"] {
-            top: calc(100% - 14rem);
-        }
-
         @include mixins.respond-from(900px) {
             top: 1.6rem;
             bottom: 1.6rem;
@@ -68,10 +63,6 @@
             width: var(--sheet-width);
             border-radius: 12px;
             box-shadow: var(--shadow-card);
-
-            &[state="peek"] {
-                top: 1.6rem;
-            }
         }
 
         @include mixins.respond-until(900px) {
@@ -92,12 +83,6 @@
 
         @include mixins.respond-from(900px) {
             padding-top: 2rem;
-        }
-
-        @include mixins.respond-until(900px) {
-            [state="peek"] > & {
-                overflow: hidden;
-            }
         }
     }
 </style>

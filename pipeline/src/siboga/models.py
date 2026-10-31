@@ -90,6 +90,13 @@ class ImageInfo:
     source_url: str | None
 
 @dataclass
+class Marker:
+    """A point on the map for a chapter, from its GeoJSON file. ref is the page a click opens."""
+    coordinates: Coordinates
+    label: str | None
+    ref: str | None
+
+@dataclass
 class SourceRef:
     """A source a record got data from: the adapter name and the URI it was asked for."""
     name: str

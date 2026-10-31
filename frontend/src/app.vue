@@ -1,6 +1,6 @@
 <script setup>
     import { computed, onBeforeUnmount, onMounted, provide, ref, watchEffect } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import ElMap from '@/components/el-map.vue';
     import ElMenu from '@/components/el-menu.vue';
     import { pageTitle } from '@/services/page-title.js';
@@ -8,6 +8,7 @@
 
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const t = (key) => store.t(key);
 
     provide('store', store);
@@ -42,7 +43,6 @@
         }
 
         const covered = {
-            peek : 140,
             half : height * 0.52,
             full : height * 0.52
         };
@@ -51,6 +51,10 @@
 
         return padding;
     });
+
+    function openMarker(ref) {
+        router.push(`/${ref}`);
+    }
 
     function onResize() {
         viewport.value = {
@@ -81,8 +85,9 @@
             v-bind:layers="store.mapLayers"
             v-bind:mode="store.map.mode"
             v-bind:focus="store.map.focus"
-            v-bind:boat="store.map.boat"
-            v-bind:padding="mapPadding" />
+            v-bind:markers="store.map.markers"
+            v-bind:padding="mapPadding"
+            v-on:open="openMarker($event)" />
 
         <div
             v-if="store.loading"

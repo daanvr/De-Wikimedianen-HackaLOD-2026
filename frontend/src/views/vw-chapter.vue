@@ -3,13 +3,10 @@
     import { useRoute, useRouter } from 'vue-router';
     import ElChapterNav from '@/components/el-chapter-nav.vue';
     import ElLayerButton from '@/components/el-layer-button.vue';
-    import ElMapButton from '@/components/el-map-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
     import ElSheet from '@/components/el-sheet.vue';
     import { chapterHeading, toRoman } from '@/services/format.js';
-
-    const TRAVEL_MS = 2600;
-    const CHAPTER_ZOOM = 6.2;
+    import { boundsOf } from '@/services/geo.js';
 
     const store = inject('store');
     const t = inject('t');
@@ -17,10 +14,6 @@
     const router = useRouter();
 
     const sheet = ref(null);
-    const sheetState = ref('half');
-    const isTravelling = ref(false);
-
-    let travelTimer = null;
 
     const chapter = computed(() => store.chapterById(route.params.id));
     const index = computed(() => store.chapters.findIndex((item) => item.id === route.params.id));
@@ -31,44 +24,29 @@
     const kicker = computed(() => chapter.value?.kicker ?? null);
     const mention = computed(() => route.query.mention ? `/${route.query.mention}` : null);
 
+    // The markers of the chapter, or the whole route if it has none
+    function chapterFocus() {
+        const markers = chapter.value.markers ?? [];
+
+        return {
+            bounds : markers.length ? boundsOf(markers.map((marker) => [marker.lon, marker.lat])) : null
+        };
+    }
+
     function enterChapter() {
         if (!chapter.value) {
             router.replace('/chapters');
             return;
         }
 
-        const position = store.chapterPosition(chapter.value);
-        const previous = store.map.boat;
-        const moves = previous && store.map.mode === 'story'
-            && (previous.lon !== position.lon || previous.lat !== position.lat);
-
-        // On mobile the sheet folds in while the boat sails, so the voyage can be seen;
-        // not when it opens at a mention, which then has to stay in view
-        const nextSheet = moves && !mention.value ? 'peek' : 'half';
-
-        clearTimeout(travelTimer);
         sheet.value?.scrollToTop();
 
         store.setMap({
             mode : 'story',
-            boat : position,
-            focus : {
-                ...position,
-                zoom : CHAPTER_ZOOM,
-                fly : moves
-            },
-            sheet : nextSheet
+            markers : chapter.value.markers ?? [],
+            focus : chapterFocus(),
+            sheet : 'half'
         });
-
-        sheetState.value = nextSheet;
-        isTravelling.value = Boolean(moves);
-
-        if (moves) {
-            travelTimer = setTimeout(() => {
-                isTravelling.value = false;
-                sheetState.value = 'half';
-            }, TRAVEL_MS + 200);
-        }
 
         store.markChapterRead(chapter.value.id);
     }
@@ -79,60 +57,30 @@
         });
     }
 
-    function recenter() {
-        if (!chapter.value) {
-            return;
-        }
-
-        store.setMap({
-            focus : {
-                ...store.chapterPosition(chapter.value),
-                zoom : CHAPTER_ZOOM,
-                at : Date.now()
-            }
-        });
-    }
-
     watch(() => [route.params.id, route.query.mention], enterChapter, {
         immediate : true
     });
 
-    watch(sheetState, (state) => {
-        store.setMap({
-            sheet : state
-        });
-    });
-
+    // The markers belong to the chapter
     onBeforeUnmount(() => {
-        clearTimeout(travelTimer);
+        store.setMap({
+            markers : []
+        });
     });
 </script>
 
 <template>
     <div
         v-if="chapter"
-        class="vw-chapter"
-        v-bind:sheet="sheetState">
-        <p
-            v-if="isTravelling"
-            class="travel-note">
-            {{ t('on_the_way') }}
-        </p>
-
-        <div class="map-buttons">
-            <el-layer-button
-                v-bind:layer="store.map.base"
-                v-on:change="setLayer($event)" />
-
-            <el-map-button
-                icon="anchor"
-                v-bind:label="t('to_boat')"
-                v-on:click="recenter()" />
-        </div>
+        class="vw-chapter">
+        <el-layer-button
+            class="layer-button"
+            v-bind:layer="store.map.base"
+            v-on:change="setLayer($event)" />
 
         <el-sheet
             ref="sheet"
-            v-bind:state="sheetState">
+            state="half">
             <el-chapter-nav
                 class="top-nav"
                 v-bind:previous="previousChapter"
@@ -146,18 +94,7 @@
 
                 <h1 class="title">{{ heading }}</h1>
 
-                <div
-                    v-if="isTravelling"
-                    class="progress"
-                    role="progressbar"
-                    aria-valuemin="0"
-                    aria-valuemax="100">
-                    <span class="progress__bar"></span>
-                </div>
-
-                <div
-                    v-else
-                    class="double-rule"></div>
+                <div class="double-rule"></div>
             </header>
 
             <el-markdown
@@ -196,44 +133,16 @@
         pointer-events: none;
     }
 
-    .travel-note {
-        position: absolute;
-        top: 8rem;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.6rem 1.2rem;
-        border-radius: 3px;
-        background: rgba(22, 58, 92, 0.88);
-        color: var(--c-paper);
-        font-family: var(--font-header);
-        font-style: italic;
-        font-size: 1.4rem;
-        white-space: nowrap;
-        z-index: 10;
-    }
-
-    // The anchor keeps its place; the layer button sits on top of it (4.8rem button + 1rem gap)
-    .map-buttons {
+    // Just above the sheet on mobile
+    .layer-button {
         position: absolute;
         right: 1.6rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        top: calc(48% - 6.4rem - 5.8rem);
-        transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+        top: calc(48% - 6.4rem);
         z-index: 15;
 
         @include mixins.respond-from(900px) {
             top: auto;
             bottom: 2.4rem;
-        }
-    }
-
-    .vw-chapter[sheet="peek"] .map-buttons {
-        top: calc(100% - 14rem - 6.4rem - 5.8rem);
-
-        @include mixins.respond-from(900px) {
-            top: auto;
         }
     }
 
@@ -266,28 +175,5 @@
     .double-rule {
         border-top: 3px double var(--c-ink);
         margin-bottom: 1.4rem;
-    }
-
-    .progress {
-        height: 3px;
-        background: #E6DFCF;
-        border-radius: 2px;
-        overflow: hidden;
-        margin-bottom: 1.4rem;
-    }
-
-    .progress__bar {
-        display: block;
-        height: 100%;
-        width: 100%;
-        background: var(--c-terracotta);
-        transform-origin: left;
-        animation: travel 2.6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
-    }
-
-    @keyframes travel {
-        from {
-            transform: scaleX(0);
-        }
     }
 </style>

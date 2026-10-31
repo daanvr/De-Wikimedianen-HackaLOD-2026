@@ -1,12 +1,14 @@
 from pathlib import Path
+import json
 
 import pytest
 
 from siboga.content import (
     BodyImage,
+    LinkIndex,
     body_images,
     build_link_index,
-    chapter_coordinates,
+    chapter_markers,
     chapter_number,
     content_type,
     convert_body,
@@ -20,7 +22,7 @@ from siboga.content import (
     show_in_explore,
     slugify
 )
-from siboga.models import ContentItem, Coordinates, ItemKind, Report
+from siboga.models import ContentItem, Coordinates, ItemKind, Marker, Report
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "content"
 REAL_CONTENT_PATH = Path(__file__).resolve().parents[2] / "content"
@@ -64,33 +66,89 @@ def test_build_link_index(index):
     assert index.attachments["foto van anna.png"] == (FIXTURE_PATH / "bijlagen" / "Foto van Anna.png").resolve()
     assert not any(name.endswith(".md") for name in index.attachments)
 
-def test_chapter_coordinates(items):
+def _markers(
+    tmp_path: Path,
+    geojson: str,
+    refs: dict[str, str] | None = None
+) -> tuple[list[Marker], Report]:
+    path = tmp_path / "kaart.geojson"
+    path.write_text(geojson, encoding = "utf-8")
+    index = LinkIndex(attachments = {"kaart.geojson": path}, refs = refs or {})
+    report = Report()
+    return chapter_markers(_item({"geojson": "[[kaart.geojson]]"}), index, report), report
+
+def _point(
+    lon: float,
+    lat: float,
+    properties: dict | None = None
+) -> dict:
+    return {
+        "type": "Feature",
+        "properties": properties or {},
+        "geometry": {
+            "type": "Point",
+            "coordinates": [lon, lat]
+        }
+    }
+
+def test_chapter_markers(items, index):
     chapters = _by_ref(items)
     report = Report()
-    assert chapter_coordinates(chapters["chapters/hoofdstuk-1-vertrek-uit-amsterdam"], report) == Coordinates(lat = -6.12, lon = 106.81)
+    markers = chapter_markers(chapters["chapters/hoofdstuk-1-vertrek-uit-amsterdam"], index, report)
+    assert markers == [
+        Marker(coordinates = Coordinates(lat = -6.12, lon = 106.81), label = "Batavia", ref = "records/haven-jakarta"),
+        Marker(coordinates = Coordinates(lat = -8.0, lon = 115.5), label = None, ref = None)
+    ]
     assert report.warnings == []
-    assert chapter_coordinates(chapters["chapters/hoofdstuk-2-zonder-plek"], report) is None
-    assert len(report.warnings) == 1
-    assert "location" in report.warnings[0]
+    # Without geojson the chapter has no markers, and that is fine.
+    assert chapter_markers(chapters["chapters/hoofdstuk-2-zonder-plek"], index, report) == []
+    assert report.warnings == []
 
-def test_chapter_coordinates_variants():
-    report = Report()
-    assert chapter_coordinates(_item({"location": " -6.12 ,106.81 "}), report) == Coordinates(lat = -6.12, lon = 106.81)
-    # Written as a YAML list.
-    assert chapter_coordinates(_item({"location": [-8, 115.5]}), report) == Coordinates(lat = -8.0, lon = 115.5)
+def test_chapter_markers_properties(tmp_path: Path):
+    features = [
+        _point(128.18, -3.69, {"label": " Ambon "}),
+        _point(4.47, 52.17, {"name": "Leiden", "link": "/records/leiden"}),
+        _point(106.8, -6.1, {"link": "Bestaat niet"})
+    ]
+    geojson = json.dumps({"type": "FeatureCollection", "features": features})
+    markers, report = _markers(tmp_path, geojson, {"leiden": "records/leiden"})
+    assert [marker.label for marker in markers] == ["Ambon", "Leiden", None]
+    assert [marker.ref for marker in markers] == [None, "records/leiden", None]
+    assert len(report.warnings) == 1
+    assert "Bestaat niet" in report.warnings[0]
+
+def test_chapter_markers_problems(tmp_path: Path):
+    line = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [[106.8, -6.1], [115.5, -8.0]]
+        }
+    }
+    geojson = json.dumps({"type": "FeatureCollection", "features": [line, _point(200, 95), _point(115.5, -8.0)]})
+    markers, report = _markers(tmp_path, geojson)
+    assert len(markers) == 1
+    assert any("outside the map" in warning for warning in report.warnings)
+    assert any("LineString" in warning for warning in report.warnings)
+    # A single geometry is a valid GeoJSON file too.
+    markers, report = _markers(tmp_path, json.dumps({"type": "Point", "coordinates": [115.5, -8.0, 12]}))
+    assert markers[0].coordinates == Coordinates(lat = -8.0, lon = 115.5)
     assert report.warnings == []
-    assert chapter_coordinates(_item({"location": "[[Haven Jakarta]]"}), report) is None
-    assert chapter_coordinates(_item({"location": "Q546796"}), report) is None
-    assert chapter_coordinates(_item({"location": "-6.12, 106.81, 3"}), report) is None
-    assert "lat, lon" in report.warnings[-1]
-    assert chapter_coordinates(_item({"location": "106.81, -6.12"}), report) is None
-    assert "swapped" in report.warnings[-1]
-    assert chapter_coordinates(_item({"location": "95, 200"}), report) is None
-    assert report.warnings[-1].endswith("is outside the map")
-    assert len(report.warnings) == 5
-    # The map shows the whole world, so the boat can start in Amsterdam.
-    assert chapter_coordinates(_item({"location": "52.37, 4.9"}), report) == Coordinates(lat = 52.37, lon = 4.9)
-    assert len(report.warnings) == 5
+    markers, report = _markers(tmp_path, "{kapot")
+    assert markers == []
+    assert "can't be read" in report.warnings[0]
+    report = Report()
+    index = LinkIndex(attachments = {}, refs = {})
+    assert chapter_markers(_item({"geojson": "[[weg.geojson]]"}), index, report) == []
+    assert "does not exist" in report.warnings[0]
+
+def test_chapter_markers_unquoted_wikilink(tmp_path: Path):
+    path = tmp_path / "kaart.geojson"
+    path.write_text(json.dumps(_point(115.5, -8.0)), encoding = "utf-8")
+    index = LinkIndex(attachments = {"kaart.geojson": path}, refs = {})
+    # Without quotes, YAML reads [[kaart.geojson]] as a list in a list.
+    assert len(chapter_markers(_item({"geojson": [["kaart.geojson"]]}), index, Report())) == 1
 
 def test_chapter_number(items):
     chapters = _by_ref(items)
@@ -250,7 +308,7 @@ def test_real_content_smoke():
     for item in items:
         convert_body(item, index, report)
         if item.kind == ItemKind.CHAPTER:
-            chapter_coordinates(item, report)
+            chapter_markers(item, index, report)
             chapter_number(item, report)
         else:
             content_type(item, report)

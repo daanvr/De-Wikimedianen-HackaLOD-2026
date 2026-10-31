@@ -32,12 +32,16 @@ contenttype: person
 ---
 type: chapter
 chapter: "1"
-location: -6.12, 106.81
+geojson: "[[De Siboga vertrekt.geojson]]"
 ---
 ```
 
 - `chapter`: volgnummer.
-- `location`: verplicht, de plek van de boot op de kaart als `breedtegraad, lengtegraad`. Dat is de volgorde waarin Google Maps en OpenStreetMap coördinaten kopiëren (rechtsklik op de kaart). Alleen voor de kaart; de volgorde van de hoofdstukken komt uit `chapter`. De kaart toont de hele wereld, dus elke plek op aarde mag, ook Amsterdam. Is een getal geen geldige breedte- of lengtegraad, dan waarschuwt de pipeline; vaak zijn de twee getallen dan omgedraaid. Zonder bruikbare `location` ligt de boot bij Soerabaja.
+- `geojson`: optioneel, een link naar een GeoJSON-bestand ergens in de content-repo, bijvoorbeeld in `media/`. Elk punt (`Point`) daarin wordt een marker op de kaart van dat hoofdstuk, en de kaart zoomt in op de markers. Teken het bestand met [geojson.io](https://geojson.io) of [uMap](https://umap.openstreetmap.fr), dan hoef je geen coördinaten op te zoeken. Per punt:
+  - `name` (of `label`): de tekst naast de marker. Zonder naam is het alleen een stip.
+  - `link`: optioneel, de pagina die opent als je op de marker klikt, als wikilink (`"[[Ambon]]"`) of als pad (`/records/ambon`). Zonder `link` is de marker niet klikbaar.
+
+  Lijnen en vlakken negeert de pipeline, met een waarschuwing; een punt buiten de kaart of een `link` naar een pagina die niet bestaat ook. Zonder `geojson` toont de kaart de hele route. Een hoofdstuk heeft verder geen eigen plek op de kaart; het oude veld `location` doet niets meer.
 
 ```yaml
 ---

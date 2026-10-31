@@ -1,0 +1,24 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Batavia",
+                "link": "[[Haven Jakarta]]"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [106.81, -6.12]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+                "type": "Point",
+                "coordinates": [115.5, -8.0]
+            }
+        }
+    ]
+}

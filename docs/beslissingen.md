@@ -24,7 +24,7 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 | Bronnen zonder Linked Data-endpoint krijgen ook een adapter, op hun eigen API (bijvoorbeeld JSON)                    | [pipeline.md](pipeline.md#bronadapters)             |
 | Bij een nieuwe commit in de content-repo bouwt een systemd-timer de site opnieuw                                     | [ontwikkelen.md](ontwikkelen.md#automatisch-bouwen) |
 | De site is voorlopig alleen Nederlands                                                                               | [content-repo.md](content-repo.md#frontmatter)      |
-| `location` bij een chapter is verplicht en alleen voor de kaart, niet voor de volgorde. Het zijn coördinaten (`lat, lon`), geen link naar een record of een QID                               | [content-repo.md](content-repo.md#frontmatter)      |
+| Een chapter heeft geen eigen plek op de kaart. Er vaart geen boot over de kaart; een chapter kan met `geojson` markers tonen, getekend in een gewone GeoJSON-editor | [content-repo.md](content-repo.md#frontmatter)      |
 | Een record heeft precies één `uri`; geen veld `sources`. Overige bronnen op Wikidata of als externe link in de tekst | [content-repo.md](content-repo.md#frontmatter)      |
 | De pipeline zet markdown niet om in HTML; de frontend doet dat met een markdown-parser                               | [frontend-data.md](frontend-data.md#tekst-en-links) |
 | Plaatjes altijd lokaal ophalen, en altijd licentie en bronvermelding overnemen                                       | [pipeline.md](pipeline.md#cache)                    |

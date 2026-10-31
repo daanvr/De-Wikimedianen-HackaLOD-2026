@@ -4,13 +4,6 @@ import { loadFrontendData } from '@/services/data.js';
 import { loadMapLayers } from '@/services/map-layers.js';
 import { DEFAULT_MESSAGES } from '@/services/messages.js';
 
-// Off Surabaya, where the Siboga set out on 7 March 1899. Used when a
-// chapter's location has no coordinates (yet).
-export const EXPEDITION_START = {
-    lon : 112.82,
-    lat : -7.1
-};
-
 const READ_KEY = 'siboga-read-chapters';
 
 function loadReadChapters() {
@@ -37,7 +30,7 @@ export const useStore = defineStore('data', {
                 base : 'historic',
                 chapterId : null,
                 focus : null,
-                travelling : false
+                markers : []
             },
             mapLayers : null,
             readChapters : loadReadChapters()
@@ -78,17 +71,6 @@ export const useStore = defineStore('data', {
     actions : {
         chapterById(id) {
             return this.chapters.find((chapter) => chapter.id === id) ?? null;
-        },
-
-        chapterPosition(chapter) {
-            if (chapter?.coordinates) {
-                return {
-                    lon : chapter.coordinates.lon,
-                    lat : chapter.coordinates.lat
-                };
-            }
-
-            return EXPEDITION_START;
         },
 
         itemByRef(ref) {
