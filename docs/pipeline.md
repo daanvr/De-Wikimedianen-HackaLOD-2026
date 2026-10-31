@@ -60,7 +60,7 @@ class SourceAdapter:
 
 | Adapter             | URI's                                               | Wat hij ophaalt                                                                  |
 | ------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `wikidata`          | `wikidata.org/wiki/Q…`                              | Het hele item (`Special:EntityData/Q….json`), en het plaatje uit P18 via Commons |
+| `wikidata`          | `wikidata.org/wiki/Q…`                              | Het hele item (`Special:EntityData/Q….json`), en het plaatje uit P18 via Commons. De link naar de volledige tekst (P953) wordt `fullTextUrl` |
 | `commons`           | `commons.wikimedia.org/wiki/File:…` en `/entity/M…` | De imageinfo met metadata en licentie, en het plaatje op 1600 px                 |
 | `gbif`              | `gbif.org/taxon/…`, `/species/…` en `/occurrence/…` | Het taxon via ChecklistBank of de GBIF-API; een plaatje alleen met licentie. Bij een occurrence (een specimen) ook het museum, de soort en de gegevens van het exemplaar zelf |
 | `archief_amsterdam` | `archief.amsterdam/detail/…`                        | Het record als JSON-LD via `id.archief.amsterdam`; een scan alleen met licentie  |

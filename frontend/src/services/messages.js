@@ -97,6 +97,7 @@ export const DEFAULT_MESSAGES = {
     plugin_not_ready : 'Hier wordt nog aan gewerkt.',
     plugin_source : 'Bekijk de bron',
     plugin_unavailable : 'Deze weergave kon niet worden geladen.',
+    read_full_text : 'Lees de volledige tekst',
     record_source : 'Bekijk de bron',
     record_sources : 'Bronnen',
     share : 'Delen',

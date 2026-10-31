@@ -112,6 +112,7 @@ Sleutels in camelCase.
             },
             "coordinates": null,
             "coordinatesSource": null,
+            "fullTextUrl": null,
             "fields": [
                 {
                     "key": "birth_date",
@@ -155,6 +156,7 @@ Sleutels in camelCase.
 - Pages, plugins en records staan in een object met het id als sleutel. Het id van een plugin komt uit `id` in de frontmatter, niet uit de bestandsnaam. Chapters staan in een lijst, gesorteerd op `number`. `markers` van een chapter zijn de punten uit het GeoJSON-bestand van `geojson` in de frontmatter, met `label` uit `name` of `label` en `ref` uit `link`; een lege lijst als er geen bestand is. Een marker met een `ref` telt als link van het chapter, dus het record noemt het chapter onder "Genoemd in".
 - `title` is bij chapters en records de bestandsnaam, bij pages het veld `title`. `label` is de naam volgens de bron. `description` komt uit `description_nl`, anders uit de bron. `source` is de naam van de adapter van `uri`.
 - **Elke waarde zegt waar hij vandaan komt.** `sources` zijn alle bronnen waar het record data uit haalt, met naam en URI; de eerste is altijd `uri` zelf, daarna komen [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata) zoals de NTA. `labelSource`, `descriptionSource`, `coordinatesSource`, `image.source` en `source` bij elk veld noemen de bron van die ene waarde, met een `name` uit `sources`. `descriptionSource` is `content` als de beschrijving uit `description_nl` komt. Zonder waarde is de bron `null`. Een record waarvan de bron niets opleverde, heeft een lege `sources`.
+- `fullTextUrl` is een link naar de volledige tekst van een werk, uit "volledig werk beschikbaar op URL" (P953) op Wikidata, bijvoorbeeld een scan op Delpher. Heeft het item er meer, dan gaat een Nederlandse (taal van het werk, P407) voor, en anders de eerste. Zonder link is het `null`. De recordpagina toont er een grote knop "Lees de volledige tekst" voor.
 - `links` zijn de refs waar de tekst naar verwijst, `backlinks` de items die naar dit item verwijzen.
 - Teksten zijn Nederlands; er zijn nog geen velden per taal.
 - Velden zonder waarde staan er met `null` (of een lege lijst), zodat de frontend nooit hoeft te raden.

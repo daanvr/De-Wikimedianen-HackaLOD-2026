@@ -120,6 +120,8 @@ class SourceData:
     filled_by: dict[str, str] = field(default_factory = dict)
     # Field key to the name of the linked source that filled it.
     filled_fields_by: dict[str, str] = field(default_factory = dict)
+    # Where the full text of a work can be read, such as a scan on Delpher.
+    full_text_url: str | None = None
     image: ImageInfo | None = None
     label: str | None = None
     linked_sources: list[SourceRef] = field(default_factory = list)
