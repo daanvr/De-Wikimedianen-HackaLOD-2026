@@ -26,6 +26,16 @@ class ItemKind(Enum):
     RECORD = "records"
 
 @dataclass
+class AudioInfo:
+    """A sound recording from a source. The file itself is in the cache under download_url."""
+    credit: str | None
+    download_url: str
+    license: str | None
+    license_url: str | None
+    mime_type: str | None
+    source_url: str | None
+
+@dataclass
 class CachedResponse:
     """One raw response from a source, exactly as it came in."""
     adapter: str
@@ -93,6 +103,7 @@ class SourceData:
     Which of them are shown depends on the content type of the record.
     Everything comes from the adapter's own source, unless filled_by says a linked source filled it.
     """
+    audio: AudioInfo | None = None
     coordinates: Coordinates | None = None
     description: str | None = None
     fields: dict[str, list[str]] = field(default_factory = dict)

@@ -152,7 +152,8 @@ Sleutels in camelCase.
 - `links` zijn de refs waar de tekst naar verwijst, `backlinks` de items die naar dit item verwijzen.
 - Teksten zijn Nederlands; er zijn nog geen velden per taal.
 - Velden zonder waarde staan er met `null` (of een lege lijst), zodat de frontend nooit hoeft te raden.
-- Een plaatje heeft altijd `credit` en `license`; zonder die twee laat de pipeline het weg. Paden in `src` en in de markdown zijn relatief aan de map met `siboga.json`.
+- `audio` is een geluidsopname, nu alleen van Wikimedia Commons: `src`, `mimeType`, en net als een plaatje `credit`, `license`, `licenseUrl`, `sourceUrl` en `source`. Zonder geluid is het `null`. De frontend toont er een speler voor.
+- Een plaatje heeft altijd `credit` en `license`; zonder die twee laat de pipeline het weg. Dat geldt ook voor geluid. Voor een geluidsbestand zonder voorbeeld geeft Commons een algemeen icoon; dat neemt de pipeline niet over als plaatje. Paden in `src` en in de markdown zijn relatief aan de map met `siboga.json`.
 
 ## Velden per contenttype
 `fields` hangt af van het `contentType` van het record, niet van de bron. Welke velden bij welk contenttype horen en in welke volgorde, staat in [pipeline/fields.toml](../pipeline/fields.toml). Alleen velden met een waarde komen in de lijst.

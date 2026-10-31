@@ -2,6 +2,7 @@
     import { computed, inject, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import ElFields from '@/components/el-fields.vue';
+    import ElAudio from '@/components/el-audio.vue';
     import ElFigure from '@/components/el-figure.vue';
     import ElIcon from '@/components/el-icon.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
@@ -155,6 +156,10 @@
                 v-if="record.image"
                 v-bind:image="record.image"
                 v-bind:alt="name" />
+
+            <el-audio
+                v-if="record.audio"
+                v-bind:audio="record.audio" />
 
             <el-markdown
                 v-if="record.body"

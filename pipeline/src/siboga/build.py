@@ -29,7 +29,7 @@ from siboga.content import (
     show_in_explore
 )
 from siboga.fields import FieldCatalog, load_fields
-from siboga.models import ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
+from siboga.models import AudioInfo, ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
 from siboga.sources import Registry, build_registry
 
 # The source of a value that an editor wrote in the frontmatter, such as description_nl.
@@ -51,6 +51,15 @@ class CoordinatesOut(OutputModel):
 
 class ImageOut(OutputModel):
     src: str
+    credit: str
+    license: str
+    license_url: str | None
+    source_url: str | None
+    source: str
+
+class AudioOut(OutputModel):
+    src: str
+    mime_type: str | None
     credit: str
     license: str
     license_url: str | None
@@ -109,6 +118,7 @@ class RecordOut(OutputModel):
     sources: list[SourceOut]
     body: str | None
     image: ImageOut | None
+    audio: AudioOut | None = None
     coordinates: CoordinatesOut | None
     coordinates_source: str | None
     fields: list[FieldOut]
@@ -152,9 +162,10 @@ def check_output(output_path: Path) -> list[str]:
                 problems.append(f"{item.ref}: link in body to unknown page {target}")
             elif target.startswith("media/") and not (output_path / target).exists():
                 problems.append(f"{item.ref}: media file {target} is missing")
-        image = getattr(item, "image", None)
-        if image is not None and not (output_path / image.src).exists():
-            problems.append(f"{item.ref}: image {image.src} is missing")
+        for kind in ("image", "audio"):
+            media = getattr(item, kind, None)
+            if media is not None and not (output_path / media.src).exists():
+                problems.append(f"{item.ref}: {kind} {media.src} is missing")
     return problems
 
 def run_build(
@@ -362,6 +373,7 @@ def _build_record(
         sources = sources,
         body = _body_or_none(converted.markdown),
         image = _copy_image(source.image, image_source, item, cache, media_dir, report),
+        audio = _copy_audio(source.audio, own_source, item, cache, media_dir, report),
         coordinates = _coordinates_out(source.coordinates),
         coordinates_source = _source_of(source, "coordinates", own_source),
         fields = _build_fields(source, own_source, catalog.profiles.get(record_type or "", []), catalog, item, report),
@@ -412,6 +424,51 @@ def _copy_attachments(
         except OSError as error:
             report.warn(f"attachment {source.name} not copied: {error}", item.path)
 
+def _copy_audio(
+    audio: AudioInfo | None,
+    audio_source: str | None,
+    item: ContentItem,
+    cache: Cache,
+    media_dir: Path,
+    report: Report
+) -> AudioOut | None:
+    """Copies a sound recording from the cache to media/; like an image, only with license and credit."""
+    if audio is None or audio_source is None:
+        return None
+    if not audio.license or not audio.credit:
+        report.warn(f"audio skipped: license or credit is missing ({audio.source_url or audio.download_url})", item.path)
+        return None
+    src = _copy_cached_file(audio.download_url, item, cache, media_dir, report)
+    if src is None:
+        return None
+    return AudioOut(
+        src = src,
+        mime_type = audio.mime_type,
+        credit = audio.credit,
+        license = audio.license,
+        license_url = audio.license_url,
+        source_url = audio.source_url,
+        source = audio_source
+    )
+
+def _copy_cached_file(
+    download_url: str,
+    item: ContentItem,
+    cache: Cache,
+    media_dir: Path,
+    report: Report
+) -> str | None:
+    """Copies a downloaded file from the cache to media/<item id>.<extension>; returns its src."""
+    if not cache.has_media(download_url):
+        report.warn(f"media file is not in the cache, run fetch first ({download_url})", item.path)
+        return None
+    cached_file = cache.media_path(download_url)
+    name = f"{item.id}{_media_suffix(cached_file, download_url, cache)}"
+    if (media_dir / name).exists():
+        report.warn(f"media file {name} already exists and will be overwritten", item.path)
+    shutil.copyfile(cached_file, media_dir / name)
+    return f"media/{name}"
+
 def _copy_image(
     image: ImageInfo | None,
     image_source: str | None,
@@ -426,16 +483,11 @@ def _copy_image(
     if not image.license or not image.credit:
         report.warn(f"image skipped: license or credit is missing ({image.source_url or image.download_url})", item.path)
         return None
-    if not cache.has_media(image.download_url):
-        report.warn(f"image is not in the cache, run fetch first ({image.download_url})", item.path)
+    src = _copy_cached_file(image.download_url, item, cache, media_dir, report)
+    if src is None:
         return None
-    cached_file = cache.media_path(image.download_url)
-    name = f"{item.id}{_media_suffix(cached_file, image.download_url, cache)}"
-    if (media_dir / name).exists():
-        report.warn(f"media file {name} already exists and will be overwritten", item.path)
-    shutil.copyfile(cached_file, media_dir / name)
     return ImageOut(
-        src = f"media/{name}",
+        src = src,
         credit = image.credit,
         license = image.license,
         license_url = image.license_url,

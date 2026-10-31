@@ -10,7 +10,7 @@ import re
 
 from loguru import logger
 
-from siboga.models import ImageInfo, SourceData
+from siboga.models import AudioInfo, ImageInfo, SourceData
 from siboga.sources.base import WIKIMEDIA_RATE_LIMIT, SourceAdapter
 
 if TYPE_CHECKING:
@@ -18,9 +18,12 @@ if TYPE_CHECKING:
     from siboga.fetcher import Fetcher
 
 API_URL = "https://commons.wikimedia.org/w/api.php"
+AUDIO_MIME_TYPES = {"application/ogg"}
 BLOCK_TAGS = {"br", "div", "li", "p", "td", "tr"}
 # A MediaInfo entity on Commons; the number after the M is the page id of the file.
 ENTITY_URL = re.compile(r"https?://commons\.wikimedia\.org/(entity/|wiki/Special:EntityPage/)M(\d+)(?![\w/])")
+# For a file without a preview, such as a sound, Commons gives a generic icon as the thumbnail.
+FILE_TYPE_ICON = "/file-type-icons/"
 FILE_PREFIXES = ("file:", "bestand:")
 FILE_URL = re.compile(r"https?://commons\.wikimedia\.org/wiki/(File|Bestand):.+", re.IGNORECASE)
 ISO_DATE = re.compile(r"\d{4}(-\d{2}(-\d{2})?)?")
@@ -58,6 +61,7 @@ class CommonsAdapter(SourceAdapter):
         filename = (_page_filename(data) or uri) if ENTITY_URL.match(uri) else filename_from_url(uri)
         metadata = info.get("extmetadata") or {}
         return SourceData(
+            audio = _audio(info) if _is_audio(info) else None,
             description = _metadata_text(metadata, "ImageDescription"),
             fields = _fields(metadata),
             image = _image(info, filename),
@@ -167,6 +171,20 @@ def _api_url(target: tuple[str, str], width: int) -> str:
     ]
     return f"{API_URL}?{urlencode(params, quote_via = quote)}"
 
+def _audio(info: dict) -> AudioInfo | None:
+    """The original file of a sound recording, with attribution and license."""
+    if not info.get("url"):
+        return None
+    metadata = info.get("extmetadata") or {}
+    return AudioInfo(
+        credit = _credit(metadata),
+        download_url = info["url"],
+        license = _metadata_text(metadata, "LicenseShortName"),
+        license_url = _metadata_text(metadata, "LicenseUrl"),
+        mime_type = info.get("mime"),
+        source_url = info.get("descriptionurl")
+    )
+
 def _credit(metadata: dict) -> str | None:
     artist = _metadata_text(metadata, "Artist")
     credit = _metadata_text(metadata, "Credit")
@@ -184,16 +202,18 @@ def _fetch_download(
     fetcher: Fetcher,
     adapter: str
 ) -> None:
-    """Fetches the imageinfo at url and downloads the image; name is only for the log messages."""
+    """Fetches the imageinfo at url and downloads the image, or the file of a sound; name is only for the log messages."""
     info = _imageinfo(fetcher.get_json(url, adapter))
     if info is None:
         logger.warning(f"No imageinfo from Commons for {name}")
         return
-    download_url = info.get("thumburl") or info.get("url")
-    if not download_url:
+    if _is_audio(info) and info.get("url"):
+        fetcher.download(info["url"], adapter)
+    download_url = _image_url(info)
+    if download_url:
+        fetcher.download(download_url, adapter)
+    elif not _is_audio(info):
         logger.warning(f"No download URL on Commons for {name}")
-        return
-    fetcher.download(download_url, adapter)
 
 def _fields(metadata: dict) -> dict[str, list[str]]:
     """The fields from the extmetadata; a date that is not ISO becomes date_description."""
@@ -211,9 +231,10 @@ def _fields(metadata: dict) -> dict[str, list[str]]:
 
 def _image(info: dict, name: str) -> ImageInfo | None:
     """Image with attribution and license from one imageinfo; name is only for the log message."""
-    download_url = info.get("thumburl") or info.get("url")
+    download_url = _image_url(info)
     if not download_url:
-        logger.warning(f"No download URL on Commons for {name}")
+        if not _is_audio(info):
+            logger.warning(f"No download URL on Commons for {name}")
         return None
     metadata = info.get("extmetadata") or {}
     return ImageInfo(
@@ -224,6 +245,14 @@ def _image(info: dict, name: str) -> ImageInfo | None:
         source_url = info.get("descriptionurl")
     )
 
+def _image_url(info: dict) -> str | None:
+    """The thumbnail, or else the original; a generic file type icon is no image."""
+    if _is_audio(info):
+        thumb = info.get("thumburl")
+        return thumb if thumb and FILE_TYPE_ICON not in thumb else None
+    url = info.get("thumburl") or info.get("url")
+    return url if url and FILE_TYPE_ICON not in url else None
+
 def _imageinfo(data: dict | list | None) -> dict | None:
     if not isinstance(data, dict):
         return None
@@ -232,6 +261,11 @@ def _imageinfo(data: dict | list | None) -> dict | None:
         if infos:
             return infos[0]
     return None
+
+def _is_audio(info: dict) -> bool:
+    """A sound: an audio MIME type, or Ogg without a width (an Ogg video has one)."""
+    mime = (info.get("mime") or "").lower()
+    return mime.startswith("audio/") or (mime in AUDIO_MIME_TYPES and not info.get("width"))
 
 def _iso_date(value: str | None) -> str | None:
     if not value or not ISO_DATE.fullmatch(value):

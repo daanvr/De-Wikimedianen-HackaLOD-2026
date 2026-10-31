@@ -8,10 +8,11 @@ from siboga import build
 from siboga.build import check_output, run_build
 from siboga.cache import Cache
 from siboga.config import Config
-from siboga.models import CachedResponse, ImageInfo, Report, SourceData
+from siboga.models import AudioInfo, CachedResponse, ImageInfo, Report, SourceData
 from siboga.sources import Registry
 from siboga.sources.base import SourceAdapter
 
+AUDIO_URL = "https://example.org/files/kat.ogg"
 IMAGE_URL = "https://example.org/files/anna.jpg"
 
 class FakeAdapter(SourceAdapter):
@@ -36,6 +37,15 @@ class FakeAdapter(SourceAdapter):
             return None
         if uri.endswith("/broken"):
             raise ValueError("kapotte bron")
+        if uri.endswith("/audio"):
+            return SourceData(audio = AudioInfo(
+                credit = "Tobias Puderer",
+                download_url = AUDIO_URL,
+                license = "CC BY-SA 3.0",
+                license_url = None,
+                mime_type = "application/ogg",
+                source_url = "https://example.org/kat"
+            ))
         license = None if uri.endswith("/nolicense") else "CC0"
         return SourceData(
             description = "beschrijving uit de bron",
@@ -77,6 +87,7 @@ def config(tmp_path: Path) -> Config:
         "[[Anna Weber|Anna]] ging mee. Zie ook [[Bestaat niet]].\n\n![[kaart.png]]\n\n[[IIIF#https://example.org/iiif/1/full/max/0/default.jpg]]\n"
     )
     _write(vault / "pages" / "about.md", "---\ntype: page\ntitle: Over deze website\n---\nGemaakt door het team. Lees over [[Anna Weber]].\n")
+    _write(vault / "records" / "Kat.md", "---\ntype: record\nuri: https://example.org/audio\ncontenttype: media\n---\n")
     _write(vault / "plugins" / "IIIF.md", "---\ntype: plugin\nid: iiif\nshow_in_explore: false\n---\n")
     _write(vault / "plugins" / "Diep.md", "---\ntype: plugin\nid: deepdive\ndescription_nl: Specimens\nshow_in_explore: \"true\"\n---\n")
     _write(vault / "etc" / "i18n.md", "---\ntype: i18n\nabout_site: Over deze site\nfield_birth_date: Geboren\n---\n")
@@ -204,3 +215,22 @@ def test_check_output_finds_problems(config: Config):
     (config.output_path / "media" / "anna-weber.jpg").unlink()
     problems = check_output(config.output_path)
     assert any("anna-weber.jpg" in problem for problem in problems)
+
+def test_build_copies_audio(config: Config):
+    cache = Cache(config.cache_path, config.media_path)
+    cache.media_path(AUDIO_URL).write_bytes(b"OggS")
+    cache.close()
+    data = json.loads(run_build(config, Report()).read_text(encoding = "utf-8"))
+    audio = data["records"]["kat"]["audio"]
+    assert audio == {
+        "src": "media/kat.ogg",
+        "mimeType": "application/ogg",
+        "credit": "Tobias Puderer",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": None,
+        "sourceUrl": "https://example.org/kat",
+        "source": "fake"
+    }
+    assert data["records"]["anna-weber"]["audio"] is None
+    assert (config.output_path / "media" / "kat.ogg").read_bytes() == b"OggS"
+

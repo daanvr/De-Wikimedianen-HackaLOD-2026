@@ -266,3 +266,31 @@ def test_strip_html():
     assert strip_html(value) == "Onbekend & Jan Piet"
     assert strip_html("<p> </p>") is None
     assert strip_html(None) is None
+
+def _audio_imageinfo() -> dict:
+    return {"query": {"pages": [{"title": "File:Kat.ogg", "imageinfo": [{
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Kat.ogg",
+        "extmetadata": {
+            "Artist": {"value": "Tobias Puderer"},
+            "LicenseShortName": {"value": "CC BY-SA 3.0"}
+        },
+        "mime": "application/ogg",
+        "thumburl": "https://commons.wikimedia.org/w/resources/assets/file-type-icons/fileicon-ogg.png",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/53/Kat.ogg",
+        "width": 0
+    }]}]}}
+
+def test_fetch_audio_downloads_the_file_not_the_icon():
+    fetcher = FakeFetcher({imageinfo_url("Kat.ogg", WIDTH): _audio_imageinfo()})
+    CommonsAdapter(image_width = WIDTH).fetch("https://commons.wikimedia.org/wiki/File:Kat.ogg", fetcher)
+    assert fetcher.downloads == [("https://upload.wikimedia.org/wikipedia/commons/5/53/Kat.ogg", "commons")]
+
+def test_normalize_audio():
+    cache = FakeCache({imageinfo_url("Kat.ogg", WIDTH): _audio_imageinfo()})
+    source = CommonsAdapter(image_width = WIDTH).normalize("https://commons.wikimedia.org/wiki/File:Kat.ogg", cache)
+    assert source.image is None
+    assert source.audio.download_url == "https://upload.wikimedia.org/wikipedia/commons/5/53/Kat.ogg"
+    assert source.audio.mime_type == "application/ogg"
+    assert source.audio.credit == "Tobias Puderer"
+    assert source.audio.license == "CC BY-SA 3.0"
+
