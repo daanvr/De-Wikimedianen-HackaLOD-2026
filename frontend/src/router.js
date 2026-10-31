@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import VwChapter from '@/views/vw-chapter.vue';
 import VwChapters from '@/views/vw-chapters.vue';
+import VwGame from '@/views/vw-game.vue';
 import VwHome from '@/views/vw-home.vue';
 import VwLibrary from '@/views/vw-library.vue';
 import VwMap from '@/views/vw-map.vue';
@@ -50,6 +51,11 @@ export const router = createRouter({
             path : '/map',
             name : 'map',
             component : VwMap
+        },
+        {
+            path : '/spel',
+            name : 'game',
+            component : VwGame
         },
         {
             path : '/:pathMatch(.*)*',

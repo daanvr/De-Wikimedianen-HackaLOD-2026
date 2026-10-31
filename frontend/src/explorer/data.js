@@ -8,7 +8,7 @@ const ROUTE_URL = '/datasets/route-stations.json';
 const EXTRA_URL = '/data/explorer.json';
 const NATURALIS_URL = 'https://bioportal.naturalis.nl/specimen/';
 
-async function fetchJson(url) {
+export async function fetchJson(url) {
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -19,7 +19,7 @@ async function fetchJson(url) {
 }
 
 // The extra data is optional: without it there are no photos and only the identifications of the dataset
-async function fetchExtra() {
+export async function fetchExtra() {
     try {
         return await fetchJson(EXTRA_URL);
     } catch (error) {
@@ -31,7 +31,7 @@ async function fetchExtra() {
     }
 }
 
-function rows(table) {
+export function rows(table) {
     return table.rijen.map((row) => Object.fromEntries(table.velden.map((field, i) => [field, row[i]])));
 }
 
@@ -91,7 +91,7 @@ function identificationsOf(row, extra, people) {
     return result;
 }
 
-function buildSpecimen(row, context) {
+export function buildSpecimen(row, context) {
     const { extras, gold, lists, museums, names, station } = context;
     const museum = museums[row.museum] ?? null;
     const isNaturalis = museum?.organisatie === 'Naturalis Biodiversity Center' && row.catalogus;

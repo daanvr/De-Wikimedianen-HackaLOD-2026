@@ -2,6 +2,7 @@
     import maplibregl from 'maplibre-gl';
     import { computed, inject, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
     import { LAND_LABELS, SEA_LABELS, limitZoom, seaChartLayers, seaChartSources } from '@/services/sea-chart.js';
+    import { createBoat, move as moveMap } from './boat.js';
     import { lineIndexAt, pointAt, stationIndexAt } from './data.js';
 
     const MAX_ZOOM = 12;
@@ -160,26 +161,6 @@
         };
     }
 
-    function createBoat() {
-        const element = document.createElement('div');
-
-        element.className = 'boat';
-        element.setAttribute('aria-hidden', 'true');
-        element.innerHTML = `
-            <svg width="72" height="36" viewBox="-46 -23 92 46">
-                <path d="M-27,0 L-44,-7 M-27,0 L-44,7" stroke="#FBF8F1" stroke-width="1.4" fill="none" opacity="0.7"/>
-                <path d="M-25,0 C-21,-6 8,-7 26,0 C8,7 -21,6 -25,0 Z" fill="#FBF8F1" stroke="#1B2433" stroke-width="1.3"/>
-                <path d="M-9,-6 L-9,6 M8,-5 L8,5" stroke="#1B2433" stroke-width="1.3" fill="none"/>
-                <circle r="2.4" fill="#A9512F"/>
-            </svg>`;
-
-        return new maplibregl.Marker({
-            element,
-            rotationAlignment : 'map',
-            pitchAlignment : 'map'
-        });
-    }
-
     // The names of the main map; they stay flat on the screen, so they go when the map tilts
     function createLabels() {
         const kinds = [
@@ -298,10 +279,7 @@
     }
 
     function move(method, options) {
-        return new Promise((resolve) => {
-            map.once('moveend', resolve);
-            map[method](options);
-        });
+        return moveMap(map, method, options);
     }
 
     // Under water the drawn ship takes over from the marker; the labels go too

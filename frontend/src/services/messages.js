@@ -72,6 +72,7 @@ export const DEFAULT_MESSAGES = {
     filter_all : 'Alles',
     gallery_next : 'Volgende afbeelding',
     gallery_previous : 'Vorige afbeelding',
+    game : 'Spel: vaar zelf',
     image_fullscreen : 'Afbeelding schermvullend tonen',
     image_source : 'Bron',
     library : 'Bibliotheek',

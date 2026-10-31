@@ -117,6 +117,17 @@
                 {{ t('about_site') }}
             </router-link>
 
+            <router-link
+                class="el-menu__item"
+                to="/spel">
+                <span class="el-menu__tile">
+                    <el-icon
+                        name="helm"
+                        v-bind:size="22" />
+                </span>
+                {{ t('game') }}
+            </router-link>
+
             <button
                 type="button"
                 class="el-menu__item"

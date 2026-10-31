@@ -149,6 +149,7 @@
                             term="eventDate"
                             text="De datum van het verzamelen volgens het museumrecord.">Geregistreerd · {{ specimen.date ? formatDate(specimen.date) : 'datum onbekend' }}</el-explorer-term>
                         <el-explorer-term
+                            v-if="specimen.station"
                             class="step__main"
                             text="Geen veld in het record: wij hebben het afgeleid. Het stationsnummer staat in de tekst van het record en de datum past bij het station. Het bewijs staat onderaan.">Station {{ specimen.station.nummer }}</el-explorer-term>
                         <el-explorer-term
@@ -247,7 +248,7 @@
             </div>
 
             <section
-                v-if="evidenceParts"
+                v-if="evidenceParts && specimen.station"
                 class="evidence">
                 <h3 class="evidence__title">Hoe we weten dat het van station {{ specimen.station.nummer }} komt</h3>
                 <p class="evidence__text">In het museumrecord, veld <code>{{ specimen.evidence.field }}</code>: “{{ evidenceParts[0] }}<mark>{{ evidenceParts[1] }}</mark>{{ evidenceParts[2] }}”</p>
