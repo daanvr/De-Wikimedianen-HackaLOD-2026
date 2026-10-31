@@ -1,4 +1,4 @@
-"""Adapter for taxa on GBIF: Catalogue of Life taxa (/taxon/…) and GBIF species (/species/…)."""
+"""Adapter for GBIF: Catalogue of Life taxa (/taxon/…), GBIF species (/species/…) and specimens (/occurrence/…)."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -7,7 +7,7 @@ import re
 
 from loguru import logger
 
-from siboga.models import ImageInfo, SourceData
+from siboga.models import Coordinates, ImageInfo, SourceData
 from siboga.sources.base import SourceAdapter
 
 if TYPE_CHECKING:
@@ -19,16 +19,19 @@ COL_CHECKLIST_KEY = "7ddf754f-d193-4cc9-b351-99906754a03b"
 COL_INFO_URL = "https://api.checklistbank.org/dataset/3LXR/taxon/{id}/info"
 DUTCH = ("nld", "nl")
 GBIF_IMAGE_URL = "https://api.gbif.org/v1/image/cache/{width}x/occurrence/{key}/media/{md5}"
+GBIF_INSTITUTION_URL = "https://api.gbif.org/v1/grscicoll/institution/{key}"
 GBIF_LICENSE_CODES = {
     "CC0_1_0": "http://creativecommons.org/publicdomain/zero/1.0/",
     "CC_BY_4_0": "http://creativecommons.org/licenses/by/4.0/",
     "CC_BY_NC_4_0": "http://creativecommons.org/licenses/by-nc/4.0/"
 }
+GBIF_OCCURRENCE_URL = "https://api.gbif.org/v1/occurrence/{key}"
 GBIF_SPECIES_URL = "https://api.gbif.org/v1/species/{id}"
 GBIF_VERNACULAR_URL = "https://api.gbif.org/v1/species/{id}/vernacularNames?limit=1000"
 LICENSE_URL = re.compile(r"https?://creativecommons\.org/(licenses|publicdomain)/([a-z-]+)/(\d\.\d)", re.IGNORECASE)
 OCCURRENCE_PAGE_URL = "https://www.gbif.org/occurrence/{key}"
 OCCURRENCE_SEARCH_URL = "https://api.gbif.org/v1/occurrence/search?{taxon}&mediaType=StillImage&limit=20"
+OCCURRENCE_URL = re.compile(r"https?://(www\.)?gbif\.org/occurrence/(\d+)(?![\w])")
 # From high to low; determines whether family and order belong in the description.
 RANKS = (
     "kingdom",
@@ -62,6 +65,10 @@ RANK_NAMES = {
 }
 SPECIES_URL = re.compile(r"https?://(www\.)?gbif\.org/species/(\d+)(?![\w])")
 TAXON_URL = re.compile(r"https?://(www\.)?gbif\.org/taxon/([A-Za-z0-9]+)(?![\w])")
+# Placeholders for an unknown collector.
+UNKNOWN_COLLECTORS = ("anonymous", "unknown")
+# How some museums write a date in verbatimEventDate: day-month-year.
+VERBATIM_DATE = re.compile(r"(\d{1,2})-(\d{1,2})-(\d{4})")
 
 class GbifAdapter(SourceAdapter):
     name = "gbif"
@@ -74,6 +81,9 @@ class GbifAdapter(SourceAdapter):
         uri: str,
         fetcher: Fetcher
     ) -> None:
+        if OCCURRENCE_URL.match(uri):
+            self._fetch_occurrence(uri, fetcher)
+            return
         for url in self._source_urls(uri):
             fetcher.get(url, self.name)
         image = _pick_image(fetcher.get_json(self._occurrences_url(uri), self.name), self.image_width)
@@ -81,13 +91,15 @@ class GbifAdapter(SourceAdapter):
             fetcher.download(image.download_url, self.name)
 
     def matches(self, uri: str) -> bool:
-        return TAXON_URL.match(uri) is not None or SPECIES_URL.match(uri) is not None
+        return any(pattern.match(uri) is not None for pattern in (OCCURRENCE_URL, SPECIES_URL, TAXON_URL))
 
     def normalize(
         self,
         uri: str,
         cache: Cache
     ) -> SourceData | None:
+        if OCCURRENCE_URL.match(uri):
+            return self._normalize_occurrence(uri, cache)
         urls = self._source_urls(uri)
         data = cache.get_json(urls[0])
         if not isinstance(data, dict):
@@ -107,6 +119,45 @@ class GbifAdapter(SourceAdapter):
             label = taxon["label"]
         )
 
+    def _fetch_occurrence(
+        self,
+        uri: str,
+        fetcher: Fetcher
+    ) -> None:
+        """The specimen itself, its institution, its taxon and its own image."""
+        occurrence = fetcher.get_json(_occurrence_url(uri), self.name)
+        if not isinstance(occurrence, dict):
+            return
+        for url in _occurrence_links(occurrence):
+            fetcher.get(url, self.name)
+        image = _pick_image({"results": [occurrence]}, self.image_width)
+        if image is not None:
+            fetcher.download(image.download_url, self.name)
+
+    def _normalize_occurrence(
+        self,
+        uri: str,
+        cache: Cache
+    ) -> SourceData | None:
+        occurrence = cache.get_json(_occurrence_url(uri))
+        if not isinstance(occurrence, dict):
+            logger.warning(f"No GBIF data in the cache for {uri}")
+            return None
+        taxon = _occurrence_taxon(occurrence, cache)
+        if taxon is None:
+            logger.warning(f"Unusable GBIF response for {uri}")
+            return None
+        key = occurrence.get("institutionKey")
+        institution = cache.get_json(GBIF_INSTITUTION_URL.format(key = key)) if key else None
+        return SourceData(
+            coordinates = _coordinates(occurrence),
+            description = _specimen_description(taxon, _type_status(occurrence)),
+            fields = _fields(taxon) | _specimen_fields(occurrence, institution),
+            # Only the specimen's own image: a photo of another specimen would be misleading here.
+            image = _pick_image({"results": [occurrence]}, self.image_width),
+            label = taxon["label"]
+        )
+
     def _occurrences_url(self, uri: str) -> str:
         """Observations and specimens of this taxon that have an image."""
         match = TAXON_URL.match(uri)
@@ -121,8 +172,7 @@ class GbifAdapter(SourceAdapter):
         match = TAXON_URL.match(uri)
         if match:
             return [COL_INFO_URL.format(id = match.group(2))]
-        key = _species_key(uri)
-        return [GBIF_SPECIES_URL.format(id = key), GBIF_VERNACULAR_URL.format(id = key)]
+        return _species_urls(_species_key(uri))
 
 def license_name(value: str | None) -> tuple[str, str] | None:
     """Short name and URL of a Creative Commons license, or None if it is not a CC license."""
@@ -161,6 +211,38 @@ def _col_taxon(data: dict) -> dict | None:
         "vernacular": _dutch_names(data.get("vernacularNames"), "name")
     }
 
+def _capitalize(text: str) -> str:
+    return f"{text[0].upper()}{text[1:]}"
+
+def _collection_date(occurrence: dict) -> str | None:
+    """The date the specimen was collected, as YYYY, YYYY-MM or YYYY-MM-DD."""
+    year, month, day = (occurrence.get(key) for key in ("year", "month", "day"))
+    if isinstance(year, int):
+        if not isinstance(month, int):
+            return f"{year:04d}"
+        if not isinstance(day, int):
+            return f"{year:04d}-{month:02d}"
+        return f"{year:04d}-{month:02d}-{day:02d}"
+    # GBIF leaves year empty when it can't parse the date; some museums use day-month-year.
+    match = VERBATIM_DATE.fullmatch((occurrence.get("verbatimEventDate") or "").strip())
+    if match is None:
+        return None
+    day, month, year = (int(part) for part in match.groups())
+    if not (1 <= month <= 12 and 1 <= day <= 31):
+        return None
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+def _collectors(value: str | None) -> list[str]:
+    """The collectors of a specimen; recordedBy separates several with a pipe."""
+    names = [name.strip() for name in (value or "").split("|")]
+    return _values(*(name for name in names if name.lower() not in UNKNOWN_COLLECTORS))
+
+def _coordinates(occurrence: dict) -> Coordinates | None:
+    lat, lon = occurrence.get("decimalLatitude"), occurrence.get("decimalLongitude")
+    if not isinstance(lat, (int, float)) or not isinstance(lon, (int, float)):
+        return None
+    return Coordinates(lat = float(lat), lon = float(lon))
+
 def _credit(media: dict, occurrence: dict) -> str | None:
     """Creator and rights holder of the image, otherwise the provenance of the record."""
     parts = []
@@ -171,21 +253,22 @@ def _credit(media: dict, occurrence: dict) -> str | None:
         return ", ".join(parts)
     return occurrence.get("datasetName") or occurrence.get("institutionCode")
 
+def _depth(occurrence: dict) -> str | None:
+    """The depth in metres at which the specimen was collected."""
+    minimum, maximum = occurrence.get("minimumDepthInMeters"), occurrence.get("maximumDepthInMeters")
+    if isinstance(minimum, (int, float)) and isinstance(maximum, (int, float)) and round(minimum) != round(maximum):
+        return f"{round(minimum)}–{round(maximum)} m"
+    depth = occurrence.get("depth")
+    if isinstance(depth, (int, float)):
+        return f"{round(depth)} m"
+    return occurrence.get("verbatimDepth")
+
 def _description(taxon: dict) -> str | None:
     """Rank and position in the classification, with the Dutch name if the source has one."""
-    rank = taxon["rank"]
-    depth = RANKS.index(rank) if rank in RANKS else len(RANKS)
-    text = RANK_NAMES.get(rank, "taxon")
-    family, order = taxon["family"], taxon["order"]
-    if family and depth > RANKS.index("family"):
-        text += f" uit de familie {family}"
-        if order:
-            text += f" (orde {order})"
-    elif order and depth > RANKS.index("order"):
-        text += f" uit de orde {order}"
+    text = _taxon_text(taxon)
     if taxon["vernacular"]:
         return f"{taxon['vernacular'][0]}, {text}."
-    return f"{text[0].upper()}{text[1:]}."
+    return f"{_capitalize(text)}."
 
 def _dutch_names(
     names: list | None,
@@ -224,9 +307,80 @@ def _gbif_taxon(
         "vernacular": _dutch_names(names, "vernacularName")
     }
 
+def _institution_name(
+    occurrence: dict,
+    institution: dict | list | None
+) -> str | None:
+    """The full name from GRSciColl, otherwise the institution code of the record."""
+    if isinstance(institution, dict) and institution.get("name"):
+        return institution["name"]
+    return occurrence.get("institutionCode")
+
 def _join(*parts: str | None) -> str | None:
     text = " ".join(part for part in parts if part)
     return text or None
+
+def _locality(occurrence: dict) -> str | None:
+    """Where the specimen was found, from specific to general, without repeating parts."""
+    parts = []
+    candidates = (
+        occurrence.get("locality") or occurrence.get("verbatimLocality"),
+        occurrence.get("stateProvince"),
+        occurrence.get("waterBody"),
+        occurrence.get("country")
+    )
+    for value in candidates:
+        value = (value or "").strip(" ;,")
+        if value and not any(value.lower() in part.lower() for part in parts):
+            parts.append(value)
+    return ", ".join(parts) or None
+
+def _occurrence_key(uri: str) -> str:
+    match = OCCURRENCE_URL.match(uri)
+    if match is None:
+        raise ValueError(f"Not a GBIF occurrence URI: {uri}")
+    return match.group(2)
+
+def _occurrence_links(occurrence: dict) -> list[str]:
+    """The API URLs that an occurrence refers to: its institution and its taxon."""
+    urls = []
+    if occurrence.get("institutionKey"):
+        urls.append(GBIF_INSTITUTION_URL.format(key = occurrence["institutionKey"]))
+    if occurrence.get("taxonKey"):
+        urls += _species_urls(occurrence["taxonKey"])
+    return urls
+
+def _occurrence_taxon(
+    occurrence: dict,
+    cache: Cache
+) -> dict | None:
+    """The taxon of a specimen from the GBIF species API, otherwise from the occurrence itself.
+
+    The label is always the name on the specimen, which can be an older synonym.
+    """
+    label = occurrence.get("scientificName")
+    if not label:
+        return None
+    taxon = None
+    key = occurrence.get("taxonKey")
+    if key:
+        urls = _species_urls(key)
+        species = cache.get_json(urls[0])
+        if isinstance(species, dict):
+            taxon = _gbif_taxon(species, cache.get_json(urls[1]))
+    if taxon is None:
+        taxon = {
+            "family": occurrence.get("family"),
+            "order": occurrence.get("order"),
+            "parent": None,
+            "rank": (occurrence.get("taxonRank") or "").lower(),
+            "vernacular": []
+        }
+    taxon["label"] = label
+    return taxon
+
+def _occurrence_url(uri: str) -> str:
+    return GBIF_OCCURRENCE_URL.format(key = _occurrence_key(uri))
 
 def _pick_image(
     search: dict | list | None,
@@ -258,6 +412,56 @@ def _species_key(uri: str) -> str:
     if match is None:
         raise ValueError(f"Not a GBIF URI: {uri}")
     return match.group(2)
+
+def _species_urls(key: int | str) -> list[str]:
+    """The GBIF species and its vernacular names."""
+    return [GBIF_SPECIES_URL.format(id = key), GBIF_VERNACULAR_URL.format(id = key)]
+
+def _specimen_description(
+    taxon: dict,
+    type_status: str | None
+) -> str:
+    """For example: Holotype van een soort uit de familie Macrouridae (orde Gadiformes)."""
+    return f"{_capitalize(type_status or 'exemplaar')} van een {_taxon_text(taxon)}."
+
+def _specimen_fields(
+    occurrence: dict,
+    institution: dict | list | None
+) -> dict[str, list[str]]:
+    """What GBIF knows about the specimen itself, as opposed to its taxon."""
+    fields = {
+        "catalog_number": _values(occurrence.get("catalogNumber")),
+        "collection": _values(_institution_name(occurrence, institution)),
+        "collection_date": _values(_collection_date(occurrence)),
+        "collector": _collectors(occurrence.get("recordedBy")),
+        "depth": _values(_depth(occurrence)),
+        "locality": _values(_locality(occurrence)),
+        "type_status": _values(_type_status(occurrence))
+    }
+    return {key: values for key, values in fields.items() if values}
+
+def _taxon_text(taxon: dict) -> str:
+    """Rank and position in the classification, for example: soort uit de familie Macrouridae (orde Gadiformes)."""
+    rank = taxon["rank"]
+    depth = RANKS.index(rank) if rank in RANKS else len(RANKS)
+    text = RANK_NAMES.get(rank, "taxon")
+    family, order = taxon["family"], taxon["order"]
+    if family and depth > RANKS.index("family"):
+        text += f" uit de familie {family}"
+        if order:
+            text += f" (orde {order})"
+    elif order and depth > RANKS.index("order"):
+        text += f" uit de orde {order}"
+    return text
+
+def _type_status(occurrence: dict) -> str | None:
+    """Holotype, syntype and so on, in lower case; the API gives a string or a list."""
+    value = occurrence.get("typeStatus")
+    if isinstance(value, list):
+        value = value[0] if value else None
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return value.strip().lower()
 
 def _values(*values: str | None) -> list[str]:
     """Non-empty, deduplicated values in source order."""

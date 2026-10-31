@@ -61,9 +61,11 @@ class SourceAdapter:
 | ------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `wikidata`          | `wikidata.org/wiki/Q…`                              | Het hele item (`Special:EntityData/Q….json`), en het plaatje uit P18 via Commons |
 | `commons`           | `commons.wikimedia.org/wiki/File:…` en `/entity/M…` | De imageinfo met metadata en licentie, en het plaatje op 1600 px                 |
-| `gbif`              | `gbif.org/taxon/…` en `gbif.org/species/…`          | Het taxon via ChecklistBank of de GBIF-API; een plaatje alleen met licentie      |
+| `gbif`              | `gbif.org/taxon/…`, `/species/…` en `/occurrence/…` | Het taxon via ChecklistBank of de GBIF-API; een plaatje alleen met licentie. Bij een occurrence (een specimen) ook het museum, de soort en de gegevens van het exemplaar zelf |
 | `archief_amsterdam` | `archief.amsterdam/detail/…`                        | Het record als JSON-LD via `id.archief.amsterdam`; een scan alleen met licentie  |
 | `nta`               | `data.bibliotheken.nl/id/thes/p…`                   | De persoon als JSON-LD, met de titels van de werken in hetzelfde antwoord        |
+
+Een `gbif.org/occurrence/…` is één museumexemplaar. De adapter haalt de occurrence op, het museum via GRSciColl (`institutionKey`) en de soort met Nederlandse namen via `taxonKey`. Het label is de naam op het exemplaar, ook als dat een oud synoniem is. Naast de taxonvelden vult hij `type_status`, `collection`, `catalog_number`, `collector`, `collection_date`, `locality`, `depth` en de coördinaten. Het plaatje komt alleen van het exemplaar zelf: een foto van een ander exemplaar van dezelfde soort zou hier misleiden.
 
 Een adapter hoeft geen Linked Data te lezen: elke bron met een API kan er een krijgen. Een URI zonder adapter geeft een waarschuwing; het record komt er dan zonder verrijking in.
 

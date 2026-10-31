@@ -1,0 +1,298 @@
+{
+    "key": 2432753941,
+    "datasetKey": "19828488-7ebf-43f8-88af-6461d8afef9e",
+    "publishingOrgKey": "396d5f30-dea9-11db-8ab4-b8a03c50a862",
+    "networkKeys": [
+        "17abcf75-2f1e-46dd-bf75-a5b21dd02655"
+    ],
+    "installationKey": "65eb93af-41b8-4917-a5fc-cfe2a45aa4bf",
+    "hostingOrganizationKey": "396d5f30-dea9-11db-8ab4-b8a03c50a862",
+    "publishingCountry": "NL",
+    "protocol": "DWC_ARCHIVE",
+    "lastCrawled": "2026-10-31T03:20:02.093+00:00",
+    "lastParsed": "2026-10-31T03:21:00.425+00:00",
+    "crawlId": 463,
+    "basisOfRecord": "PRESERVED_SPECIMEN",
+    "individualCount": 1,
+    "occurrenceStatus": "PRESENT",
+    "classifications": {
+        "7ddf754f-d193-4cc9-b351-99906754a03b": {
+            "usage": {
+                "key": "KWZY",
+                "name": "Bathygadus dubiosus Weber, 1913",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Weber, 1913",
+                "genericName": "Bathygadus",
+                "specificEpithet": "dubiosus",
+                "formattedName": "<i>Bathygadus</i> <i>dubiosus</i> Weber, 1913"
+            },
+            "acceptedUsage": {
+                "key": "KWZY",
+                "name": "Bathygadus dubiosus Weber, 1913",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Weber, 1913",
+                "genericName": "Bathygadus",
+                "specificEpithet": "dubiosus",
+                "formattedName": "<i>Bathygadus</i> <i>dubiosus</i> Weber, 1913"
+            },
+            "taxonomicStatus": "ACCEPTED",
+            "classification": [
+                {
+                    "key": "CS5HF",
+                    "name": "Eukaryota",
+                    "rank": "DOMAIN"
+                },
+                {
+                    "key": "N",
+                    "name": "Animalia",
+                    "rank": "KINGDOM"
+                },
+                {
+                    "key": "CH2",
+                    "name": "Chordata",
+                    "rank": "PHYLUM"
+                },
+                {
+                    "key": "8V4V3",
+                    "name": "Vertebrata",
+                    "rank": "SUBPHYLUM"
+                },
+                {
+                    "key": "8V4V5",
+                    "name": "Gnathostomata",
+                    "rank": "INFRAPHYLUM"
+                },
+                {
+                    "key": "8VVWB",
+                    "name": "Osteichthyes",
+                    "rank": "PARVPHYLUM"
+                },
+                {
+                    "key": "8VR36",
+                    "name": "Actinopterygii",
+                    "rank": "GIGACLASS"
+                },
+                {
+                    "key": "KTWM8",
+                    "name": "Actinopteri",
+                    "rank": "SUPERCLASS"
+                },
+                {
+                    "key": "8V4VD",
+                    "name": "Teleostei",
+                    "rank": "CLASS"
+                },
+                {
+                    "key": "38T",
+                    "name": "Gadiformes",
+                    "rank": "ORDER"
+                },
+                {
+                    "key": "KVGZ5",
+                    "name": "Macrouridae",
+                    "rank": "FAMILY"
+                },
+                {
+                    "key": "KV5QW",
+                    "name": "Bathygadinae",
+                    "rank": "SUBFAMILY"
+                },
+                {
+                    "key": "KV5QX",
+                    "name": "Bathygadus",
+                    "rank": "GENUS"
+                },
+                {
+                    "key": "KWZY",
+                    "name": "Bathygadus dubiosus",
+                    "rank": "SPECIES"
+                }
+            ],
+            "issues": []
+        },
+        "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c": {
+            "usage": {
+                "key": "2416422",
+                "name": "Bathygadus dubiosus Weber, 1913",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Weber, 1913",
+                "genericName": "Bathygadus",
+                "specificEpithet": "dubiosus",
+                "formattedName": "<i>Bathygadus</i> <i>dubiosus</i> Weber, 1913"
+            },
+            "acceptedUsage": {
+                "key": "2416422",
+                "name": "Bathygadus dubiosus Weber, 1913",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Weber, 1913",
+                "genericName": "Bathygadus",
+                "specificEpithet": "dubiosus",
+                "formattedName": "<i>Bathygadus</i> <i>dubiosus</i> Weber, 1913"
+            },
+            "taxonomicStatus": "ACCEPTED",
+            "classification": [
+                {
+                    "key": "1",
+                    "name": "Animalia",
+                    "rank": "KINGDOM"
+                },
+                {
+                    "key": "44",
+                    "name": "Chordata",
+                    "rank": "PHYLUM"
+                },
+                {
+                    "key": "549",
+                    "name": "Gadiformes",
+                    "rank": "ORDER"
+                },
+                {
+                    "key": "6978",
+                    "name": "Macrouridae",
+                    "rank": "FAMILY"
+                },
+                {
+                    "key": "2416414",
+                    "name": "Bathygadus",
+                    "rank": "GENUS"
+                },
+                {
+                    "key": "2416422",
+                    "name": "Bathygadus dubiosus",
+                    "rank": "SPECIES"
+                }
+            ],
+            "issues": []
+        }
+    },
+    "taxonKey": 2416422,
+    "kingdomKey": 1,
+    "phylumKey": 44,
+    "orderKey": 549,
+    "familyKey": 6978,
+    "genusKey": 2416414,
+    "speciesKey": 2416422,
+    "acceptedTaxonKey": 2416422,
+    "scientificName": "Bathygadus dubiosus Weber, 1913",
+    "scientificNameAuthorship": "Weber, 1913",
+    "acceptedScientificName": "Bathygadus dubiosus Weber, 1913",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "order": "Gadiformes",
+    "family": "Macrouridae",
+    "genus": "Bathygadus",
+    "species": "Bathygadus dubiosus",
+    "genericName": "Bathygadus",
+    "specificEpithet": "dubiosus",
+    "taxonRank": "SPECIES",
+    "taxonomicStatus": "ACCEPTED",
+    "gadm": {},
+    "year": 1899,
+    "month": 8,
+    "day": 26,
+    "eventDate": "1899-08-26",
+    "startDayOfYear": 238,
+    "endDayOfYear": 238,
+    "typeStatus": "Holotype",
+    "issues": [
+        "OCCURRENCE_STATUS_INFERRED_FROM_INDIVIDUAL_COUNT",
+        "INSTITUTION_COLLECTION_MISMATCH"
+    ],
+    "modified": "2018-11-20T00:00:00.000+00:00",
+    "lastInterpreted": "2026-10-31T03:21:00.425+00:00",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/legalcode",
+    "isSequenced": false,
+    "identifiers": [
+        {
+            "identifier": "ZMA.PISC.114896@CRS"
+        }
+    ],
+    "media": [
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_LAB_1",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_LAB_1/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_8",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_8/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_7",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_7/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_6",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_6/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_5",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_5/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_4",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_4/format/large"
+        },
+        {
+            "type": "StillImage",
+            "format": "image/jpeg",
+            "description": "ZMA.PISC.114896_3",
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+            "rightsHolder": "Naturalis Biodiversity Center",
+            "identifier": "https://medialib.naturalis.nl/file/id/ZMA.PISC.114896_3/format/large"
+        }
+    ],
+    "facts": [],
+    "relations": [],
+    "institutionKey": "0e919a55-08d3-4bd2-aec1-200858fafd92",
+    "isInCluster": true,
+    "recordedBy": "Weber M.",
+    "identifiedBy": "Weber M.",
+    "preparations": "(wet specimen)",
+    "dnaSequenceID": [],
+    "nucleotideSequence": [],
+    "countryCode": "ID",
+    "recordedByIDs": [],
+    "identifiedByIDs": [],
+    "gbifRegion": "ASIA",
+    "country": "Indonesia",
+    "publishedByGbifRegion": "EUROPE",
+    "rightsHolder": "Naturalis Biodiversity Center",
+    "identifier": "ZMA.PISC.114896@CRS",
+    "catalogNumber": "ZMA.PISC.114896",
+    "institutionID": "https://ror.org/0566bfb96",
+    "verbatimEventDate": "26-8-1899",
+    "nomenclaturalCode": "ICZN",
+    "http://unknown.org/crawl_attempt": "463",
+    "collectionCode": "Pisces",
+    "gbifID": "2432753941",
+    "occurrenceID": "https://data.biodiversitydata.nl/naturalis/specimen/ZMA.PISC.114896",
+    "higherClassification": "Animalia|Pisces|Macrouridae"
+}

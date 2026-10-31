@@ -1,0 +1,223 @@
+{
+    "key": 2433852088,
+    "datasetKey": "4c7c21a8-68d3-49c5-b090-6b26259a291b",
+    "publishingOrgKey": "396d5f30-dea9-11db-8ab4-b8a03c50a862",
+    "networkKeys": [
+        "17abcf75-2f1e-46dd-bf75-a5b21dd02655"
+    ],
+    "installationKey": "65eb93af-41b8-4917-a5fc-cfe2a45aa4bf",
+    "hostingOrganizationKey": "396d5f30-dea9-11db-8ab4-b8a03c50a862",
+    "publishingCountry": "NL",
+    "protocol": "DWC_ARCHIVE",
+    "lastCrawled": "2026-10-20T12:45:09.974+00:00",
+    "lastParsed": "2026-10-20T17:21:50.645+00:00",
+    "crawlId": 450,
+    "basisOfRecord": "PRESERVED_SPECIMEN",
+    "occurrenceStatus": "PRESENT",
+    "classifications": {
+        "7ddf754f-d193-4cc9-b351-99906754a03b": {
+            "usage": {
+                "key": "3247N",
+                "name": "Ctenactis albitentaculata Hoeksema, 1989",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Hoeksema, 1989",
+                "genericName": "Ctenactis",
+                "specificEpithet": "albitentaculata",
+                "formattedName": "<i>Ctenactis</i> <i>albitentaculata</i> Hoeksema, 1989"
+            },
+            "acceptedUsage": {
+                "key": "3247N",
+                "name": "Ctenactis albitentaculata Hoeksema, 1989",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Hoeksema, 1989",
+                "genericName": "Ctenactis",
+                "specificEpithet": "albitentaculata",
+                "formattedName": "<i>Ctenactis</i> <i>albitentaculata</i> Hoeksema, 1989"
+            },
+            "taxonomicStatus": "ACCEPTED",
+            "classification": [
+                {
+                    "key": "CS5HF",
+                    "name": "Eukaryota",
+                    "rank": "DOMAIN"
+                },
+                {
+                    "key": "N",
+                    "name": "Animalia",
+                    "rank": "KINGDOM"
+                },
+                {
+                    "key": "CN2",
+                    "name": "Cnidaria",
+                    "rank": "PHYLUM"
+                },
+                {
+                    "key": "7S",
+                    "name": "Anthozoa",
+                    "rank": "CLASS"
+                },
+                {
+                    "key": "7NF5D",
+                    "name": "Hexacorallia",
+                    "rank": "SUBCLASS"
+                },
+                {
+                    "key": "B8V7V",
+                    "name": "Scleractinia",
+                    "rank": "ORDER"
+                },
+                {
+                    "key": "BX37Y",
+                    "name": "Vacatina",
+                    "rank": "SUBORDER"
+                },
+                {
+                    "key": "84K7Z",
+                    "name": "Fungiidae",
+                    "rank": "FAMILY"
+                },
+                {
+                    "key": "84MMR",
+                    "name": "Ctenactis",
+                    "rank": "GENUS"
+                },
+                {
+                    "key": "3247N",
+                    "name": "Ctenactis albitentaculata",
+                    "rank": "SPECIES"
+                }
+            ],
+            "iucnRedListCategoryCode": "EN",
+            "issues": []
+        },
+        "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c": {
+            "usage": {
+                "key": "2260588",
+                "name": "Ctenactis albitentaculata Hoeksema, 1989",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Hoeksema, 1989",
+                "genericName": "Ctenactis",
+                "specificEpithet": "albitentaculata",
+                "formattedName": "<i>Ctenactis</i> <i>albitentaculata</i> Hoeksema, 1989"
+            },
+            "acceptedUsage": {
+                "key": "2260588",
+                "name": "Ctenactis albitentaculata Hoeksema, 1989",
+                "rank": "SPECIES",
+                "code": "ZOOLOGICAL",
+                "authorship": "Hoeksema, 1989",
+                "genericName": "Ctenactis",
+                "specificEpithet": "albitentaculata",
+                "formattedName": "<i>Ctenactis</i> <i>albitentaculata</i> Hoeksema, 1989"
+            },
+            "taxonomicStatus": "ACCEPTED",
+            "classification": [
+                {
+                    "key": "1",
+                    "name": "Animalia",
+                    "rank": "KINGDOM"
+                },
+                {
+                    "key": "43",
+                    "name": "Cnidaria",
+                    "rank": "PHYLUM"
+                },
+                {
+                    "key": "206",
+                    "name": "Anthozoa",
+                    "rank": "CLASS"
+                },
+                {
+                    "key": "714",
+                    "name": "Scleractinia",
+                    "rank": "ORDER"
+                },
+                {
+                    "key": "3970",
+                    "name": "Fungiidae",
+                    "rank": "FAMILY"
+                },
+                {
+                    "key": "2260587",
+                    "name": "Ctenactis",
+                    "rank": "GENUS"
+                },
+                {
+                    "key": "2260588",
+                    "name": "Ctenactis albitentaculata",
+                    "rank": "SPECIES"
+                }
+            ],
+            "iucnRedListCategoryCode": "EN",
+            "issues": []
+        }
+    },
+    "taxonKey": 2260588,
+    "kingdomKey": 1,
+    "phylumKey": 43,
+    "classKey": 206,
+    "orderKey": 714,
+    "familyKey": 3970,
+    "genusKey": 2260587,
+    "speciesKey": 2260588,
+    "acceptedTaxonKey": 2260588,
+    "scientificName": "Ctenactis albitentaculata Hoeksema, 1989",
+    "scientificNameAuthorship": "Hoeksema, 1989",
+    "acceptedScientificName": "Ctenactis albitentaculata Hoeksema, 1989",
+    "kingdom": "Animalia",
+    "phylum": "Cnidaria",
+    "order": "Scleractinia",
+    "family": "Fungiidae",
+    "genus": "Ctenactis",
+    "species": "Ctenactis albitentaculata",
+    "genericName": "Ctenactis",
+    "specificEpithet": "albitentaculata",
+    "taxonRank": "SPECIES",
+    "taxonomicStatus": "ACCEPTED",
+    "iucnRedListCategory": "EN",
+    "stateProvince": "Celebes",
+    "gadm": {},
+    "issues": [
+        "INSTITUTION_COLLECTION_MISMATCH"
+    ],
+    "modified": "2014-11-10T00:00:00.000+00:00",
+    "lastInterpreted": "2026-10-20T17:21:50.645+00:00",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/legalcode",
+    "isSequenced": false,
+    "identifiers": [
+        {
+            "identifier": "ZMA.COEL.405@CRS"
+        }
+    ],
+    "media": [],
+    "facts": [],
+    "relations": [],
+    "institutionKey": "0e919a55-08d3-4bd2-aec1-200858fafd92",
+    "isInCluster": false,
+    "recordedBy": "Siboga Expedition",
+    "preparations": "(air dried)",
+    "dnaSequenceID": [],
+    "nucleotideSequence": [],
+    "class": "Anthozoa",
+    "countryCode": "ID",
+    "recordedByIDs": [],
+    "identifiedByIDs": [],
+    "gbifRegion": "ASIA",
+    "country": "Indonesia",
+    "publishedByGbifRegion": "EUROPE",
+    "rightsHolder": "Naturalis Biodiversity Center",
+    "identifier": "ZMA.COEL.405@CRS",
+    "catalogNumber": "ZMA.COEL.405",
+    "institutionID": "https://ror.org/0566bfb96",
+    "verbatimEventDate": "26-09-1899",
+    "nomenclaturalCode": "ICZN",
+    "http://unknown.org/crawl_attempt": "450",
+    "collectionCode": "Cnidaria",
+    "gbifID": "2433852088",
+    "occurrenceID": "https://data.biodiversitydata.nl/naturalis/specimen/ZMA.COEL.405",
+    "higherClassification": "Animalia",
+    "verbatimDepth": "36 meter"
+}
