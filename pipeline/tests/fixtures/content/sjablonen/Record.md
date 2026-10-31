@@ -1,0 +1,5 @@
+---
+type: record
+uri:
+contenttype:
+---
