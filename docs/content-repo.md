@@ -37,7 +37,7 @@ location: -6.12, 106.81
 ```
 
 - `chapter`: volgnummer.
-- `location`: verplicht, de plek van de boot op de kaart als `breedtegraad, lengtegraad`. Dat is de volgorde waarin Google Maps en OpenStreetMap coördinaten kopiëren (rechtsklik op de kaart). Alleen voor de kaart; de volgorde van de hoofdstukken komt uit `chapter`. Ligt de plek buiten de kaart, dan waarschuwt de pipeline; vaak zijn de twee getallen dan omgedraaid. Zonder bruikbare `location` ligt de boot bij Soerabaja.
+- `location`: verplicht, de plek van de boot op de kaart als `breedtegraad, lengtegraad`. Dat is de volgorde waarin Google Maps en OpenStreetMap coördinaten kopiëren (rechtsklik op de kaart). Alleen voor de kaart; de volgorde van de hoofdstukken komt uit `chapter`. De kaart toont de hele wereld, dus elke plek op aarde mag, ook Amsterdam. Is een getal geen geldige breedte- of lengtegraad, dan waarschuwt de pipeline; vaak zijn de twee getallen dan omgedraaid. Zonder bruikbare `location` ligt de boot bij Soerabaja.
 
 ```yaml
 ---

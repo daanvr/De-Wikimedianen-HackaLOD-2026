@@ -33,10 +33,10 @@ _KINDS = {
     "record": ItemKind.RECORD
 }
 _LINK_TITLE = re.compile(r"\s+(?:\"[^\"]*\"|'[^']*')$")
-# The extent of the map layers (LAYER_BOUNDS in frontend/src/components/el-map.vue).
+# The map shows the whole world, so any place on Earth will do; a swapped pair usually falls outside it.
 _MAP_BOUNDS = {
-    "lat": (-16.0, 10.0),
-    "lon": (104.0, 142.0)
+    "lat": (-90.0, 90.0),
+    "lon": (-180.0, 180.0)
 }
 _RECORD_LINK = re.compile(r"\]\(/records/(?P<id>[^()\s/?#]+)\)")
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")

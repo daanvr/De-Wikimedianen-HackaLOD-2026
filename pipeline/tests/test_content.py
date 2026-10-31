@@ -85,8 +85,11 @@ def test_chapter_coordinates_variants():
     assert "lat, lon" in report.warnings[-1]
     assert chapter_coordinates(_item({"location": "106.81, -6.12"}), report) is None
     assert "swapped" in report.warnings[-1]
-    assert chapter_coordinates(_item({"location": "52.37, 4.9"}), report) is None
+    assert chapter_coordinates(_item({"location": "95, 200"}), report) is None
     assert report.warnings[-1].endswith("is outside the map")
+    assert len(report.warnings) == 5
+    # The map shows the whole world, so the boat can start in Amsterdam.
+    assert chapter_coordinates(_item({"location": "52.37, 4.9"}), report) == Coordinates(lat = 52.37, lon = 4.9)
     assert len(report.warnings) == 5
 
 def test_chapter_number(items):

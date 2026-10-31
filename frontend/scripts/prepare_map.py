@@ -4,11 +4,13 @@ Reads Natural Earth bathymetry shapefiles, Natural Earth land and the route
 drawn from station to station (one LineString per leg), clips them to the
 archipelago, simplifies them and writes small GeoJSON files to public/map/.
 The route file also gets one Point per station, so the map can draw the stops.
-Coarse world versions of the land and depth layers (Natural Earth 50m land)
-fill in the rest of the world, outside the archipelago.
+Coarse world versions of the land (Natural Earth 50m) and depth layers fill in
+the rest of the world, outside the archipelago. The land files hold the land as polygons and
+the coastline as separate lines, so the edge of the archipelago, where the two
+are cut apart, never shows up as a line on the map.
 
 Usage:
-    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-geojson> <land-geojson> <world-land-shp> <output-dir>
+    uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-dir> <route-geojson> <ne_10m_land.shp> <ne_50m_land.shp> <output-dir>
 """
 import json
 import sys
@@ -55,15 +57,32 @@ def drop_small_parts(geometry, min_area: float):
         for polygon in polygons
     ])
 
+def land_features(land, area) -> list:
+    """The land within `area` as one polygon feature plus one coastline feature."""
+    return [{
+        "type" : "Feature",
+        "properties" : {},
+        "geometry" : mapping(area(land))
+    }, {
+        "type" : "Feature",
+        "properties" : {},
+        "geometry" : mapping(area(land.boundary))
+    }]
+
+def read_shapes(path: Path) -> list:
+    if path.suffix == ".shp":
+        return [shape(record.__geo_interface__) for record in shapefile.Reader(str(path)).shapes()]
+    return [shape(feature["geometry"]) for feature in json.loads(path.read_text())["features"]]
+
 def round_coordinates(value, digits: int = 4):
     if isinstance(value, (list, tuple)):
         return [round_coordinates(item, digits) for item in value]
     return round(value, digits)
 
 def world_geometry(geometries: list, tolerance: float):
-    # Everything outside the archipelago, which has its own detailed layers
+    # Simplified as a whole, so islands across the edge of the archipelago are not cut off
     merged = unary_union([geometry.buffer(0) for geometry in geometries])
-    simplified = merged.difference(BBOX).simplify(tolerance, preserve_topology = True)
+    simplified = merged.simplify(tolerance, preserve_topology = True)
     return drop_small_parts(simplified, tolerance * tolerance * 20)
 
 def write_geojson(path: Path, features: list, digits: int = 4):
@@ -92,14 +111,11 @@ def prepare_bathymetry(natural_earth_dir: Path, output_dir: Path):
     write_geojson(output_dir / "bathymetry.geojson", features)
 
 def prepare_land(land_path: Path, output_dir: Path):
-    source = json.loads(land_path.read_text())
-    geometries = [shape(feature["geometry"]) for feature in source["features"]]
-    geometry = clip_and_simplify(geometries, 0.005)
-    write_geojson(output_dir / "land.geojson", [{
-        "type" : "Feature",
-        "properties" : {},
-        "geometry" : mapping(geometry)
-    }])
+    # Simplified a little beyond the edge, so the coastline runs on across it
+    nearby = BBOX.buffer(1, join_style = "mitre")
+    geometries = [geometry.buffer(0).intersection(nearby) for geometry in read_shapes(land_path)]
+    land = unary_union(geometries).simplify(0.005, preserve_topology = True)
+    write_geojson(output_dir / "land.geojson", land_features(land, BBOX.intersection))
 
 def prepare_route(route_path: Path, output_dir: Path):
     source = json.loads(route_path.read_text())
@@ -152,15 +168,11 @@ def prepare_world(natural_earth_dir: Path, world_land_path: Path, output_dir: Pa
             "properties" : {
                 "depth" : depth
             },
-            "geometry" : mapping(world_geometry(bathymetry_shapes(natural_earth_dir, layer), WORLD_TOLERANCE))
+            "geometry" : mapping(world_geometry(bathymetry_shapes(natural_earth_dir, layer), WORLD_TOLERANCE).difference(BBOX))
         })
     write_geojson(output_dir / "world-bathymetry.geojson", features, WORLD_DIGITS)
-    geometries = [shape(record.__geo_interface__) for record in shapefile.Reader(str(world_land_path)).shapes()]
-    write_geojson(output_dir / "world-land.geojson", [{
-        "type" : "Feature",
-        "properties" : {},
-        "geometry" : mapping(world_geometry(geometries, WORLD_LAND_TOLERANCE))
-    }], WORLD_DIGITS)
+    land = world_geometry(read_shapes(world_land_path), WORLD_LAND_TOLERANCE)
+    write_geojson(output_dir / "world-land.geojson", land_features(land, lambda geometry: geometry.difference(BBOX)), WORLD_DIGITS)
 
 def main():
     natural_earth_dir, route_path, land_path, world_land_path, output_dir = [Path(arg) for arg in sys.argv[1:6]]

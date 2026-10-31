@@ -340,6 +340,7 @@
                     id : 'land-lagoon',
                     type : 'line',
                     source : 'land',
+                    filter : ['==', ['geometry-type'], 'LineString'],
                     paint : {
                         'line-color' : '#CBE8E2',
                         'line-width' : ['interpolate', ['linear'], ['zoom'], 4, 3, 9, 10],
@@ -351,6 +352,7 @@
                     id : 'land',
                     type : 'fill',
                     source : 'land',
+                    filter : ['==', ['geometry-type'], 'Polygon'],
                     paint : {
                         'fill-color' : '#F2ECDB'
                     }
@@ -359,6 +361,7 @@
                     id : 'world-land',
                     type : 'fill',
                     source : 'worldLand',
+                    filter : ['==', ['geometry-type'], 'Polygon'],
                     paint : {
                         'fill-color' : '#F2ECDB'
                     }
@@ -367,6 +370,7 @@
                     id : 'world-land-outline',
                     type : 'line',
                     source : 'worldLand',
+                    filter : ['==', ['geometry-type'], 'LineString'],
                     paint : {
                         'line-color' : '#7C6E52',
                         'line-width' : 0.5
@@ -376,6 +380,7 @@
                     id : 'land-outline',
                     type : 'line',
                     source : 'land',
+                    filter : ['==', ['geometry-type'], 'LineString'],
                     paint : {
                         'line-color' : '#7C6E52',
                         'line-width' : ['interpolate', ['linear'], ['zoom'], 4, 0.5, 9, 1.2]
