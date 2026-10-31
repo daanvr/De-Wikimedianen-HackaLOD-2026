@@ -3,6 +3,7 @@
     import { computed, inject, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
     import { LAND_LABELS, SEA_LABELS, limitZoom, seaChartLayers, seaChartSources } from '@/services/sea-chart.js';
     import { lineIndexAt, pointAt, stationIndexAt } from './data.js';
+    import Ship, { monsoonAt } from './ship.js';
 
     const MAX_ZOOM = 12;
     const FOLLOW_ZOOM = 6.4;
@@ -64,11 +65,16 @@
     const compassTransform = computed(() => `rotateX(${camera.value.pitch * COMPASS_TILT}deg) rotateZ(${-camera.value.bearing}deg)`);
 
     let map = null;
-    let boat = null;
+    let ship = null;
+    let shipCanvas = null;
+    let shipContext = null;
+    let pixelRatio = 1;
     let frame = null;
+    let lastFrame = 0;
     let isFollowing = true;
+    let isFollowPaused = false;
     let isDiving = false;
-    let target = null;
+    let isShipHidden = false;
     let visitedUpTo = -1;
     let trailKm = -1;
     let topMarkers = [];
@@ -160,24 +166,14 @@
         };
     }
 
-    function createBoat() {
-        const element = document.createElement('div');
-
-        element.className = 'boat';
-        element.setAttribute('aria-hidden', 'true');
-        element.innerHTML = `
-            <svg width="72" height="36" viewBox="-46 -23 92 46">
-                <path d="M-27,0 L-44,-7 M-27,0 L-44,7" stroke="#FBF8F1" stroke-width="1.4" fill="none" opacity="0.7"/>
-                <path d="M-25,0 C-21,-6 8,-7 26,0 C8,7 -21,6 -25,0 Z" fill="#FBF8F1" stroke="#1B2433" stroke-width="1.3"/>
-                <path d="M-9,-6 L-9,6 M8,-5 L8,5" stroke="#1B2433" stroke-width="1.3" fill="none"/>
-                <circle r="2.4" fill="#A9512F"/>
-            </svg>`;
-
-        return new maplibregl.Marker({
-            element,
-            rotationAlignment : 'map',
-            pitchAlignment : 'map'
-        });
+    // The ship is drawn on its own canvas right above the map, under the markers and labels
+    function createShipCanvas() {
+        shipCanvas = document.createElement('canvas');
+        shipCanvas.className = 'ship';
+        shipCanvas.setAttribute('aria-hidden', 'true');
+        map.getCanvasContainer().insertBefore(shipCanvas, map.getCanvas().nextSibling);
+        shipContext = shipCanvas.getContext('2d');
+        resizeShipCanvas();
     }
 
     // The names of the main map; they stay flat on the screen, so they go when the map tilts
@@ -255,17 +251,18 @@
             return;
         }
 
-        const ship = pointAt(props.line, station.km);
+        const spot = pointAt(props.line, station.km);
         const height = container.value.clientHeight;
 
         isDiving = true;
         stopFollowing();
         setInteractive(false);
         updateCamera();
-        boat.setLngLat([ship.lon, ship.lat]);
+        // The ship lies still at the station for the dive
+        ship.place(station.km);
 
         await move('flyTo', {
-            center : [ship.lon, ship.lat],
+            center : [spot.lon, spot.lat],
             zoom : FOCUS_ZOOM,
             pitch : FOCUS_PITCH,
             bearing : -10,
@@ -279,7 +276,7 @@
 
         setMarkersHidden(true);
         map.easeTo({
-            center : [ship.lon, ship.lat],
+            center : [spot.lon, spot.lat],
             zoom : DIVE_ZOOM,
             pitch : DIVE_PITCH,
             bearing : map.getBearing() + 12,
@@ -306,25 +303,23 @@
 
     // Under water the drawn ship takes over from the marker; the labels go too
     function setMarkersHidden(hidden) {
-        for (const marker of [boat, ...topMarkers, ...photoMarkers, ...labels]) {
+        for (const marker of [...topMarkers, ...photoMarkers, ...labels]) {
             marker.getElement().style.visibility = hidden ? 'hidden' : '';
         }
+
+        isShipHidden = hidden;
     }
 
     // Straight down with north up; the map stays where it is
     async function resetNorth() {
-        // The follow loop would stop the ease halfway
-        cancelAnimationFrame(frame);
-        frame = null;
+        // Following would stop the ease halfway
+        isFollowPaused = true;
         await move('easeTo', {
             pitch : 0,
             bearing : 0,
             duration : 700
         });
-
-        if (isFollowing) {
-            startFollowing();
-        }
+        isFollowPaused = false;
     }
 
     function setInteractive(isInteractive) {
@@ -348,7 +343,7 @@
 
         setMarkersHidden(false);
         await move('easeTo', {
-            center : target ? [target.lon, target.lat] : map.getCenter(),
+            center : ship ? [ship.position.lon, ship.position.lat] : map.getCenter(),
             zoom : FOLLOW_ZOOM,
             pitch : 0,
             bearing : 0,
@@ -369,25 +364,19 @@
         updateCamera();
     }
 
-    function follow() {
-        frame = null;
-
-        if (!map || !isFollowing || !target || isDiving) {
-            return;
-        }
-
+    // Eases the camera towards the ship, one step per frame
+    function followShip() {
         const center = map.getCenter();
-        const dx = target.lon - center.lng;
-        const dy = target.lat - center.lat;
+        const dx = ship.position.lon - center.lng;
+        const dy = ship.position.lat - center.lat;
 
-        if (Math.abs(dx) + Math.abs(dy) < 0.0005) {
+        if (Math.abs(dx) + Math.abs(dy) < 0.00005) {
             return;
         }
 
         map.jumpTo({
             center : [center.lng + dx * 0.16, center.lat + dy * 0.16]
         });
-        frame = requestAnimationFrame(follow);
     }
 
     function lineFeature(coordinates) {
@@ -419,16 +408,63 @@
         };
     }
 
-    function startFollowing() {
-        if (!frame) {
-            frame = requestAnimationFrame(follow);
+    function resizeShipCanvas() {
+        if (!shipCanvas) {
+            return;
         }
+
+        const width = container.value.clientWidth;
+        const height = container.value.clientHeight;
+
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
+        shipCanvas.width = Math.round(width * pixelRatio);
+        shipCanvas.height = Math.round(height * pixelRatio);
+        shipCanvas.style.width = `${width}px`;
+        shipCanvas.style.height = `${height}px`;
+    }
+
+    // One frame of the ship: physics, the camera following it, the trail and the drawing
+    function step(now) {
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastFrame) / 1000));
+
+        frame = requestAnimationFrame(step);
+        lastFrame = now;
+
+        if (!map || isShipHidden) {
+            return;
+        }
+
+        const station = props.stations[Math.max(0, stationIndexAt(props.stations, ship.km))];
+        const view = {
+            bearing : map.getBearing(),
+            pitch : map.getPitch(),
+            zoom : map.getZoom(),
+            project : (lon, lat) => {
+                const point = map.project([lon, lat]);
+
+                return [point.x, point.y];
+            }
+        };
+
+        ship.update(dt, props.position, view.zoom, monsoonAt(station?.datum));
+
+        if (isFollowing && !isFollowPaused && !isDiving) {
+            followShip();
+        }
+
+        updateVisited(stationIndexAt(props.stations, ship.km));
+
+        if (Math.abs(ship.km - trailKm) > 6 || (Math.abs(ship.velocity) < 0.5 && Math.abs(ship.km - trailKm) > 0.5)) {
+            updateTrail(ship.km);
+        }
+
+        shipContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        shipContext.clearRect(0, 0, shipCanvas.width, shipCanvas.height);
+        ship.draw(shipContext, view);
     }
 
     function stopFollowing() {
         isFollowing = false;
-        cancelAnimationFrame(frame);
-        frame = null;
     }
 
     function updatePhotoZoom() {
@@ -449,24 +485,10 @@
         }
     }
 
+    // The timeline moved: the ship sails there by itself, and the camera follows it again
     function updatePosition() {
-        if (!map) {
-            return;
-        }
-
-        const km = props.position;
-
-        target = pointAt(props.line, km);
-        boat.setLngLat([target.lon, target.lat]).setRotation(target.bearing - 90);
-        updateVisited(stationIndexAt(props.stations, km));
-
-        if (Math.abs(km - trailKm) > 6) {
-            updateTrail(km);
-        }
-
-        if (!isDiving) {
+        if (map && !isDiving) {
             isFollowing = true;
-            startFollowing();
         }
     }
 
@@ -475,7 +497,7 @@
         const coordinates = props.line.slice(0, end).map((point) => [point[1], point[2]]);
 
         trailKm = km;
-        coordinates.push([target.lon, target.lat]);
+        coordinates.push([ship.position.lon, ship.position.lat]);
         map.getSource('trail')?.setData(lineFeature(coordinates));
     }
 
@@ -532,9 +554,17 @@
         }
 
         // The plugin can mount before its frame has its final size
-        resizeObserver = new ResizeObserver(() => map?.resize());
+        resizeObserver = new ResizeObserver(() => {
+            map?.resize();
+            resizeShipCanvas();
+        });
         resizeObserver.observe(container.value);
-        boat = createBoat().setLngLat([start.lon, start.lat]).addTo(map);
+        // With less motion asked for, the ship lies on a flat sea
+        ship = new Ship(props.line, {
+            waves : window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6
+        });
+        ship.place(props.position);
+        createShipCanvas();
 
         // A user who moves the map takes over until the timeline moves again
         map.on('dragstart', stopFollowing);
@@ -565,12 +595,15 @@
             createTopMarkers();
             updatePhotoZoom();
             updatePosition();
+            lastFrame = performance.now();
+            frame = requestAnimationFrame(step);
         });
     });
 
     onBeforeUnmount(() => {
         resizeObserver?.disconnect();
         stopFollowing();
+        cancelAnimationFrame(frame);
         [...topMarkers, ...photoMarkers, ...labels].forEach((marker) => marker.remove());
         map?.remove();
         map = null;
@@ -636,9 +669,11 @@
             inset: 0;
         }
 
-        :deep(.boat) {
+        :deep(.ship) {
+            position: absolute;
+            top: 0;
+            left: 0;
             pointer-events: none;
-            filter: drop-shadow(0 2px 3px rgba(8, 26, 44, 0.35));
         }
 
         :deep(.map-label) {
