@@ -6,9 +6,6 @@
     const ARCHIPELAGO_BOUNDS = [[106, -12], [136, 6]];
     const MAX_ZOOM = 11;
     const TRAVEL_MS = 2600;
-    const OUTSIDE_MAX_ZOOM = 6;
-    // How fast the zoom limit drops when you pan out of the research area, in zoom levels per degree
-    const ZOOM_DROP_PER_DEGREE = 2;
     // How far the map zooms in on the markers of a chapter, also when there is only one
     const MARKERS_MAX_ZOOM = 8;
     // Historical map, georeferenced with Allmaps; loaded live, the vector layers stay underneath as a fallback

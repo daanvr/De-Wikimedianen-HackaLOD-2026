@@ -456,6 +456,11 @@
     }
 
     function onScroll() {
+        // A last scroll event can arrive while the dive is being taken down
+        if (!air.value || !scroller.value) {
+            return;
+        }
+
         const airHeight = air.value.offsetHeight;
         const y = scroller.value.scrollTop + height.value * 0.5 - airHeight;
 
