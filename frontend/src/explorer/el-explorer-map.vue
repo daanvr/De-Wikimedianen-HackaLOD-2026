@@ -1,6 +1,7 @@
 <script setup>
     import maplibregl from 'maplibre-gl';
-    import { computed, inject, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
+    import { computed, inject, onBeforeUnmount, onMounted, ref, shallowRef, toRaw, watch } from 'vue';
+    import { formatDate } from '@/services/format.js';
     import { LAND_LABELS, SEA_LABELS, limitZoom, seaChartLayers, seaChartSources } from '@/services/sea-chart.js';
     import { lineIndexAt, pointAt, stationIndexAt } from './data.js';
     import Ship, { monsoonAt } from './ship.js';
@@ -15,9 +16,12 @@
     const TOP_STATIONS = 5;
     // Zoomed out further than this, the photos of the stations would cover the whole map
     const PHOTO_MIN_ZOOM = 4.5;
-    // A station photo grows while the ship is within this many route kilometres, up to this factor
-    const PHOTO_GROW_KM = 60;
-    const PHOTO_GROW = 3;
+    // While the ship is within this many route kilometres of a station with a photo, that photo
+    // gets a ring on the map and shows larger in a corner; it stays a moment after the ship has gone
+    const PHOTO_NEAR_KM = 25;
+    const PHOTO_LINGER = 1500;
+    // Faster than this (km/s, scrubbing or a high speed) no new photo comes up, so it does not flicker
+    const PHOTO_MAX_SPEED = 100;
     // The compass lies down with the camera, but only partly, so it stays readable
     const COMPASS_TILT = 0.6;
     const EMPTY = {
@@ -63,6 +67,8 @@
     });
 
     // Only when the camera is tilted or the map turned; under water the dive has the screen
+    // The station whose photo shows in the corner
+    const nearStation = shallowRef(null);
     const isCompassVisible = computed(() => !camera.value.isDiving && (camera.value.pitch >= 0.5 || Math.abs(camera.value.bearing) >= 0.5));
     // North of the compass points to north on the map
     const compassTransform = computed(() => `rotateX(${camera.value.pitch * COMPASS_TILT}deg) rotateZ(${-camera.value.bearing}deg)`);
@@ -83,7 +89,8 @@
     let topMarkers = [];
     let photoMarkers = [];
     let photoStations = [];
-    let photoScales = [];
+    let nearIndex = -1;
+    let nearLeftAt = 0;
     let labels = [];
     let resizeObserver = null;
 
@@ -204,7 +211,6 @@
     // A round photo above the stations that have one on Wikidata, as an invitation to tap
     function createPhotoMarkers() {
         photoStations = props.stations.filter((station) => station.photo);
-        photoScales = photoStations.map(() => 1);
         photoMarkers = photoStations
             .map((station) => {
                 const element = document.createElement('button');
@@ -226,25 +232,6 @@
                     offset : [0, -4]
                 }).setLngLat([station.lon, station.lat]).addTo(map);
             });
-    }
-
-    // The photo of a station swells as the ship comes by and shrinks again behind it
-    function updatePhotoSizes(km) {
-        photoMarkers.forEach((marker, i) => {
-            const near = Math.max(0, 1 - Math.abs(photoStations[i].km - km) / PHOTO_GROW_KM);
-            const eased = near * near * (3 - 2 * near);
-            const scale = 1 + (PHOTO_GROW - 1) * eased;
-
-            if (Math.abs(scale - photoScales[i]) < 0.01) {
-                return;
-            }
-
-            const element = marker.getElement();
-
-            photoScales[i] = scale;
-            element.style.setProperty('--grow', scale.toFixed(3));
-            element.toggleAttribute('is-near', scale > 1.05);
-        });
     }
 
     function createTopMarkers() {
@@ -478,6 +465,7 @@
         }
 
         updateVisited(stationIndexAt(props.stations, ship.km));
+        updateNearPhoto(now);
 
         if (Math.abs(ship.km - trailKm) > 6 || (Math.abs(ship.velocity) < 0.5 && Math.abs(ship.km - trailKm) > 0.5)) {
             updateTrail(ship.km);
@@ -490,6 +478,47 @@
 
     function stopFollowing() {
         isFollowing = false;
+    }
+
+    // Rings the photo of the station the ship is passing and puts it in the corner
+    function updateNearPhoto(now) {
+        let index = -1;
+        let distance = PHOTO_NEAR_KM;
+
+        photoStations.forEach((station, i) => {
+            const gap = Math.abs(station.km - ship.km);
+
+            if (gap < distance) {
+                index = i;
+                distance = gap;
+            }
+        });
+
+        // A new photo only comes up at a speed at which you can see it
+        if (index !== nearIndex && Math.abs(ship.velocity) > PHOTO_MAX_SPEED) {
+            index = -1;
+        }
+
+        // The photo stays a moment after the ship has gone
+        if (index === -1 && nearIndex !== -1) {
+            nearLeftAt ||= now;
+
+            if (now - nearLeftAt < PHOTO_LINGER) {
+                return;
+            }
+        } else {
+            nearLeftAt = 0;
+        }
+
+        if (index === nearIndex) {
+            return;
+        }
+
+        photoMarkers[nearIndex]?.getElement().removeAttribute('is-near');
+        photoMarkers[index]?.getElement().setAttribute('is-near', '');
+        nearIndex = index;
+        nearLeftAt = 0;
+        nearStation.value = photoStations[index] ?? null;
     }
 
     function updatePhotoZoom() {
@@ -547,7 +576,6 @@
     }
 
     watch(() => props.position, updatePosition);
-    watch(() => props.position, updatePhotoSizes);
     watch(() => props.padding, (padding) => map?.setPadding(padding), {
         deep : true
     });
@@ -618,7 +646,6 @@
         map.on('load', () => {
             createLabels();
             createPhotoMarkers();
-            updatePhotoSizes(props.position);
             createTopMarkers();
             updatePhotoZoom();
             updatePosition();
@@ -649,6 +676,25 @@
         <div
             ref="container"
             class="canvas"></div>
+
+        <transition name="photo-card">
+            <button
+                v-if="nearStation && !camera.isDiving"
+                v-bind:key="nearStation.nummer"
+                class="photo-card"
+                type="button"
+                v-bind:aria-label="`Station ${nearStation.nummer}, foto: ${nearStation.photo.caption}. Duik hier.`"
+                v-on:click="emit('select', nearStation)">
+                <img
+                    v-bind:src="nearStation.photo.src"
+                    alt="">
+                <span class="photo-card__text">
+                    <strong>Station {{ nearStation.nummer }}</strong>
+                    {{ formatDate(nearStation.datum) }}
+                    <small v-if="nearStation.photo.caption">{{ nearStation.photo.caption }}</small>
+                </span>
+            </button>
+        </transition>
 
         <button
             v-if="isCompassVisible"
@@ -727,8 +773,8 @@
         // Round like a pin, with a small point towards the station
         :deep(.photo-marker) {
             position: relative;
-            width: calc(4.2rem * var(--grow, 1));
-            height: calc(4.2rem * var(--grow, 1));
+            width: 4.2rem;
+            height: 4.2rem;
             padding: 0;
             border: 2px solid #FBF8F1;
             border-radius: 50%;
@@ -752,10 +798,15 @@
                 border-color: var(--c-terracotta);
             }
 
-            // Near the ship: above the other markers
+            // Near the ship: a ring, above the other markers; it stays where it is and keeps its size
             &[is-near] {
                 z-index: 2;
-                border-width: 3px;
+                border-color: var(--c-terracotta);
+                box-shadow: 0 0 0 3px rgba(169, 81, 47, 0.35), 0 2px 6px rgba(8, 26, 44, 0.45);
+
+                &::after {
+                    border-top-color: var(--c-terracotta);
+                }
             }
 
             img {
@@ -795,6 +846,84 @@
             span {
                 color: var(--c-ink-soft);
             }
+        }
+    }
+
+    // The photo of the station the ship is passing, in the corner under the date
+    .photo-card {
+        position: absolute;
+        top: 6rem;
+        left: 1.6rem;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        width: 17rem;
+        padding: 0;
+        border: 0;
+        border-radius: 0.6rem;
+        overflow: hidden;
+        background: var(--c-paper);
+        color: var(--c-ink);
+        text-align: left;
+        box-shadow: var(--shadow-float);
+        cursor: pointer;
+
+        img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            filter: sepia(0.15);
+        }
+    }
+
+    .photo-card__text {
+        display: flex;
+        flex-direction: column;
+        padding: 0.6rem 1rem 0.8rem;
+        font-family: var(--font-text);
+        font-size: 1.3rem;
+        line-height: 1.35;
+        color: var(--c-ink-soft);
+
+        strong {
+            font-family: var(--font-header);
+            font-weight: 400;
+            font-size: 1.5rem;
+            color: var(--c-ink);
+        }
+
+        small {
+            display: -webkit-box;
+            margin-top: 0.2rem;
+            overflow: hidden;
+            font-size: 1.2rem;
+            font-style: italic;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+    }
+
+    .photo-card-enter-active,
+    .photo-card-leave-active {
+        transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .photo-card-enter-from,
+    .photo-card-leave-to {
+        opacity: 0;
+        transform: translateY(-0.6rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .photo-card-enter-active,
+        .photo-card-leave-active {
+            transition: opacity 0.3s;
+        }
+
+        .photo-card-enter-from,
+        .photo-card-leave-to {
+            transform: none;
         }
     }
 
