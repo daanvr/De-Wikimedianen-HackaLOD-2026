@@ -1,8 +1,9 @@
 <script setup>
-    import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue';
+    import { computed, onBeforeUnmount, onMounted, provide, ref, watchEffect } from 'vue';
     import { useRoute } from 'vue-router';
     import ElMap from '@/components/el-map.vue';
     import ElMenu from '@/components/el-menu.vue';
+    import { pageTitle } from '@/services/page-title.js';
     import { useStore } from '@/store.js';
 
     const store = useStore();
@@ -57,6 +58,11 @@
             height : window.innerHeight
         };
     }
+
+    // Also runs again when the data has loaded, so a page opened directly gets its title too
+    watchEffect(() => {
+        document.title = pageTitle(route, store, t);
+    });
 
     onMounted(() => {
         store.load();

@@ -99,6 +99,7 @@ export const DEFAULT_MESSAGES = {
     share_link : 'Link naar deze pagina',
     share_qr : 'QR-code met de link naar deze pagina',
     share_title : 'Deel deze pagina',
+    site_title : 'De Siboga-Expeditie',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',
     to_boat : 'Terug naar de boot',
     to_start : 'Terug naar het begin'
