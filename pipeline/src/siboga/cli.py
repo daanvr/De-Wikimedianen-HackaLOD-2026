@@ -8,6 +8,7 @@ from siboga.build import check_output, run_build
 from siboga.cache import Cache
 from siboga.config import Config, load_config
 from siboga.content import read_content, record_uri
+from siboga.explorer import fetch_explorer
 from siboga.fetcher import Fetcher
 from siboga.models import ItemKind, Report
 from siboga.sources import build_registry
@@ -89,6 +90,7 @@ def run_fetch(
             except Exception as error:
                 # One broken source must not stop the rest.
                 report.warn(f"fetching failed ({adapter.name}): {error!r}", item.path)
+        fetch_explorer(config.gold_path, config.stations_path, fetcher, config.image_width, report)
     finally:
         fetcher.close()
         cache.close()

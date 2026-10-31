@@ -29,6 +29,7 @@ from siboga.content import (
     record_uri,
     show_in_explore
 )
+from siboga.explorer import build_explorer
 from siboga.fields import FieldCatalog, load_fields
 from siboga.models import AudioInfo, ContentItem, Coordinates, ImageInfo, ItemKind, Report, SourceData
 from siboga.sources import Registry, build_registry
@@ -194,6 +195,7 @@ def run_build(
     media_dir.mkdir(parents = True)
     try:
         pages, plugins, chapters, records = _build_items(items, index, registry, cache, catalog, media_dir, report)
+        build_explorer(config.gold_path, config.stations_path, cache, staging, media_dir, config.image_width, report)
     finally:
         cache.close()
     _add_backlinks([*pages.values(), *plugins.values(), *chapters, *records.values()])

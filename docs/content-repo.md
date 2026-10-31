@@ -74,7 +74,7 @@ show_in_explore: "true"
 - `id`: verplicht, de naam van de plugin in de frontend (`frontend/src/plugins/index.js`). Ook het id in de URL: `/plugins/deepdive`.
 - `title`: optioneel; zonder `title` is de bestandsnaam de titel.
 - `description_nl`: optioneel, de beschrijving onder de titel.
-- `show_in_explore`: `true` (ook `"true"`) zet de plugin als knop in de ontdekmodus. Standaard `false`.
+- `show_in_explore`: `true` (ook `"true"`) of `false` (standaard). Wordt nu niet gebruikt: de ontdekmodus toont geen knoppen meer, maar is zelf de plugin `deepdive` ([ontdekmodus.md](ontdekmodus.md)).
 
 Een plugin gebruik je in de tekst met een wikilink naar het bestand. Alles na de `#` is het argument voor de plugin:
 

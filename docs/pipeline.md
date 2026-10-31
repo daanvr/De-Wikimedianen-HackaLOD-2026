@@ -8,8 +8,8 @@ De pipeline haalt van elke bron een **volledige kopie** op en kiest pas daarna l
 ## Stappen
 | Stap    | Doet                                                      | Internet |
 | ------- | --------------------------------------------------------- | -------- |
-| `fetch` | Bronnen van alle records ophalen en in de cache zetten    | ja       |
-| `build` | Content en cache combineren tot `siboga.json` en `media/` | nee      |
+| `fetch` | Bronnen van alle records ophalen en in de cache zetten, plus de GBIF-records van de [ontdekmodus](#ontdekmodus) | ja |
+| `build` | Content en cache combineren tot `siboga.json`, `explorer.json` en `media/` | nee |
 | `check` | De uitvoer controleren tegen het contract                 | nee      |
 
 ```bash
@@ -33,6 +33,7 @@ pipeline/src/siboga/
 ├── fetcher.py     ← HTTP: User-Agent, pauze per host, retries volgens de rate limit van de adapter
 ├── cache.py       ← SQLite en gedownloade bestanden
 ├── sources/       ← één adapter per soort bron
+├── explorer.py    ← GBIF-records en foto's van de specimens in de ontdekmodus
 └── build.py       ← frontend data schrijven en controleren
 ```
 
@@ -109,6 +110,9 @@ CREATE TABLE response (
 - Plaatjes staan in `pipeline/cache/media/`, met `body` leeg in de tabel. In de uitvoer komt een plaatje alleen met licentie en bronvermelding.
 - `build` maakt van elk plaatje van een record ook een thumbnail in `media/thumbs/` ([thumbnails.py](../pipeline/src/siboga/thumbnails.py)). Dat gebeurt elke build opnieuw en zonder internet; voor zo'n 60 plaatjes duurt het minder dan een seconde.
 - Antwoorden ouder dan `max_age_days` (standaard 30) worden bij `fetch` opnieuw opgehaald.
+
+## Ontdekmodus
+De [ontdekmodus](ontdekmodus.md) toont de specimens uit de [gouden dataset](gouden-dataset.md) die aan een station gekoppeld zijn. `explorer.py` behandelt die als records zonder markdown-bestand: `fetch` haalt per specimen het GBIF-record en de foto op (via dezelfde cache en dezelfde regels voor licentie en naam als de GBIF-adapter), en `build` kopieert de foto's naar `media/specimen-<gbif>.jpg` en schrijft `explorer.json` met per specimen de foto, alle determinaties en de verzamelaars uit `recordedBy`. Hetzelfde doet `explorer.py` voor de stations uit `route-stations.json`: `fetch` vraagt hun Wikidata-items op (vijftig per verzoek, `wbgetentities`) en haalt van wie een afbeelding heeft (P18) de foto op Commons op; `build` kopieert die naar `media/station-<nummer>.jpg`. Waar de bestanden staan, zeggen `[explorer] gold_path` en `stations_path` in `defaults.toml`.
 
 ## Configuratie
 `pipeline/defaults.toml` staat in git; `pipeline/config.toml` (niet in git) overschrijft wat je wilt. Paden zijn relatief aan de root van de repo.

@@ -6,6 +6,7 @@ Het contract tussen [pipeline](pipeline.md) en [frontend](frontend.md): de pipel
 ```
 frontend/public/data/      ← niet in git
 ├── siboga.json
+├── explorer.json          ← foto's, determinaties en stationsfoto's voor de ontdekmodus, zie ontdekmodus.md
 └── media/                 ← alle plaatjes, ook die van Wikimedia Commons
 ```
 

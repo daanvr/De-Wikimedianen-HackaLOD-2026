@@ -18,3 +18,9 @@ timeout_seconds = 30
 
 [media]
 image_width = 1600
+
+[explorer]
+# The gold dataset; its specimens with a station get their GBIF record and image
+gold_path = "frontend/public/datasets/siboga-goud.json"
+# The stations along the route; those with an image on Wikidata get it in the dive
+stations_path = "frontend/public/datasets/route-stations.json"

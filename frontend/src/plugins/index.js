@@ -4,6 +4,7 @@ import { defineAsyncComponent } from 'vue';
 // under the id from its frontmatter. A plugin gets two props: `argument`
 // (everything after the # in [[IIIF#argument]], or null) and `fullscreen`.
 export const PLUGINS = {
+    deepdive : defineAsyncComponent(() => import('@/explorer/el-explorer.vue')),
     iiif : defineAsyncComponent(() => import('@/plugins/el-plugin-iiif.vue'))
 };
 
