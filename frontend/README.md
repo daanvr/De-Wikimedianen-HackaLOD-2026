@@ -7,7 +7,7 @@ just dev         # http://localhost:5173
 ```
 
 ## Kaartlagen
-`public/map/` bevat de kaartlagen. Ze staan in git en de pipeline raakt ze niet aan.
+`public/map-layers/` bevat de kaartlagen (niet `public/map/`: een map met dezelfde naam als de route `/map` geeft op de server een 403). Ze staan in git en de pipeline raakt ze niet aan.
 
 | Bestand              | Inhoud                                                  | Herkomst                                                                                                                                                     |
 | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -21,7 +21,7 @@ Daarop ligt de historische kaart als hoofdlaag. Die staat niet in git, maar komt
 `scripts/prepare_map.py` snijdt de bronbestanden bij tot de archipel en vereenvoudigt ze:
 
 ```bash
-uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-map> <route.geojson> <ne_10m_land.shp> <ne_50m_land.shp> public/map
+uv run --with shapely --with pyshp scripts/prepare_map.py <natural-earth-map> <route.geojson> <ne_10m_land.shp> <ne_50m_land.shp> public/map-layers
 ```
 
 De route is getekend naar een schets op kleine schaal uit 1904: lees hem als "ongeveer hier", niet als GPS-spoor. De stations staan op hun gedrukte positie; stations zonder positie zijn overgeslagen.
