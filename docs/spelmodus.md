@@ -21,6 +21,7 @@ De disclaimer blijft bereikbaar via de i-knop. In het album staat bij elk specim
 - **Linedoop.** De eerste keer dat je de evenaar oversteekt, komt Neptunus boven met een oorkonde, die je als plaatje kunt bewaren.
 - **Meldingen.** Vangsten, insignes en de bemanning liggen als een stapeltje onderin: de nieuwste bovenop, de oudere steken er net achter uit.
 - **Album.** Tik op het netje. Daar staan je specimens per groep, de stations als stempels en de insignes.
+- **Geen browserzoom.** Zolang het spel open is (`/spel`), zoomt de browser de pagina niet (knijpen, dubbeltikken, Ctrl/Cmd met scrollwiel of trackpad, Ctrl/Cmd met plus, min of 0). Zo raakt niemand het stuurwiel of de ketel kwijt. De kaart van het spel zoomt gewoon. Zie `services/no-zoom.js`.
 
 Het spel heeft geen einde. De doelen zijn het album, de insignes en hoeveel van de zee je ontdekt.
 

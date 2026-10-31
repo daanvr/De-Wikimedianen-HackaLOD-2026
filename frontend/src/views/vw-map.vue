@@ -1,10 +1,14 @@
 <script setup>
     import { defineAsyncComponent, inject, onMounted } from 'vue';
+    import { usePreventZoom } from '@/services/no-zoom.js';
 
     // The explore mode is the explorer itself, full screen; it has its own map on top of the main one
     const ElExplorer = defineAsyncComponent(() => import('@/explorer/el-explorer.vue'));
 
     const store = inject('store');
+
+    // Full screen the controls must stay in view, so the browser may not zoom the page
+    usePreventZoom();
 
     onMounted(() => {
         const settings = {
