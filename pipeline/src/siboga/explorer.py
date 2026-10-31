@@ -20,6 +20,7 @@ from siboga.fetcher import Fetcher
 from siboga.models import Report
 from siboga.sources.commons import fetch_image, read_image
 from siboga.sources.gbif import GBIF_OCCURRENCE_URL, _pick_image
+from siboga.thumbnails import make_thumbnail
 
 ADAPTER = "gbif"
 WIKIDATA_ADAPTER = "wikidata"
@@ -104,6 +105,7 @@ def build_station_images(
         images[number] = {
             "image": {
                 "src": f"media/{name}",
+                "thumb": _station_thumbnail(media_dir / name, number, report),
                 "caption": caption(filename),
                 "credit": image.credit,
                 "license": image.license,
@@ -278,6 +280,20 @@ def _identification(
 def _safe(value: str) -> str:
     """A station number as part of a file name: 225a stays 225a, anything odd becomes a dash."""
     return "".join(character if character.isalnum() else "-" for character in value)
+
+def _station_thumbnail(
+    source: Path,
+    number: str,
+    report: Report
+) -> str | None:
+    """Makes media/thumbs/station-<number>.webp for the photo markers on the map; returns its src."""
+    name = f"thumbs/station-{_safe(number)}.webp"
+    try:
+        make_thumbnail(source, source.parent / name)
+    except (OSError, ValueError) as error:
+        report.warn(f"explorer: no thumbnail for the image of station {number}: {error}")
+        return None
+    return f"media/{name}"
 
 def _same(a: dict, b: dict) -> bool:
     """Same name, and dates that agree as far as both go: 1984 matches 1984-01-01."""

@@ -10,6 +10,14 @@
     const MAX_DEPTH = 7200;
     const MAX_DOTS = 5;
     const MAX_FLIGHTS = 24;
+    // Playing sails this many kilometres per second at 1×; the whole route takes about three minutes
+    const PLAY_KM_PER_SECOND = 90;
+    const PLAY_SPEEDS = [1, 2, 4];
+    // A fling slows down by this factor every 16 ms, and stops below this speed in px per ms
+    const FLING_FRICTION = 0.95;
+    const FLING_STOP = 0.02;
+    // A mouse that moves less than this while pressed has clicked, not dragged
+    const DRAG_THRESHOLD = 4;
     const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
     const emit = defineEmits(['update:position', 'select', 'open-net']);
@@ -44,10 +52,14 @@
     const flights = ref(null);
     const width = ref(390);
     const isBumping = ref(false);
+    const isDragging = ref(false);
+    const isPlaying = ref(false);
+    const speed = ref(PLAY_SPEEDS[0]);
 
     const dots = new Map();
 
     let tween = null;
+    let drag = null;
     let bumpTimer = null;
     let resizeObserver = null;
 
@@ -184,6 +196,26 @@
         return count;
     }
 
+    // Ships slide on after a mouse lets go, as a finger would fling them
+    function fling(velocity) {
+        let last = performance.now();
+        let current = velocity;
+
+        function step(now) {
+            const elapsed = now - last;
+
+            last = now;
+            current *= FLING_FRICTION ** (elapsed / 16);
+            track.value.scrollLeft -= current * elapsed;
+
+            if (Math.abs(current) > FLING_STOP) {
+                tween = requestAnimationFrame(step);
+            }
+        }
+
+        tween = requestAnimationFrame(step);
+    }
+
     function next() {
         const target = props.stations.find((station) => station.km > props.position + 0.5);
 
@@ -192,10 +224,120 @@
         }
     }
 
+    // Touch and trackpads scroll the strip themselves; a mouse grabs it and drags
+    function onPointerDown(event) {
+        stopTween();
+
+        if (event.pointerType !== 'mouse' || event.button !== 0) {
+            return;
+        }
+
+        drag = {
+            startX : event.clientX,
+            startLeft : track.value.scrollLeft,
+            hasMoved : false,
+            samples : [{
+                x : event.clientX,
+                time : event.timeStamp
+            }]
+        };
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp, {
+            once : true
+        });
+    }
+
+    function onPointerMove(event) {
+        const dx = event.clientX - drag.startX;
+
+        if (Math.abs(dx) > DRAG_THRESHOLD) {
+            drag.hasMoved = true;
+            isDragging.value = true;
+        }
+
+        track.value.scrollLeft = drag.startLeft - dx;
+        drag.samples.push({
+            x : event.clientX,
+            time : event.timeStamp
+        });
+        drag.samples = drag.samples.filter((sample) => event.timeStamp - sample.time < 100);
+    }
+
+    function onPointerUp(event) {
+        window.removeEventListener('pointermove', onPointerMove);
+
+        if (drag?.hasMoved) {
+            const first = drag.samples[0];
+            const elapsed = event.timeStamp - first.time;
+
+            // The click that ends a drag must not open a station
+            window.addEventListener('click', swallowClick, {
+                capture : true,
+                once : true
+            });
+            // Released outside the strip there is no click; then the next real click must still work
+            setTimeout(() => window.removeEventListener('click', swallowClick, true));
+
+            if (elapsed > 0) {
+                fling((event.clientX - first.x) / elapsed);
+            }
+        }
+
+        drag = null;
+        isDragging.value = false;
+    }
+
     function onScroll() {
         if (track.value) {
             emit('update:position', Math.max(0, Math.min(props.length, track.value.scrollLeft / PX_PER_KM)));
         }
+    }
+
+    // A mouse wheel turns the strip; sideways scrolling on a trackpad already works by itself
+    function onWheel(event) {
+        stopTween();
+
+        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+            event.preventDefault();
+            track.value.scrollLeft += event.deltaY;
+        }
+    }
+
+    function play() {
+        if (isPlaying.value) {
+            stopTween();
+            return;
+        }
+
+        stopTween();
+
+        // At the end of the route, playing starts again from the beginning
+        if (props.position >= props.length - 1) {
+            track.value.scrollLeft = 0;
+        }
+
+        let last = performance.now();
+        // Sub-pixel steps are lost in scrollLeft, so the exact position is kept here
+        let left = track.value.scrollLeft;
+
+        isPlaying.value = true;
+
+        function step(now) {
+            const elapsed = Math.min(100, now - last);
+
+            last = now;
+            left += PLAY_KM_PER_SECOND * speed.value * PX_PER_KM * elapsed / 1000;
+            track.value.scrollLeft = left;
+
+            if (left >= track.value.scrollWidth - track.value.clientWidth) {
+                isPlaying.value = false;
+                return;
+            }
+
+            tween = requestAnimationFrame(step);
+        }
+
+        tween = requestAnimationFrame(step);
     }
 
     function scrollToKm(km, duration = null) {
@@ -208,7 +350,7 @@
         const time = duration ?? Math.min(1400, 450 + Math.abs(end - start) * 0.25);
         const startedAt = performance.now();
 
-        cancelAnimationFrame(tween);
+        stopTween();
 
         if (!time) {
             track.value.scrollLeft = end;
@@ -237,9 +379,19 @@
         }
     }
 
-    // A finger or wheel on the strip takes over from a running animation
+    // A finger, mouse or wheel on the strip takes over from a running animation, playing included
     function stopTween() {
         cancelAnimationFrame(tween);
+        isPlaying.value = false;
+    }
+
+    function swallowClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    function toggleSpeed() {
+        speed.value = PLAY_SPEEDS[(PLAY_SPEEDS.indexOf(speed.value) + 1) % PLAY_SPEEDS.length];
     }
 
     function xOf(km) {
@@ -283,6 +435,8 @@
 
     onBeforeUnmount(() => {
         cancelAnimationFrame(tween);
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
         clearTimeout(bumpTimer);
         resizeObserver?.disconnect();
     });
@@ -351,9 +505,10 @@
                 class="track"
                 tabindex="0"
                 aria-label="Tijdlijn van de reis, op afstand. Sleep om te varen."
+                v-bind:is-dragging="isDragging ? '' : null"
                 v-on:scroll.passive="onScroll()"
-                v-on:pointerdown="stopTween()"
-                v-on:wheel.passive="stopTween()">
+                v-on:pointerdown="onPointerDown($event)"
+                v-on:wheel="onWheel($event)">
                 <div
                     class="strip"
                     v-bind:style="{ width : `${stripWidth}px` }">
@@ -412,6 +567,35 @@
             <span
                 class="needle"
                 aria-hidden="true"></span>
+
+            <div class="player">
+                <button
+                    type="button"
+                    class="play"
+                    v-bind:aria-label="isPlaying ? 'Pauze' : 'Varen'"
+                    v-bind:aria-pressed="isPlaying"
+                    v-on:click="play()">
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        aria-hidden="true">
+                        <path
+                            v-if="isPlaying"
+                            d="M8 5v14M16 5v14" />
+                        <path
+                            v-else
+                            class="play__triangle"
+                            d="M8 5l11 7-11 7z" />
+                    </svg>
+                </button>
+
+                <button
+                    type="button"
+                    class="speed"
+                    v-bind:aria-label="`Snelheid ${speed} keer, tik voor sneller`"
+                    v-on:click="toggleSpeed()">{{ speed }}×</button>
+            </div>
 
             <button
                 type="button"
@@ -518,6 +702,8 @@
     .track {
         overflow-x: auto;
         overflow-y: hidden;
+        cursor: grab;
+        user-select: none;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-x: contain;
@@ -528,6 +714,14 @@
 
         &:focus-visible {
             outline-offset: -3px;
+        }
+
+        &[is-dragging] {
+            cursor: grabbing;
+
+            * {
+                cursor: grabbing;
+            }
         }
     }
 
@@ -660,6 +854,59 @@
             border-right: 6px solid transparent;
             border-top: 8px solid var(--c-terracotta);
         }
+    }
+
+    // Left, on the part of the route already sailed
+    .player {
+        position: absolute;
+        left: 0.8rem;
+        top: 50%;
+        margin-top: -2.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .play {
+        width: 4.4rem;
+        height: 4.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--c-frame);
+        border-radius: 50%;
+        background: var(--c-paper);
+        color: var(--c-marine);
+        box-shadow: 0 1px 4px rgba(8, 26, 44, 0.2);
+        cursor: pointer;
+
+        path {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .play__triangle {
+            fill: currentColor;
+            stroke-width: 1.4;
+        }
+    }
+
+    .speed {
+        min-width: 3.2rem;
+        height: 2.6rem;
+        padding: 0 0.6rem;
+        border: 1px solid var(--c-frame);
+        border-radius: 1.3rem;
+        background: var(--c-paper);
+        color: var(--c-marine);
+        font-family: var(--font-text);
+        font-size: 1.2rem;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgba(8, 26, 44, 0.2);
+        cursor: pointer;
     }
 
     .next {

@@ -12,6 +12,8 @@
     const DIVE_ZOOM = 13.4;
     const DIVE_PITCH = 80;
     const TOP_STATIONS = 5;
+    // Zoomed out further than this, the photos of the stations would cover the whole map
+    const PHOTO_MIN_ZOOM = 4.5;
     // The compass lies down with the camera, but only partly, so it stays readable
     const COMPASS_TILT = 0.6;
     const EMPTY = {
@@ -48,6 +50,7 @@
         }
     });
 
+    const root = ref(null);
     const container = ref(null);
     const camera = ref({
         pitch : 0,
@@ -69,6 +72,7 @@
     let visitedUpTo = -1;
     let trailKm = -1;
     let topMarkers = [];
+    let photoMarkers = [];
     let labels = [];
     let resizeObserver = null;
 
@@ -196,6 +200,32 @@
         }));
     }
 
+    // A round photo above the stations that have one on Wikidata, as an invitation to tap
+    function createPhotoMarkers() {
+        photoMarkers = props.stations
+            .filter((station) => station.photo)
+            .map((station) => {
+                const element = document.createElement('button');
+                const image = document.createElement('img');
+
+                element.type = 'button';
+                element.className = 'photo-marker';
+                element.title = `Station ${station.nummer}: ${station.photo.caption}`;
+                element.setAttribute('aria-label', `Station ${station.nummer}, foto: ${station.photo.caption}`);
+                image.src = station.photo.thumb;
+                image.alt = '';
+                image.loading = 'lazy';
+                element.appendChild(image);
+                element.addEventListener('click', () => emit('select', station));
+
+                return new maplibregl.Marker({
+                    element,
+                    anchor : 'bottom',
+                    offset : [0, -4]
+                }).setLngLat([station.lon, station.lat]).addTo(map);
+            });
+    }
+
     function createTopMarkers() {
         const top = [...props.stations]
             .filter((station) => station.specimens.length)
@@ -276,7 +306,7 @@
 
     // Under water the drawn ship takes over from the marker; the labels go too
     function setMarkersHidden(hidden) {
-        for (const marker of [boat, ...topMarkers, ...labels]) {
+        for (const marker of [boat, ...topMarkers, ...photoMarkers, ...labels]) {
             marker.getElement().style.visibility = hidden ? 'hidden' : '';
         }
     }
@@ -401,6 +431,10 @@
         frame = null;
     }
 
+    function updatePhotoZoom() {
+        root.value?.toggleAttribute('is-far', map.getZoom() < PHOTO_MIN_ZOOM);
+    }
+
     function updateCamera() {
         const pitch = Math.round(map.getPitch() * 10) / 10;
         const bearing = Math.round(map.getBearing() * 10) / 10;
@@ -507,6 +541,7 @@
         map.on('wheel', stopFollowing);
         map.on('touchstart', stopFollowing);
         map.on('move', updateCamera);
+        map.on('zoomend', updatePhotoZoom);
 
         for (const layer of ['stations', 'stations-finds']) {
             map.on('click', layer, (event) => {
@@ -526,7 +561,9 @@
 
         map.on('load', () => {
             createLabels();
+            createPhotoMarkers();
             createTopMarkers();
+            updatePhotoZoom();
             updatePosition();
         });
     });
@@ -534,7 +571,7 @@
     onBeforeUnmount(() => {
         resizeObserver?.disconnect();
         stopFollowing();
-        [...topMarkers, ...labels].forEach((marker) => marker.remove());
+        [...topMarkers, ...photoMarkers, ...labels].forEach((marker) => marker.remove());
         map?.remove();
         map = null;
     });
@@ -546,7 +583,9 @@
 </script>
 
 <template>
-    <div class="el-explorer-map">
+    <div
+        ref="root"
+        class="el-explorer-map">
         <div
             ref="container"
             class="canvas"></div>
@@ -621,6 +660,48 @@
             font-size: 1rem;
             letter-spacing: 0.24em;
             color: #6E6248;
+        }
+
+        // Round like a pin, with a small point towards the station
+        :deep(.photo-marker) {
+            position: relative;
+            width: 4.2rem;
+            height: 4.2rem;
+            padding: 0;
+            border: 2px solid #FBF8F1;
+            border-radius: 50%;
+            background: var(--c-paper);
+            box-shadow: 0 2px 6px rgba(8, 26, 44, 0.45);
+            cursor: pointer;
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: -7px;
+                margin-left: -5px;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid #FBF8F1;
+            }
+
+            // MapLibre places the marker with an inline transform, so hover changes the border instead
+            &:hover {
+                border-color: var(--c-terracotta);
+            }
+
+            img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                filter: sepia(0.15);
+            }
+        }
+
+        &[is-far] :deep(.photo-marker) {
+            display: none;
         }
 
         :deep(.top-station) {

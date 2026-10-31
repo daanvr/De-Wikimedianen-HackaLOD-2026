@@ -151,7 +151,8 @@ export async function loadExplorer() {
             index,
             photo : photo ? {
                 ...photo,
-                src : mediaUrl(photo.src)
+                src : mediaUrl(photo.src),
+                thumb : mediaUrl(photo.thumb ?? photo.src)
             } : null,
             specimens : [],
             collected : 0

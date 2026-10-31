@@ -1,7 +1,8 @@
 <script setup>
     // The explore mode: a map with the route, a timeline to sail along it, the net that fills up,
     // and a dive into the water column at every station. Also the plugin `deepdive` of the content repo.
-    import { computed, onMounted, ref, shallowRef } from 'vue';
+    import { computed, onMounted, ref, shallowRef, watch } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import { formatDate } from '@/services/format.js';
     import ElExplorerDive from './el-explorer-dive.vue';
     import ElExplorerMap from './el-explorer-map.vue';
@@ -17,6 +18,9 @@
         bottom : 150,
         left : 0
     };
+
+    const route = useRoute();
+    const router = useRouter();
 
     const props = defineProps({
         // A station number, as in [[Diep onder het schip#99]], dives at that station
@@ -40,17 +44,39 @@
     const diveStation = shallowRef(null);
     const selectedSpecimen = shallowRef(null);
     const isNetOpen = ref(false);
+    // What is open (station, net, specimen) when the explorer is not full screen, as in a chapter
+    const localQuery = ref({});
 
+    // Full screen, every open layer is a step in the browser history, so the back button closes it.
+    // In a chapter the explorer keeps it to itself: the page must not jump or fill the history.
+    const usesHistory = computed(() => props.fullscreen);
+    const query = computed(() => usesHistory.value ? route.query : localQuery.value);
     const currentStation = computed(() => data.value?.stations[stationIndexAt(data.value.stations, position.value)] ?? null);
     const dateLabel = computed(() => formatDate(currentStation.value?.datum ?? '1899-03-01'));
 
-    async function dive(station) {
-        if (phase.value !== 'sail') {
+    // The history position when the explorer opened; anything after it was opened here
+    let basePosition = null;
+    let isSyncing = false;
+    let needsSync = false;
+
+    // Closes the top layer: a step back in the history if this explorer made it, otherwise in place
+    function back(fallback) {
+        if (!usesHistory.value) {
+            localQuery.value = fallback;
             return;
         }
 
+        if ((window.history.state?.position ?? 0) > basePosition) {
+            router.back();
+        } else {
+            router.replace({
+                query : fallback
+            });
+        }
+    }
+
+    async function dive(station) {
         selectedSpecimen.value = null;
-        isNetOpen.value = false;
         position.value = station.km;
         phase.value = 'flying';
         await map.value.dive(station);
@@ -58,29 +84,119 @@
         phase.value = 'dive';
     }
 
-    async function onSurface() {
+    function open(next) {
+        if (usesHistory.value) {
+            router.push({
+                query : next
+            });
+        } else {
+            localQuery.value = next;
+        }
+    }
+
+    function openNet() {
+        open({
+            ...query.value,
+            net : '1'
+        });
+    }
+
+    function openStation(station) {
+        if (phase.value === 'sail' || isNetOpen.value) {
+            open({
+                station : station.nummer
+            });
+        }
+    }
+
+    function openSpecimen(specimen) {
+        open({
+            ...query.value,
+            specimen : String(specimen.id)
+        });
+    }
+
+    function closeNet() {
+        const { net, ...rest } = query.value;
+
+        back(rest);
+    }
+
+    function closeSpecimen() {
+        const { specimen, ...rest } = query.value;
+
+        back(rest);
+    }
+
+    function surface() {
+        back({});
+    }
+
+    async function surfaceNow() {
         diveStation.value = null;
         phase.value = 'flying';
         await map.value.surface();
         phase.value = 'sail';
     }
 
-    function selectSpecimen(specimen) {
-        isNetOpen.value = false;
-        selectedSpecimen.value = specimen;
+    // Brings what is open in line with the query; a dive or surfacing finishes before the next change
+    async function sync() {
+        if (!data.value || !map.value) {
+            return;
+        }
+
+        if (isSyncing) {
+            needsSync = true;
+            return;
+        }
+
+        isSyncing = true;
+
+        do {
+            needsSync = false;
+
+            const wanted = query.value;
+            const station = wanted.station ? data.value.stations.find((item) => item.nummer === wanted.station) ?? null : null;
+            const specimenId = Number(wanted.specimen);
+
+            isNetOpen.value = wanted.net === '1';
+            selectedSpecimen.value = wanted.specimen ? data.value.specimens.find((item) => item.id === specimenId) ?? null : null;
+
+            if (diveStation.value && diveStation.value !== station) {
+                await surfaceNow();
+            }
+
+            if (station && diveStation.value !== station) {
+                await dive(station);
+                // A specimen in the query stays open over the dive
+                selectedSpecimen.value = wanted.specimen ? data.value.specimens.find((item) => item.id === specimenId) ?? null : null;
+            }
+        } while (needsSync);
+
+        isSyncing = false;
     }
 
+    watch(query, sync);
+
     onMounted(async () => {
+        basePosition = window.history.state?.position ?? 0;
+
         try {
             data.value = await loadExplorer();
             position.value = data.value.stations[0].km;
 
             const station = props.argument ? data.value.stations.find((item) => item.nummer === props.argument) : null;
 
-            if (station) {
-                // Let the map settle on the route before flying off
-                setTimeout(() => dive(station), 600);
-            }
+            // Let the map settle on the route before flying off
+            setTimeout(() => {
+                if (station && !query.value.station) {
+                    localQuery.value = {
+                        station : station.nummer
+                    };
+                } else {
+                    sync();
+                }
+            }, 600);
         } catch (loadError) {
             console.error(loadError);
             error.value = loadError.message;
@@ -108,7 +224,7 @@
                 v-bind:line="data.line"
                 v-bind:position="position"
                 v-bind:padding="MAP_PADDING"
-                v-on:select="dive($event)" />
+                v-on:select="openStation($event)" />
 
             <p
                 class="date"
@@ -122,31 +238,31 @@
                 v-bind:position="position"
                 v-bind:total="data.total"
                 v-on:update:position="position = $event"
-                v-on:select="dive($event)"
-                v-on:open-net="isNetOpen = true" />
+                v-on:select="openStation($event)"
+                v-on:open-net="openNet()" />
 
             <el-explorer-dive
                 v-if="diveStation"
                 v-bind:key="diveStation.index"
                 v-bind:station="diveStation"
                 v-bind:wikidata-url="data.wikidataUrl"
-                v-on:surface="onSurface()"
-                v-on:select-specimen="selectSpecimen($event)" />
+                v-on:surface="surface()"
+                v-on:select-specimen="openSpecimen($event)" />
 
             <el-explorer-net
                 v-if="isNetOpen"
                 v-bind:stations="data.stations"
                 v-bind:position="position"
                 v-bind:total="data.total"
-                v-on:close="isNetOpen = false"
-                v-on:select-station="dive($event)"
-                v-on:select-specimen="selectSpecimen($event)" />
+                v-on:close="closeNet()"
+                v-on:select-station="openStation($event)"
+                v-on:select-specimen="openSpecimen($event)" />
 
             <el-explorer-specimen
                 v-if="selectedSpecimen"
                 v-bind:key="selectedSpecimen.id"
                 v-bind:specimen="selectedSpecimen"
-                v-on:close="selectedSpecimen = null" />
+                v-on:close="closeSpecimen()" />
         </template>
     </div>
 </template>
