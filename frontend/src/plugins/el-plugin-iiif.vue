@@ -20,15 +20,19 @@
     const hasError = ref(false);
 
     let viewer = null;
+    // Counts the opens, so a manifest that arrives late does not open over a newer one
+    let openCount = 0;
 
     function close() {
+        openCount += 1;
+
         if (viewer) {
             viewer.destroy();
             viewer = null;
         }
     }
 
-    function open() {
+    async function open() {
         close();
         hasError.value = !props.argument;
 
@@ -36,9 +40,24 @@
             return;
         }
 
+        const current = openCount;
+        let tileSource = null;
+
+        try {
+            tileSource = await iiifTileSource(props.argument);
+        } catch (error) {
+            console.warn(error.message);
+            hasError.value = true;
+            return;
+        }
+
+        if (current !== openCount || !container.value) {
+            return;
+        }
+
         viewer = OpenSeadragon({
             element : container.value,
-            tileSources : iiifTileSource(props.argument),
+            tileSources : tileSource,
             showNavigationControl : false,
             crossOriginPolicy : 'Anonymous',
             visibilityRatio : 1,
