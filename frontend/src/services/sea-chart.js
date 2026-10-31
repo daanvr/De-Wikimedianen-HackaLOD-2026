@@ -19,7 +19,7 @@ const EMPTY = {
     features : []
 };
 
-// The research area: the extent of the detailed layers in public/map/. Outside it the
+// The research area: the extent of the detailed layers in public/map-layers/. Outside it the
 // coarse world layers take over, and you can only zoom in to about province level.
 export const LAYER_BOUNDS = [[104, -16], [142, 10]];
 const OUTSIDE_MAX_ZOOM = 6;
@@ -222,11 +222,11 @@ export function seaChartSources(layers) {
         },
         worldBathymetry : {
             type : 'geojson',
-            data : '/map/world-bathymetry.geojson'
+            data : '/map-layers/world-bathymetry.geojson'
         },
         worldLand : {
             type : 'geojson',
-            data : '/map/world-land.geojson'
+            data : '/map-layers/world-land.geojson'
         }
     };
 }

@@ -14,7 +14,7 @@ Wat vastligt en wat nog open staat. Nieuwe beslissingen bovenaan toevoegen.
 | Boven en onder elk hoofdstuk dezelfde navigatie: vorig hoofdstuk, alle hoofdstukken, volgend hoofdstuk | [frontend.md](frontend.md#routes) |
 | Geen aparte stationslaag meer (`stations.geojson` is weg): geen stationskaart in de ontdekmodus en geen stations in de bibliotheek. Een station is voortaan een gewoon record, zoals Station 297. Wel staan de stations als kleine, niet-klikbare puntjes op de route (uit `route.geojson`), om te laten zien waar de Siboga stopte | [frontend.md](frontend.md#routes) |
 | MapLibre GL JS voor de kaart in plaats van Leaflet: vectorkaart met vloeiend zoomen, eigen stijl, geen kaarttegels van buiten | [frontend.md](frontend.md#kaart) |
-| Kaartlagen (diepte, land, route) staan als GeoJSON in `frontend/public/map/`, in git | [frontend.md](frontend.md#structuur) |
+| Kaartlagen (diepte, land, route) staan als GeoJSON in `frontend/public/map-layers/`, in git (niet in `public/map/`, want die naam botst met de route `/map`) | [frontend.md](frontend.md#structuur) |
 | Standaardteksten van de site in `frontend/src/services/messages.js`; berichten uit de content-repo gaan voor | [frontend.md](frontend.md#teksten-i18n) |
 | Bij elke waarde in de frontend data staat uit welke bron die komt (`sources`, `labelSource`, `source` per veld, enz.) | [frontend-data.md](frontend-data.md) |
 | De Wikidata-adapter volgt een vaste lijst identifiers (nu alleen P1006, de NTA) precies één stap; die bron vult alleen aan wat Wikidata leeg laat | [pipeline.md](pipeline.md#gekoppelde-bronnen-via-wikidata) |

@@ -191,6 +191,19 @@ def test_labels_urls_are_sorted_chunked_and_stable():
 def test_matches(uri: str, expected: bool):
     assert WikidataAdapter(image_width = WIDTH).matches(uri) is expected
 
+def test_normalize_full_text_url():
+    english = _statement("https://example.org/book-en")
+    english["qualifiers"] = {"P407": [{"datavalue": {"value": {"id": "Q1860"}}}]}
+    dutch = _statement("https://www.delpher.nl/nl/boeken/view?identifier=1")
+    dutch["qualifiers"] = {"P407": [{"datavalue": {"value": {"id": "Q7411"}}}]}
+    # A Dutch text goes first, whatever the order on Wikidata.
+    claims = {"P953": [english, dutch]}
+    assert _normalize(_entity(claims = claims)).full_text_url == "https://www.delpher.nl/nl/boeken/view?identifier=1"
+    # Without a language the first one counts; anything that is no web address is skipped.
+    claims = {"P953": [_statement("not a url"), _statement("https://a.org"), _statement("https://b.org")]}
+    assert _normalize(_entity(claims = claims)).full_text_url == "https://a.org"
+    assert _normalize(_entity()).full_text_url is None
+
 def test_normalize_coordinates():
     claims = {"P625": [_statement({"latitude": -4.52, "longitude": 129.9, "globe": "http://www.wikidata.org/entity/Q2"})]}
     assert _normalize(_entity(claims = claims)).coordinates == Coordinates(lat = -4.52, lon = 129.9)

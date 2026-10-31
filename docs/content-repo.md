@@ -12,7 +12,7 @@
 | `plugin`  | Een interactief onderdeel, zoals een IIIF-viewer | Alleen frontmatter; de code staat in de frontend                     | `plugins/`  |
 | `i18n`    | De teksten van de site zelf (knoppen, menu) | Elke sleutel in de frontmatter is een bericht                             | `etc/`      |
 
-De pipeline kijkt naar `type` in de frontmatter, niet naar de map. Bestanden zonder `type` (zoals `README.md`) slaat hij over. De titel van een chapter of record is de bestandsnaam zonder `.md`; een page heeft een eigen `title`.
+De pipeline kijkt naar `type` in de frontmatter, niet naar de map. Bestanden zonder `type` (zoals `README.md`) slaat hij over. Ook de map met sjablonen slaat hij over, zodat een sjabloon met `type: record` geen record op de site wordt. Welke map dat is, leest hij uit de instelling van Obsidian (`.obsidian/templates.json`, nu `templates/`). De titel van een chapter of record is de bestandsnaam zonder `.md`; een page heeft een eigen `title`.
 
 ## Frontmatter
 ```yaml

@@ -1,6 +1,7 @@
 <script setup>
     import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
+    import ElChapterEnd from '@/components/el-chapter-end.vue';
     import ElChapterNav from '@/components/el-chapter-nav.vue';
     import ElLayerButton from '@/components/el-layer-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
@@ -105,18 +106,7 @@
                 v-bind:highlight="mention"
                 drop-cap />
 
-            <div
-                class="ornament"
-                aria-hidden="true">
-                <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 10 10">
-                    <path
-                        d="M5 0L6.2 3.8L10 5L6.2 6.2L5 10L3.8 6.2L0 5L3.8 3.8Z"
-                        fill="#A9512F" />
-                </svg>
-            </div>
+            <el-chapter-end v-bind:next="nextChapter" />
 
             <el-chapter-nav
                 v-bind:previous="previousChapter"

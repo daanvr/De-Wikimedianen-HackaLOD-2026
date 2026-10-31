@@ -55,7 +55,6 @@
         }
     ];
 
-    const RULER_DEPTHS = [2, 5, 10, 20, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000];
     const BOTTOM_ROW = 6;
     const PORTHOLES = Array.from({ length : 11 }, (_, i) => 92 + i * 22);
     const WINDOWS = Array.from({ length : 6 }, (_, i) => 138 + i * 20);
@@ -78,7 +77,6 @@
     const air = ref(null);
     const width = ref(390);
     const height = ref(700);
-    const reading = ref(0);
     const openGear = ref(null);
     const seen = ref(new Set());
 
@@ -135,28 +133,6 @@
         }
 
         return d;
-    });
-
-    const ruler = computed(() => {
-        const ticks = [];
-        let lastY = -Infinity;
-
-        for (const z of RULER_DEPTHS) {
-            const y = yAt(z);
-
-            if (z >= depth.value * 0.97 || y - lastY < 60 || y < 70) {
-                continue;
-            }
-
-            ticks.push({
-                z,
-                top : y,
-                label : `${z.toLocaleString('nl-NL')} m`
-            });
-            lastY = y;
-        }
-
-        return ticks;
     });
 
     const zones = computed(() => ZONES
@@ -462,9 +438,6 @@
         }
 
         const airHeight = air.value.offsetHeight;
-        const y = scroller.value.scrollTop + height.value * 0.5 - airHeight;
-
-        reading.value = Math.max(0, Math.min(depth.value, depthAt(y)));
 
         if (isArmed && airHeight - scroller.value.scrollTop > height.value * SURFACE_AT) {
             isArmed = false;
@@ -475,10 +448,6 @@
     function surface() {
         isArmed = false;
         animateScroll(0, Math.min(2600, 900 + scroller.value.scrollTop / 4), () => emit('surface'));
-    }
-
-    function depthAt(y) {
-        return Math.pow(Math.max(0, y) / k.value, 2);
     }
 
     function yAt(z) {
@@ -582,16 +551,6 @@
                         opacity="0.8"
                         v-bind:d="wavesPath" />
                 </svg>
-
-                <div
-                    class="ruler"
-                    aria-hidden="true">
-                    <span
-                        v-for="tick in ruler"
-                        v-bind:key="tick.z"
-                        class="ruler__tick"
-                        v-bind:style="{ top : `${tick.top}px` }">{{ tick.label }}</span>
-                </div>
 
                 <p
                     v-for="zone in zones"
@@ -972,12 +931,6 @@
                 <strong>Station {{ station.nummer }}</strong>
                 {{ dates }}
             </p>
-            <p
-                class="gauge"
-                aria-live="off">
-                <span class="gauge__value">{{ Math.round(reading).toLocaleString('nl-NL') }}</span>
-                <span class="gauge__unit">m</span>
-            </p>
             <button
                 type="button"
                 class="hud__surface"
@@ -1157,35 +1110,6 @@
         color: var(--c-paper);
         text-shadow: 0 1px 2px rgba(8, 26, 44, 0.6);
         white-space: nowrap;
-    }
-
-    .ruler {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 2;
-        pointer-events: none;
-    }
-
-    .ruler__tick {
-        position: absolute;
-        left: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transform: translateY(-50%);
-        font-family: var(--font-header);
-        font-size: 1.1rem;
-        letter-spacing: 0.06em;
-        color: rgba(251, 246, 234, 0.85);
-        white-space: nowrap;
-
-        &::before {
-            content: "";
-            width: 1.2rem;
-            height: 1px;
-            background: currentColor;
-        }
     }
 
     .zone {
@@ -1534,34 +1458,6 @@
             font-weight: 400;
             font-size: 1.7rem;
         }
-    }
-
-    // Below the menu button of the app
-    .gauge {
-        position: absolute;
-        top: 7.6rem;
-        right: 1.6rem;
-        display: flex;
-        align-items: baseline;
-        gap: 0.3rem;
-        margin: 0;
-        padding: 0.4rem 1.2rem 0.6rem;
-        border-radius: 3px;
-        background: rgba(12, 30, 50, 0.55);
-        color: var(--c-paper);
-        font-family: var(--font-header);
-        backdrop-filter: blur(4px);
-    }
-
-    .gauge__value {
-        min-width: 2.6em;
-        text-align: right;
-        font-size: 2.6rem;
-        font-variant-numeric: tabular-nums;
-    }
-
-    .gauge__unit {
-        font-size: 1.4rem;
     }
 
     .hud__surface {

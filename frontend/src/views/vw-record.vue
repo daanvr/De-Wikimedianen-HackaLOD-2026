@@ -108,7 +108,9 @@
                 ? {
                     lon : coordinates.lon,
                     lat : coordinates.lat,
-                    zoom : 7
+                    zoom : 7,
+                    label : name.value,
+                    kicker : t('content_type_single_' + type.value)
                 }
                 : store.map.focus
         });
@@ -178,6 +180,19 @@
             <el-audio
                 v-if="record.audio"
                 v-bind:audio="record.audio" />
+
+            <a
+                v-if="record.fullTextUrl"
+                class="full-text"
+                v-bind:href="record.fullTextUrl"
+                target="_blank"
+                rel="noopener">
+                {{ t('read_full_text') }}
+                <el-icon
+                    name="external"
+                    v-bind:size="20"
+                    v-bind:stroke-width="1.9" />
+            </a>
 
             <el-markdown
                 v-if="record.body"
@@ -250,6 +265,30 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
+    }
+
+    // The same big button as on the home screen
+    .full-text {
+        min-height: 5.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 0 0 2.4rem;
+        padding: 0 1.6rem;
+        background: var(--c-terracotta);
+        color: var(--c-paper);
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.9rem;
+        border-radius: 12px;
+        transition: background 0.15s ease;
+
+        &:hover {
+            background: var(--c-terracotta-dark);
+            color: var(--c-paper);
+        }
     }
 
     // Leaves room for the menu button in the top right corner (see app.vue)

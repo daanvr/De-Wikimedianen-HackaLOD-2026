@@ -13,9 +13,9 @@ Let op: in de template heet het bestand `App.vue`, maar `main.js` importeert `@/
 frontend/
 ├── public/
 │   ├── data/            ← frontend data van de pipeline (niet in git)
-│   └── map/             ← kaartlagen: diepte, land, route (wel in git)
+│   └── map-layers/      ← kaartlagen: diepte, land, route (wel in git)
 ├── scripts/
-│   └── prepare_map.py   ← maakt public/map/ uit de bronbestanden
+│   └── prepare_map.py   ← maakt public/map-layers/ uit de bronbestanden
 └── src/
     ├── main.js
     ├── app.vue          ← laadt de data, houdt de kaart vast, toont de view
@@ -43,12 +43,16 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 | `/map`          | `vw-map.vue`      | Datavisualisatie (de ontdekmodus) schermvullend, zie [ontdekmodus.md](ontdekmodus.md); ook de knop na het laatste hoofdstuk gaat hierheen |
 | `/spel`         | `vw-game.vue`     | Het spel: zelf varen en specimens verzamelen, zie [spelmodus.md](spelmodus.md); in het menu onder de streep |
 
+Onder elk hoofdstuk staat een knop naar het volgende (`el-chapter-end.vue`). Na het laatste hoofdstuk zijn dat twee knoppen: naar de datavisualisatie (`/map`) en naar de bibliotheek.
+
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 
 De paginatitel (`document.title`) is de kop van de view met de naam van de site erachter, zoals "Het schip Hr.Ms. Siboga · De Siboga-Expeditie". Het startscherm, en een item dat niet bestaat, krijgt alleen de naam van de site: het bericht `site_title`. `app.vue` houdt de titel bij met `pageTitle()` uit `src/services/page-title.js`, ook als de data pas na de eerste route binnenkomt.
 
+De tags voor het delen op sociale media (Open Graph en Twitter: titel, beschrijving en `public/social.jpg` van 1200 × 630) staan vast in `index.html`. Scrapers zoals die van Facebook voeren geen JavaScript uit, dus ze moeten in de HTML zelf staan. Daardoor heeft elke pagina dezelfde preview. De URL's zijn absoluut, met `https://siboga.nl`.
+
 ## Kaart
-Eén kaart (`el-map.vue`) blijft staan onder alle views. Views zetten de kaartstand in de store (`store.setMap()`); `app.vue` geeft die als props door. De onderlaag is eigen werk, met vlakke dieptebanden uit `public/map/`, die lokaal staan. Daarop ligt als hoofdlaag de "Kaart van den Trek v. H.M. Siboga 1899-1900" (Stadsarchief Amsterdam), gegeorefereerd met [Allmaps](https://allmaps.org) en live geladen als rastertegels van `allmaps.xyz`. Valt Allmaps uit, dan blijft de eigen onderlaag zichtbaar. De kaart zit niet vast aan de archipel: je kunt over de hele wereld schuiven. Buiten het onderzoeksgebied liggen grove wereldlagen (`world-land.geojson`, `world-bathymetry.geojson`), die MapLibre zelf op de achtergrond laadt, zodat de site er niet op wacht. Daar kun je hooguit tot ongeveer provincieniveau inzoomen (zoom 6); hoe verder je buiten het gebied komt, hoe lager de grens (`limitZoom()` in `el-map.vue`). De route (`public/map/route.geojson`) is één doorlopende lijn van station naar station, met een klein puntje per station; de puntjes zijn niet klikbaar. Zee- en landnamen zijn HTML-labels, zodat er geen glyph-server nodig is; op de historische kaart staan ze niet, want die heeft zijn eigen namen.
+Eén kaart (`el-map.vue`) blijft staan onder alle views. Views zetten de kaartstand in de store (`store.setMap()`); `app.vue` geeft die als props door. De onderlaag is eigen werk, met vlakke dieptebanden uit `public/map-layers/`, die lokaal staan. Daarop ligt als hoofdlaag de "Kaart van den Trek v. H.M. Siboga 1899-1900" (Stadsarchief Amsterdam), gegeorefereerd met [Allmaps](https://allmaps.org) en live geladen als rastertegels van `allmaps.xyz`. Valt Allmaps uit, dan blijft de eigen onderlaag zichtbaar. De kaart zit niet vast aan de archipel: je kunt over de hele wereld schuiven. Buiten het onderzoeksgebied liggen grove wereldlagen (`world-land.geojson`, `world-bathymetry.geojson`), die MapLibre zelf op de achtergrond laadt, zodat de site er niet op wacht. Daar kun je hooguit tot ongeveer provincieniveau inzoomen (zoom 6); hoe verder je buiten het gebied komt, hoe lager de grens (`limitZoom()` in `el-map.vue`). De route (`public/map-layers/route.geojson`) is één doorlopende lijn van station naar station, met een klein puntje per station; de puntjes zijn niet klikbaar. Zee- en landnamen zijn HTML-labels, zodat er geen glyph-server nodig is; op de historische kaart staan ze niet, want die heeft zijn eigen namen.
 
 Rechts zit een knop voor de kaartlaag (`el-layer-button.vue`), in een hoofdstuk en in de ontdekmodus. Elke tik gaat naar de volgende stand: oude kaart, oude kaart half doorzichtig boven de satellietfoto, zeekaart (alleen de eigen onderlaag) en satelliet. De stand staat in de store als `map.base` en blijft staan als je van view wisselt. De satellietfoto is [Esri World Imagery](https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9), live geladen; ook daaronder blijft de eigen onderlaag als vangnet.
 

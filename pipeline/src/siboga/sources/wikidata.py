@@ -28,6 +28,7 @@ DATE_FIELDS = {
     "start_date": "P580"
 }
 DESCRIPTION_LANGUAGES = ("nl", "en")
+DUTCH = "Q7411"
 EARTH = "http://www.wikidata.org/entity/Q2"
 ENTITY_URL = re.compile(r"https?://(www\.)?wikidata\.org/(wiki|entity)/(Q\d+)(?!\w)")
 # Field to properties that refer to an item; the label of that item is shown.
@@ -115,6 +116,7 @@ class WikidataAdapter(SourceAdapter):
             coordinates = _coordinates(_first_value(entity, "P625")),
             description = _text(entity.get("descriptions"), DESCRIPTION_LANGUAGES),
             fields = _fields(entity, labels),
+            full_text_url = _full_text_url(entity),
             image = read_image(image, self.image_width, cache) if isinstance(image, str) else None,
             label = _text(entity.get("labels"), LABEL_LANGUAGES)
         )
@@ -214,6 +216,18 @@ def _fields(entity: dict, labels: dict[str, str]) -> dict[str, list[str]]:
 def _first_value(entity: dict, prop: str) -> object:
     values = _values(entity, prop)
     return values[0] if values else None
+
+def _full_text_url(entity: dict) -> str | None:
+    """The first "full work available at URL" (P953); one in Dutch (language of work, P407) goes first."""
+    urls = []
+    for statement in _best_statements(entity, "P953"):
+        value = statement["mainsnak"].get("datavalue", {}).get("value")
+        if not isinstance(value, str) or not re.match(r"https?://", value):
+            continue
+        qualifiers = statement.get("qualifiers", {}).get("P407", [])
+        languages = [_item_id(qualifier.get("datavalue", {}).get("value")) for qualifier in qualifiers]
+        urls.append((DUTCH not in languages, len(urls), value))
+    return min(urls)[2] if urls else None
 
 def _item_id(value: object) -> str | None:
     if not isinstance(value, dict):

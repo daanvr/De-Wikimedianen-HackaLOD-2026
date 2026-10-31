@@ -43,6 +43,8 @@ _MAP_BOUNDS = {
 }
 _RECORD_LINK = re.compile(r"\]\(/records/(?P<id>[^()\s/?#]+)\)")
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+# Obsidian's setting for the folder with templates; a template is no content.
+_TEMPLATES_SETTINGS = Path(".obsidian") / "templates.json"
 _TRUE_VALUES = {"true", "yes", "1"}
 # A single scan over the text. Code blocks and inline code are matched first,
 # so links and comments inside them stay untouched.
@@ -296,7 +298,7 @@ def plugin_title(item: ContentItem) -> str:
 
 def read_content(content_path: Path, report: Report) -> list[ContentItem]:
     items = []
-    for path in _walk_files(content_path):
+    for path in _content_files(content_path):
         if path.suffix.lower() == ".md":
             item = _read_item(path, content_path, report)
             if item:
@@ -307,7 +309,7 @@ def read_content(content_path: Path, report: Report) -> list[ContentItem]:
 def read_messages(content_path: Path, report: Report) -> dict[str, str]:
     """All messages from files with `type: i18n`: every key in the frontmatter except `type`."""
     messages = {}
-    for path in _walk_files(content_path):
+    for path in _content_files(content_path):
         if path.suffix.lower() != ".md":
             continue
         parsed = _parse(path, content_path)
@@ -392,6 +394,13 @@ def _check_blocks(
             open_blocks.pop()
     for name in open_blocks:
         report.warn(f"::: {name} without a closing :::, shown as plain text", item.path)
+
+def _content_files(content_path: Path) -> list[Path]:
+    """All files under content_path, without the templates folder that Obsidian is set to."""
+    templates = _templates_dir(content_path)
+    if templates is None:
+        return _walk_files(content_path)
+    return [path for path in _walk_files(content_path) if not path.is_relative_to(templates)]
 
 def _deduplicate_ids(items: list[ContentItem], report: Report) -> None:
     """Gives duplicate ids within one kind a suffix -2, -3, ... (in path order)."""
@@ -560,6 +569,17 @@ def _strip_link_title(target: str) -> str:
     if target.startswith("<") and ">" in target:
         return target[1:target.index(">")].strip()
     return _LINK_TITLE.sub("", target)
+
+def _templates_dir(content_path: Path) -> Path | None:
+    try:
+        settings = json.loads((content_path / _TEMPLATES_SETTINGS).read_text(encoding = "utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    folder = str(settings.get("folder") or "").strip().strip("/") if isinstance(settings, dict) else ""
+    if not folder:
+        return None
+    logger.debug(f"skipping templates in {folder}/")
+    return content_path / folder
 
 def _walk_files(content_path: Path) -> list[Path]:
     """All files under content_path, excluding hidden directories and files, sorted."""

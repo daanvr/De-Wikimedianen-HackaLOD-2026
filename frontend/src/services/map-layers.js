@@ -1,8 +1,9 @@
-// Static map layers, prepared by scripts/prepare_map.py and served from public/map/.
+// Static map layers, prepared by scripts/prepare_map.py and served from public/map-layers/.
+// Not public/map/: a folder with the same name as the route /map makes the web server answer /map with a 403.
 const LAYER_FILES = {
-    bathymetry : '/map/bathymetry.geojson',
-    land : '/map/land.geojson',
-    route : '/map/route.geojson'
+    bathymetry : '/map-layers/bathymetry.geojson',
+    land : '/map-layers/land.geojson',
+    route : '/map-layers/route.geojson'
 };
 
 export async function loadMapLayers() {

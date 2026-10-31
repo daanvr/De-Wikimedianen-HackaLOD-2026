@@ -73,6 +73,7 @@
     let map = null;
     let labels = [];
     let chapterMarkers = [];
+    let focusMarker = null;
 
     function applyBase() {
         if (!map || !isReady.value) {
@@ -226,12 +227,9 @@
 
     function createChapterMarker(marker) {
         const element = document.createElement(marker.ref ? 'button' : 'div');
-        const label = document.createElement('span');
 
         element.className = 'map-marker';
-        label.className = 'map-marker__label';
-        label.textContent = marker.label ?? '';
-        element.append(label);
+        element.append(createMarkerLabel(marker.label, marker.kicker));
 
         if (marker.ref) {
             element.type = 'button';
@@ -243,6 +241,24 @@
             element,
             anchor : 'center'
         }).setLngLat([marker.lon, marker.lat]).addTo(map);
+    }
+
+    function createMarkerLabel(text, kicker) {
+        const label = document.createElement('span');
+
+        label.className = 'map-marker__label';
+
+        if (kicker) {
+            const small = document.createElement('small');
+
+            small.className = 'map-marker__kicker';
+            small.textContent = kicker;
+            label.append(small);
+        }
+
+        label.append(text ?? '');
+
+        return label;
     }
 
     function createLabel(label, kind) {
@@ -295,6 +311,33 @@
         chapterMarkers = props.markers.map(createChapterMarker);
     }
 
+    // The place the map zooms in on, e.g. the location of a record, with its name next to it
+    function updateFocusMarker() {
+        if (!map || !isReady.value) {
+            return;
+        }
+
+        focusMarker?.remove();
+        focusMarker = null;
+
+        const focus = props.focus;
+
+        if (focus?.lon === undefined || !focus.label) {
+            return;
+        }
+
+        const element = document.createElement('div');
+
+        element.className = 'map-marker';
+        element.setAttribute('is-focus', '');
+        element.append(createMarkerLabel(focus.label, focus.kicker));
+
+        focusMarker = new maplibregl.Marker({
+            element,
+            anchor : 'center'
+        }).setLngLat([focus.lon, focus.lat]).addTo(map);
+    }
+
     function updateMode() {
         if (!map || !isReady.value) {
             return;
@@ -309,6 +352,7 @@
     watch(() => props.layers, setLayerData);
     watch(() => props.mode, updateMode);
     watch(() => props.markers, updateMarkers);
+    watch(() => props.focus, updateFocusMarker);
     watch(() => [props.focus, props.padding], () => applyFocus(true), {
         deep : true
     });
@@ -339,6 +383,7 @@
             setLayerData();
             updateMode();
             updateMarkers();
+            updateFocusMarker();
             applyFocus(false);
 
             for (const label of SEA_LABELS) {
@@ -358,6 +403,7 @@
         map = null;
         labels = [];
         chapterMarkers = [];
+        focusMarker = null;
     });
 
     defineExpose({
@@ -433,6 +479,36 @@
             text-shadow: 0 0 3px var(--c-paper), 0 0 6px var(--c-paper);
         }
 
+        // The place being looked at: larger, with a ring around it
+        :deep(.map-marker[is-focus]) {
+            z-index: 1;
+            width: 1.4rem;
+            height: 1.4rem;
+            box-shadow: 0 0 0 0.35rem rgba(169, 81, 47, 0.35), 0 1px 3px rgba(8, 26, 44, 0.4);
+        }
+
+        // On a paper card, so it stays readable on top of the old map
+        :deep(.map-marker[is-focus] .map-marker__label) {
+            left: calc(100% + 0.9rem);
+            padding: 0.5rem 0.9rem;
+            border-radius: 0.4rem;
+            background: var(--c-paper);
+            box-shadow: 0 1px 4px rgba(8, 26, 44, 0.35);
+            font-size: 1.7rem;
+            line-height: 1.2;
+            text-shadow: none;
+        }
+
+        :deep(.map-marker__kicker) {
+            display: block;
+            font-family: var(--font-text);
+            font-style: normal;
+            font-size: 1.05rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--c-terracotta);
+        }
+
         :deep(.map-marker[is-link]:hover .map-marker__label),
         :deep(.map-marker[is-link]:focus-visible .map-marker__label) {
             text-decoration: underline;
@@ -448,6 +524,11 @@
             :deep(.map-label--land),
             :deep(.map-marker__label) {
                 color: #F2ECDB;
+            }
+
+            :deep(.map-marker[is-focus] .map-marker__label) {
+                color: var(--c-ink);
+                text-shadow: none;
             }
         }
     }

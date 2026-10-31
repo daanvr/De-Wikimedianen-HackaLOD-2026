@@ -52,6 +52,8 @@
     const usesHistory = computed(() => props.fullscreen);
     const query = computed(() => usesHistory.value ? route.query : localQuery.value);
     const currentStation = computed(() => data.value?.stations[stationIndexAt(data.value.stations, position.value)] ?? null);
+    // Full screen the ship sets sail by itself, unless a link asks for a station or specimen straight away
+    const autoplay = usesHistory.value && !route.query.station && !route.query.specimen;
     const dateLabel = computed(() => formatDate(currentStation.value?.datum ?? '1899-03-01'));
 
     // The history position when the explorer opened; anything after it was opened here
@@ -237,6 +239,7 @@
                 v-bind:length="data.length"
                 v-bind:position="position"
                 v-bind:total="data.total"
+                v-bind:autoplay="autoplay"
                 v-on:update:position="position = $event"
                 v-on:select="openStation($event)"
                 v-on:open-net="openNet()" />

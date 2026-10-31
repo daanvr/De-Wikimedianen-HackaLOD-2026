@@ -134,6 +134,8 @@ class RecordOut(OutputModel):
     audio: AudioOut | None = None
     coordinates: CoordinatesOut | None
     coordinates_source: str | None
+    # A link to read the whole work, from Wikidata (P953)
+    full_text_url: str | None = None
     fields: list[FieldOut]
     links: list[str]
     backlinks: list[str]
@@ -400,6 +402,7 @@ def _build_record(
         audio = _copy_audio(source.audio, own_source, item, cache, media_dir, report),
         coordinates = _coordinates_out(source.coordinates),
         coordinates_source = _source_of(source, "coordinates", own_source),
+        full_text_url = source.full_text_url,
         fields = _build_fields(source, own_source, catalog.profiles.get(record_type or "", []), catalog, item, report),
         links = converted.links,
         backlinks = []

@@ -263,6 +263,7 @@ def test_embed_extension_lowercased(tmp_path: Path):
 
 def test_read_content(items):
     refs = [item.ref for item in items]
+    # sjablonen/Record.md is left out: .obsidian/templates.json makes it the templates folder.
     assert refs == [
         "chapters/hoofdstuk-1-vertrek-uit-amsterdam",
         "chapters/hoofdstuk-2-zonder-plek",
@@ -282,6 +283,13 @@ def test_read_content(items):
     chapter = _by_ref(items)["chapters/hoofdstuk-1-vertrek-uit-amsterdam"]
     assert chapter.kind == ItemKind.CHAPTER
     assert chapter.body.startswith("[[Anna Weber]] was aan boord")
+
+def test_read_content_without_templates_setting(tmp_path: Path):
+    record = tmp_path / "sjablonen" / "Record.md"
+    record.parent.mkdir()
+    record.write_text("---\ntype: record\n---\n", encoding = "utf-8")
+    # Without Obsidian's setting the pipeline does not know it is a template.
+    assert [item.ref for item in read_content(tmp_path, Report())] == ["records/record"]
 
 def test_read_content_duplicates_sorted_by_path(items):
     duplicates = {item.id: item.path for item in items if item.id.startswith("duplicaat")}

@@ -2,7 +2,7 @@
 
 Reads Natural Earth bathymetry shapefiles, Natural Earth land and the route
 drawn from station to station (one LineString per leg), clips them to the
-archipelago, simplifies them and writes small GeoJSON files to public/map/.
+archipelago, simplifies them and writes small GeoJSON files to public/map-layers/.
 The route file also gets one Point per station, so the map can draw the stops.
 Coarse world versions of the land (Natural Earth 50m) and depth layers fill in
 the rest of the world, outside the archipelago. The land files hold the land as polygons and
