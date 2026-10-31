@@ -31,6 +31,7 @@ export const DEFAULT_MESSAGES = {
     content_type_single_publication : 'Publicatie',
     content_type_single_specimen : 'Specimen',
     content_type_single_term : 'Begrip',
+    data_visualisation : 'Datavisualisatie',
     explore_mode : 'Ontdekmodus',
     field_alternate_name : 'Ook bekend als',
     field_archive : 'Archief',
@@ -102,6 +103,7 @@ export const DEFAULT_MESSAGES = {
     share_qr : 'QR-code met de link naar deze pagina',
     share_title : 'Deel deze pagina',
     site_title : 'De Siboga-Expeditie',
+    start_data_visualisation : 'Bekijk de datavisualisatie',
     tagline : 'Een ontdekkingsreis door de Indische wateren, 1899–1900',
     term_read_more : 'Lees meer',
     to_start : 'Terug naar het begin'

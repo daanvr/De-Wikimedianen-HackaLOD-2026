@@ -33,14 +33,14 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 ## Routes
 | URL             | View              | Wat                                                          |
 | --------------- | ----------------- | ------------------------------------------------------------ |
-| `/`             | `vw-home.vue`     | Welkom (`pages/welcome`), knop naar het eerste hoofdstuk     |
+| `/`             | `vw-home.vue`     | Welkom (`pages/welcome`), met twee keuzes: het verhaal (eerste hoofdstuk) of de datavisualisatie (`/map`) |
 | `/chapters`     | `vw-chapters.vue` | Lijst van hoofdstukken, met gelezen en huidig                |
 | `/chapters/:id` | `vw-chapter.vue`  | Verhaalmodus: kaart met markers en tekstvel                  |
 | `/records/:id`  | `vw-record.vue`   | Record met plaatje, velden, bron en "Genoemd in"             |
 | `/pages/:id`    | `vw-page.vue`     | Vaste pagina, zoals `/pages/about`                           |
 | `/plugins/:id`  | `vw-plugin.vue`   | Plugin schermvullend; `?argument=` gaat naar de plugin       |
 | `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype               |
-| `/map`          | `vw-map.vue`      | Ontdekmodus: de verkenner schermvullend, zie [ontdekmodus.md](ontdekmodus.md) |
+| `/map`          | `vw-map.vue`      | Datavisualisatie (de ontdekmodus) schermvullend, zie [ontdekmodus.md](ontdekmodus.md); ook de knop na het laatste hoofdstuk gaat hierheen |
 
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 

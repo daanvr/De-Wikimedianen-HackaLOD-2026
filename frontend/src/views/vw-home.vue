@@ -32,15 +32,28 @@
                 class="text"
                 v-bind:body="welcome?.body" />
 
-            <router-link
-                class="start"
-                v-bind:to="startTarget">
-                {{ t('start_bn') }}
-                <el-icon
-                    name="arrowRight"
-                    v-bind:size="20"
-                    v-bind:stroke-width="1.9" />
-            </router-link>
+            <!-- Two ways in: the story, chapter by chapter, or the data visualisation -->
+            <div class="choices">
+                <router-link
+                    class="start"
+                    v-bind:to="startTarget">
+                    {{ t('start_bn') }}
+                    <el-icon
+                        name="arrowRight"
+                        v-bind:size="20"
+                        v-bind:stroke-width="1.9" />
+                </router-link>
+
+                <router-link
+                    class="start start--data"
+                    to="/map">
+                    {{ t('start_data_visualisation') }}
+                    <el-icon
+                        name="explore"
+                        v-bind:size="20"
+                        v-bind:stroke-width="1.9" />
+                </router-link>
+            </div>
 
             <router-link
                 class="about"
@@ -136,9 +149,15 @@
         }
     }
 
+    .choices {
+        margin-top: 0.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
     // Deliberately not newspaper style: rounded, sentence case
     .start {
-        margin-top: 0.4rem;
         min-height: 5.4rem;
         display: flex;
         align-items: center;
@@ -154,6 +173,18 @@
 
         &:hover {
             background: var(--c-terracotta-dark);
+            color: var(--c-paper);
+        }
+    }
+
+    // The second way in, as clear but quieter: an outline in the colour of the sea
+    .start--data {
+        background: transparent;
+        color: var(--c-marine);
+        box-shadow: inset 0 0 0 2px var(--c-marine);
+
+        &:hover {
+            background: var(--c-marine);
             color: var(--c-paper);
         }
     }

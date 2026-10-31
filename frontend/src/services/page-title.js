@@ -28,7 +28,7 @@ function viewTitle(route, store, t) {
     const keys = {
         chapters : 'chapters',
         library : 'library',
-        map : 'explore_mode'
+        map : 'data_visualisation'
     };
 
     return keys[route.name] ? t(keys[route.name]) : null;

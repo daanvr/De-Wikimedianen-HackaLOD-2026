@@ -32,7 +32,7 @@
             {
                 to : '/map',
                 icon : 'explore',
-                label : t('explore_mode')
+                label : t('data_visualisation')
             }
         ];
     });

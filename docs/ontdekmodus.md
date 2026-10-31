@@ -1,7 +1,9 @@
-# Ontdekmodus
-[Documentatie](README.md) › Ontdekmodus
+# Datavisualisatie (ontdekmodus)
+[Documentatie](README.md) › Datavisualisatie
 
-De ontdekmodus (`/map`, in het menu) laat zien waar de Siboga voer, waar ze iets ophaalde en waar dat nu ligt. Je sleept een tijdlijn en het schip vaart mee over de kaart. Bij elk station met vondsten vliegen die het netje in. Tik je op een station, dan vliegt de kaart erheen, kantelt, en duik je de waterkolom in tot op de bodem. Tik je op een specimen, dan zie je wat het is, wie het determineerde en in welk museum het ligt.
+Op de site heet hij **Datavisualisatie**; in de code en in deze docs heet hij ook de ontdekmodus (`explorer`). Je komt erin via het welkomscherm (naast de knop naar het verhaal), het menu, en de knop na het laatste hoofdstuk.
+
+De datavisualisatie (`/map`) laat zien waar de Siboga voer, waar ze iets ophaalde en waar dat nu ligt. Je sleept een tijdlijn en het schip vaart mee over de kaart. Bij elk station met vondsten vliegen die het netje in. Tik je op een station, dan vliegt de kaart erheen, kantelt, en duik je de waterkolom in tot op de bodem. Tik je op een specimen, dan zie je wat het is, wie het determineerde en in welk museum het ligt.
 
 Dit document legt uit hoe dat werkt, welke data je ziet, waar die vandaan komt en hoe zeker die is.
 

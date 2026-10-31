@@ -48,13 +48,14 @@
                 v-bind:size="18" />
         </router-link>
 
+        <!-- After the last chapter the story goes on in the data -->
         <router-link
             v-else
             class="back-link link link--next"
-            to="/pages/about">
-            {{ t('about_site') }}
+            to="/map">
+            {{ t('data_visualisation') }}
             <el-icon
-                name="info"
+                name="explore"
                 v-bind:size="18" />
         </router-link>
     </nav>
