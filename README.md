@@ -1,43 +1,69 @@
 # De Wikimedianen (HackaLOD 2026)
-Dit is de GitHub repository van team De Wikimedianen tijdens de [HackaLOD 2026, 30-31 oktober 2026, Middelburg](https://netwerkdigitaalerfgoed.nl/hackalod/).
+Dit is de GitHub repository van team De Wikimedianen tijdens de [HackaLOD 2026, 30-31 oktober 2026, Middelburg](https://netwerkdigitaalerfgoed.nl/hackalod/). Het resultaat is de website **[De Siboga-expeditie](https://siboga.nl)**.
 
-Het resultaat van ons hackathon-project is de website **[De Siboga Expeditie](https://siboga.nl)**: het verhaal over een grote Nederlandse zee-expeditie van 1899–1900 naar de Indonesische archipel, verteld met Linked Data uit erfgoed- en natuurhistorische collecties.
+> In 1899 voer de Siboga door de zeeën van Nederlands-Indië, het huidige Indonesië. Aan boord: wetenschappers die alles in en rond de zee onderzochten. Ze vonden enorm veel planten en dieren, veel ervan nog niet beschreven. Hun ontdekkingen veranderden hoe wetenschappers naar de natuur keken. Ontdek wie er meegingen, waar ze kwamen en wat ze vonden.
 
-# Wat we gedaan hebben
-## Het idee
-De Siboga-expeditie bracht tienduizenden dieren en planten naar Nederland. Die liggen nu verspreid over musea in Leiden, Londen, Parijs, Harvard en Trondheim, en de verslagen verschenen tussen 1901 en 1986 in 148 delen. Wij brengen dat verspreide materiaal weer samen: elk verhaal verwijst naar records, en elk record verwijst naar Linked Data elders. De kaart is de ruggengraat. Het model is herbruikbaar voor elk verhaal dat je via punten op een kaart en Linked Data kunt vertellen.
+| | | |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/welkom.jpg" width="230" alt="Welkomstscherm van siboga.nl"> | <img src="docs/screenshots/hoofdstuk.jpg" width="230" alt="Hoofdstuk I, De Siboga vertrekt"> | <img src="docs/screenshots/hoofdstuk-kaart.jpg" width="230" alt="Hoofdstuk met de historische Kaart van den Trek"> |
+| Welkom | Hoofdstuk I: De Siboga vertrekt | De Kaart van den Trek over de moderne kaart |
+| <img src="docs/screenshots/record-portret.jpg" width="230" alt="Record van Anna Weber-van Bosse"> | <img src="docs/screenshots/record-gegevens.jpg" width="230" alt="Gegevens uit Wikidata bij Anna Weber-van Bosse"> | <img src="docs/screenshots/record-bronnen.jpg" width="230" alt="Bronnen en hoofdstukken bij een record"> |
+| Een persoon: Anna Weber-van Bosse | Met gegevens uit Wikidata | Bronnen, en in welke hoofdstukken ze voorkomt |
+| <img src="docs/screenshots/bibliotheek-specimens.jpg" width="230" alt="Bibliotheek, filter specimens"> | <img src="docs/screenshots/bibliotheek-plaatsen.jpg" width="230" alt="Bibliotheek, filter plaatsen"> | <img src="docs/screenshots/datavisualisatie.jpg" width="230" alt="Datavisualisatie met tijdlijn, 24 juni 1899"> |
+| De bibliotheek: specimens | De bibliotheek: plaatsen | De datavisualisatie |
+| <img src="docs/screenshots/spel.jpg" width="230" alt="Het spel: missie van Hugo Nierstrasz"> | | |
+| Het spel | | |
 
-## De website
-- **Verhaal in hoofdstukken.** Over het schip, de bemanning, het verzamelen, de route, de collectie, de vrouwen in en rond de expeditie, wat er na de reis gebeurde en hoe het nu gaat met de Siboga-soorten. Met een verklarend woordenboek.
-- **Records.** Personen, plaatsen, specimens, publicaties, foto's en collecties, elk met een eigen pagina en een verwijzing naar de bron.
-- **Datavisualisatie.** Een kaart met tijdlijn: het schip vaart mee, bij elk station vliegen de vondsten het net in, en je kunt de waterkolom in duiken tot op de bodem. Zie [docs/ontdekmodus.md](docs/ontdekmodus.md).
-- **Statisch en robuust.** Een Python-pipeline haalt alle bronnen vooraf op en een Vue-frontend toont ze. Alles staat lokaal, zodat de site ook werkt als een externe dienst uitvalt. Zie [docs/](docs/README.md).
+# Over deze website
+Deze website is gebouwd in het kader van de [HackaLOD 2026](https://netwerkdigitaalerfgoed.nl/agenda/hackalod-2026/).
 
-## De inhoud
-De teksten staan in de content-repo [hay/siboga-content](https://github.com/hay/siboga-content), geschreven in Obsidian.
-- **Hoofdstukken** met bronvermelding, gecontroleerd tegen de oorspronkelijke bronnen, vooral *Een jaar aan boord H.M. Siboga* van Anna Weber-van Bosse (1904).
-- **Ruim honderd records**, onder meer voor de wetenschappers en de bemanning, inclusief de Indonesische bemanningsleden die alleen Anna bij naam noemt.
-- **Vrouwen in de wetenschap.** Dertien vrouwen schreven mee aan zeventien delen van de Siboga-reeks, van Ethel Barton (1901) tot Marian Pettibone (1970). Ze hebben allemaal een record met een Wikidata-koppeling.
-- **Collecties en platforms** als locatie-records met een Wikidata-URI: Naturalis, het voormalige Zoölogisch Museum Amsterdam, het Museum of Comparative Zoology, het MNHN, het Natural History Museum in Londen, het NTNU Vitenskapsmuseet, de Bijzondere Collecties van de UvA, het Stadsarchief Amsterdam en de KB, plus GBIF, de Biodiversity Heritage Library en WoRMS.
-- **Verklarend woordenboek** gekoppeld aan het [Termennetwerk](https://termennetwerk.netwerkdigitaalerfgoed.nl/) van het NDE: 45 van de ongeveer 80 termen hebben een link naar de Cultuurhistorische Thesaurus, de Art & Architecture Thesaurus, de Indisch Erfgoed Thesaurus of Wikidata.
+## Collecties en databronnen
+Voor deze site zijn onder meer deze databronnen, collecties en literatuur gebruikt. Bronnen met (NDE) staan in het [NDE-datasetregister](https://datasetregister.netwerkdigitaalerfgoed.nl/).
 
-## Data die we open hebben gemaakt
-- **Wikidata.** De 363 stations van de expeditie staan als items op Wikidata, de meeste met coördinaten. Ook bemanningsleden en het scheepsdier, de kasuaris Piet, kregen een item. Daarnaast werken we aan een item per deel van de Siboga-reeks.
-- **Zenodo.** De stationslijst staat als dataset op Zenodo: [doi:10.5281/zenodo.23433434](https://doi.org/10.5281/zenodo.23433434).
-- **Gouden dataset.** 6.714 specimens waarvan zeker is dat ze van de Siboga komen, waarvan 183 ook zeker van één station. Zie [docs/gouden-dataset.md](docs/gouden-dataset.md).
+### Databronnen
+- [Personen uit de Nederlandse Thesaurus van Auteursnamen (NTA)](https://datasetregister.netwerkdigitaalerfgoed.nl/datasets/http://data.bibliotheken.nl/id/dataset/persons) (NDE)
+- [Cultuur-Historische Objecten (Rijksdienst voor het Cultureel Erfgoed)](https://datasetregister.netwerkdigitaalerfgoed.nl/datasets/https://linkeddata.cultureelerfgoed.nl/rce/datacatalog/id/dataset/db6193aa-84af-3edf-90fd-074a0a11248d) (NDE)
+- [Wikidata](https://www.wikidata.org/)
+- [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page)
+- [GBIF](https://www.gbif.org/)
+- [Biodiversity Heritage Library](https://www.biodiversitylibrary.org/)
+- [World Register of Marine Species](https://www.marinespecies.org/)
 
-## Bronnen en Linked Data
-| Bron | Waarvoor | NDE |
-| --- | --- | --- |
-| [Wikidata](https://www.wikidata.org/wiki/Q4201627) | Stations, personen, plaatsen, publicaties, collecties | Termennetwerk |
-| [Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:Siboga_Expedition) | Foto's van de expeditie (Bijzondere Collecties UvA), portretten, platen | |
-| [Nederlandse Thesaurus van Auteursnamen](https://datasetregister.netwerkdigitaalerfgoed.nl/datasets/http://data.bibliotheken.nl/id/dataset/persons) (KB) | Auteurs van de Siboga-reeks | Datasetregister |
-| [Cultuur-Historische Objecten](https://datasetregister.netwerkdigitaalerfgoed.nl/datasets/https://linkeddata.cultureelerfgoed.nl/rce/datacatalog/id/dataset/db6193aa-84af-3edf-90fd-074a0a11248d) (RCE) | Huis te Eerbeek, het huis van de Webers | Datasetregister |
-| [Termennetwerk](https://termennetwerk.netwerkdigitaalerfgoed.nl/) | Termen in het verklarend woordenboek | Termennetwerk |
-| [GBIF](https://www.gbif.org/) | Specimens van Naturalis en andere musea | |
-| [Biodiversity Heritage Library](https://www.biodiversitylibrary.org/) | Gescande delen van de Siboga-reeks | |
-| [WoRMS](https://www.marinespecies.org/) | Geldige soortnamen | |
-| [Stadsarchief Amsterdam](https://archief.amsterdam/) | Archief van het Zoölogisch Museum, historische kaart | |
+Sommige van de foto's en kaarten zijn ontsloten via de [IIIF-standaard](https://iiif.io/).
+
+### Collecties
+- Naturalis Biodiversity Center
+- Zoölogisch Museum Amsterdam
+- Museum of Comparative Zoology
+- Muséum national d'Histoire naturelle
+- Natural History Museum, Londen
+- NTNU Vitenskapsmuseet
+- Bijzondere Collecties van de Universiteit van Amsterdam
+- Stadsarchief Amsterdam
+- KB, nationale bibliotheek
+
+### Literatuur
+- M. Weber (red.), *Siboga-Expeditie* (1901-1986)
+- A. Weber-van Bosse, *Een jaar aan boord H.M. Siboga* (1904)
+- G.M.W. Acda, *Op de deining van de wetenschap. Leven en werk van Gustaaf Frederik Tydeman (1858-1939), zeeofficier en hydrograaf* (2019)
+- E.S. Hutcheson, *The Living Seas: Marine Algae, Symbiosis and the Modern Conception of Coral Reefs 1880-1930* (2023)
+- A. Kieskamp, *In lange rok de koraalriffen op* (2026)
+- *De expeditie der Siboga*, Het Vaderland, 24 juli 1899
+
+### Kaart
+- Diepte en land: Natural Earth
+- Route: Kaart van den Trek v. H.M. Siboga (Weber-van Bosse, 1904)
+- Historische kaart: Stadsarchief Amsterdam
+
+## Team
+<img src="docs/screenshots/team.jpg" width="450" alt="Het team van siboga.nl">
+
+*Het team van siboga.nl tijdens de HackaLOD 2026. Van links naar rechts: Olaf Janssen, Sandra Fauconnier, Daniëlle Jansen, Annika Hendriksen, Hay Kranen en Daan van Ramshorst.*
+
+## Auteursrecht en hergebruik
+De teksten, de code en de eigen graphics van deze website, zoals de kaartlagen, de iconen en de kaart van de paddenstoelkoraal, stellen we vrij beschikbaar onder [CC0 1.0](LICENSE.md). Je mag ze zonder toestemming en zonder naamsvermelding gebruiken, aanpassen en verspreiden. De code staat in deze repository, de teksten in de [content-repo](https://github.com/hay/siboga-content).
+
+Dat geldt niet voor de afbeeldingen die we van elders gebruiken, zoals foto's, platen en kaarten uit erfgoedcollecties. Die zijn publiek domein of hebben een eigen licentie; maker, licentie en bron staan bij elke afbeelding. Ook de logo's van het Netwerk Digitaal Erfgoed en Wikipedia vallen niet onder CC0. Citaten uit oude bronnen, zoals het reisverslag van Anna Weber-van Bosse uit 1904, zijn publiek domein.
 
 # Uitleg en documentatie
 De technische documentatie van de website staat in [docs/](docs/README.md). De codeconventies staan in [CLAUDE.md](CLAUDE.md). Het inhoudelijke overzicht van de expeditie staat in [expeditie/](expeditie/README.md).
