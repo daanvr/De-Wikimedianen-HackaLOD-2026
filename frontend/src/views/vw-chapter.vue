@@ -1,6 +1,7 @@
 <script setup>
     import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
+    import ElChapterEnd from '@/components/el-chapter-end.vue';
     import ElChapterNav from '@/components/el-chapter-nav.vue';
     import ElLayerButton from '@/components/el-layer-button.vue';
     import ElMarkdown from '@/components/el-markdown.vue';
@@ -104,6 +105,8 @@
                 v-bind:lookup-term="store.termForHref"
                 v-bind:highlight="mention"
                 drop-cap />
+
+            <el-chapter-end v-bind:next="nextChapter" />
 
             <el-chapter-nav
                 v-bind:previous="previousChapter"

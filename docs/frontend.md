@@ -42,6 +42,8 @@ Herkomst en licenties van de kaartlagen staan in [frontend/README.md](../fronten
 | `/library`      | `vw-library.vue`  | Bibliotheek: zoeken en filteren op contenttype               |
 | `/map`          | `vw-map.vue`      | Datavisualisatie (de ontdekmodus) schermvullend, zie [ontdekmodus.md](ontdekmodus.md); ook de knop na het laatste hoofdstuk gaat hierheen |
 
+Onder elk hoofdstuk staat een knop naar het volgende (`el-chapter-end.vue`). Na het laatste hoofdstuk zijn dat twee knoppen: naar de datavisualisatie (`/map`) en naar de bibliotheek.
+
 Volledige paden, geen hashes. Links in de tekst die met `/` beginnen, gaan via de router. Op de server is daarvoor één regel nginx nodig ([ontwikkelen.md](ontwikkelen.md#server)).
 
 De paginatitel (`document.title`) is de kop van de view met de naam van de site erachter, zoals "Het schip Hr.Ms. Siboga · De Siboga-Expeditie". Het startscherm, en een item dat niet bestaat, krijgt alleen de naam van de site: het bericht `site_title`. `app.vue` houdt de titel bij met `pageTitle()` uit `src/services/page-title.js`, ook als de data pas na de eerste route binnenkomt.
