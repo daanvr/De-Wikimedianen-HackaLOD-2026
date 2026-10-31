@@ -3,8 +3,8 @@
 
     defineProps({
         // peek: folded in (mobile, while the boat sails), half: the lower half (mobile),
-        // screen: the whole screen, also on desktop. On desktop, peek and half are a
-        // panel on the left.
+        // screen: the whole screen on mobile. On desktop, every state is the same
+        // panel on the left, so the library lies where the chapter was.
         state : {
             type : String,
             default : 'half'
@@ -50,6 +50,8 @@
         background: var(--c-paper);
         border-radius: 16px 16px 0 0;
         box-shadow: var(--shadow-sheet);
+        // Clips the scrolling body, whose scrollbar would otherwise cover the rounded corners
+        overflow: hidden;
         pointer-events: auto;
         transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
         z-index: 20;
@@ -72,13 +74,13 @@
             }
         }
 
-        // After the desktop rules, so the whole screen also wins there
-        &[state="screen"] {
-            inset: 0;
-            width: auto;
-            border-radius: 0;
-            box-shadow: none;
-            transition: none;
+        @include mixins.respond-until(900px) {
+            &[state="screen"] {
+                inset: 0;
+                border-radius: 0;
+                box-shadow: none;
+                transition: none;
+            }
         }
     }
 
@@ -92,13 +94,7 @@
             padding-top: 2rem;
         }
 
-        // A readable column in the middle of a wide screen
-        [state="screen"] > & {
-            padding-left: max(var(--gutter), calc((100% - 72rem) / 2));
-            padding-right: max(var(--gutter), calc((100% - 72rem) / 2));
-        }
-
-        @include mixins.respond-until(899px) {
+        @include mixins.respond-until(900px) {
             [state="peek"] > & {
                 overflow: hidden;
             }

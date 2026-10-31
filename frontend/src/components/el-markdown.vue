@@ -139,6 +139,10 @@
 </template>
 
 <style lang="scss" scoped>
+    $icon-anchor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='5' r='2'/%3E%3Cpath d='M12 7v13M8.5 10h7M5 13.5a7 7 0 0 0 14 0M5 13.5l-1.5 1.5M5 13.5l1.8 1M19 13.5l1.5 1.5M19 13.5l-1.8 1'/%3E%3C/svg%3E");
+    $icon-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4.5h11a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2z'/%3E%3Cpath d='M5 18a2 2 0 0 1 2-2h11'/%3E%3Cpath d='M9 8.5h6M9 11.5h4'/%3E%3C/svg%3E");
+    $icon-item: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l7-4 7 4v8l-7 4-7-4z'/%3E%3Cpath d='M5 8l7 4 7-4M12 12v8'/%3E%3C/svg%3E");
+    $icon-location: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z'/%3E%3Ccircle cx='12' cy='10' r='2.3'/%3E%3C/svg%3E");
     $icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='3.5'/%3E%3Cpath d='M5 20c0-4 3.1-6.5 7-6.5s7 2.5 7 6.5'/%3E%3C/svg%3E");
     $icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
     $icon-specimen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M12 12.5a1.2 1.2 0 1 1 1.2 1.2A2.6 2.6 0 0 1 10.6 11a4 4 0 0 1 4-4 5.3 5.3 0 0 1 5.3 5.3 6.7 6.7 0 0 1-6.7 6.7A8 8 0 0 1 5.2 11 9.3 9.3 0 0 1 9 3.6'/%3E%3C/svg%3E");
@@ -265,13 +269,25 @@
             mask-image: $icon-image;
         }
 
+        :deep(a[data-kind="item"])::after {
+            mask-image: $icon-item;
+        }
+
+        :deep(a[data-kind="location"])::after {
+            mask-image: $icon-location;
+        }
+
+        :deep(a[data-kind="publication"])::after {
+            mask-image: $icon-book;
+        }
+
+        :deep(a[data-kind="expedition"])::after {
+            mask-image: $icon-anchor;
+        }
+
         :deep(a[data-kind="chapter"])::after,
         :deep(a[data-kind="plugin"])::after,
         :deep(a[data-kind="internal"])::after,
-        :deep(a[data-kind="item"])::after,
-        :deep(a[data-kind="location"])::after,
-        :deep(a[data-kind="expedition"])::after,
-        :deep(a[data-kind="article"])::after,
         :deep(a[data-kind="record"])::after {
             display: none;
         }

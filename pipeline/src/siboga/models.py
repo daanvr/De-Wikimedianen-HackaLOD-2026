@@ -7,12 +7,12 @@ import json
 from loguru import logger
 
 class ContentType(Enum):
-    ARTICLE = "article"
     EXPEDITION = "expedition"
     ITEM = "item"
     LOCATION = "location"
     MEDIA = "media"
     PERSON = "person"
+    PUBLICATION = "publication"
     SPECIMEN = "specimen"
 
 class FieldType(Enum):

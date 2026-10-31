@@ -26,7 +26,7 @@ contenttype: person
 
 - `uri`: precies één bron. Er is geen veld voor overige bronnen: die zetten we op Wikidata, of als gewone externe link in de lopende tekst. Een paar identifiers op Wikidata volgt de pipeline wel, zoals het NTA-ID (P1006) van een persoon; zie [gekoppelde bronnen](pipeline.md#gekoppelde-bronnen-via-wikidata). Wil je bij een persoon ook de naamvarianten en werken uit de NTA, voeg dan op Wikidata P1006 toe. Aan de markdown verandert niets.
 - `description_nl`: optioneel; gaat voor de beschrijving uit de bron. De site is voorlopig alleen Nederlands, dus de pipeline leest alleen `_nl`-velden.
-- `contenttype`: nu `person`, `item`, `media`, `location`, `article`, `expedition` of `specimen`. Het contenttype bepaalt welke velden het record op de site toont, niet de bron: een Wikidata-item over een persoon toont geboortedatum en beroep, een Wikidata-item over een soort de wetenschappelijke naam en familie. Welke velden bij welk contenttype horen, staat in [pipeline/fields.toml](../pipeline/fields.toml).
+- `contenttype`: nu `person`, `item`, `media`, `location`, `publication`, `expedition` of `specimen`. Het contenttype bepaalt welke velden het record op de site toont, niet de bron: een Wikidata-item over een persoon toont geboortedatum en beroep, een Wikidata-item over een soort de wetenschappelijke naam en familie. Welke velden bij welk contenttype horen, staat in [pipeline/fields.toml](../pipeline/fields.toml).
 
 ```yaml
 ---

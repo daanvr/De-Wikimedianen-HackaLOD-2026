@@ -15,7 +15,7 @@
         media : 'image',
         location : 'location',
         item : 'item',
-        article : 'book',
+        publication : 'book',
         expedition : 'anchor'
     };
 
@@ -77,8 +77,15 @@
         };
     }).filter(Boolean));
 
-    // Back to the library; through the history if we came from there, so it returns to the same spot
+    // Without history (a shared link) there is nowhere to go back to
+    const hasHistory = Boolean(window.history.state?.back);
+
     function goBack() {
+        router.back();
+    }
+
+    // Through the history if we came from the library, so it returns to the same spot
+    function openLibrary() {
         if (window.history.state?.back?.startsWith('/library')) {
             router.back();
         } else {
@@ -120,11 +127,22 @@
             state="screen">
             <div class="bar">
                 <button
+                    v-if="hasHistory"
                     type="button"
                     class="back-link"
                     v-on:click="goBack()">
                     <el-icon
                         name="arrowLeft"
+                        v-bind:size="18" />
+                    {{ t('back') }}
+                </button>
+
+                <button
+                    type="button"
+                    class="back-link bar__library"
+                    v-on:click="openLibrary()">
+                    <el-icon
+                        name="book"
                         v-bind:size="18" />
                     {{ t('library') }}
                 </button>
@@ -224,6 +242,8 @@
 </template>
 
 <style lang="scss" scoped>
+    @use "../../node_modules/valenski/mixins";
+
     .vw-record {
         position: absolute;
         inset: 0;
@@ -234,7 +254,17 @@
     .bar {
         display: flex;
         align-items: center;
+        gap: 1.6rem;
         min-height: 4.8rem;
+
+        // Fullscreen on mobile: leaves room for the menu button (see app.vue)
+        @include mixins.respond-until(900px) {
+            padding-right: 6.4rem;
+        }
+    }
+
+    .bar__library {
+        margin-left: auto;
     }
 
     .type-row {

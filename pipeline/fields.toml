@@ -13,7 +13,7 @@ person = ["birth_date", "birth_place", "death_date", "death_place", "occupation"
 specimen = ["scientific_name", "vernacular_name", "taxon_rank", "family", "order", "parent_taxon"]
 media = ["creator", "created", "date_description", "collection", "archive"]
 item = ["author", "publication_date", "inception", "publisher", "published_in", "collection"]
-article = ["author", "publication_date", "published_in"]
+publication = ["author", "publication_date", "published_in"]
 expedition = ["start_date", "end_date", "location", "participant"]
 location = ["country", "location"]
 

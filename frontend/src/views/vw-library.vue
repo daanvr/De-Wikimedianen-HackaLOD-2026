@@ -5,14 +5,14 @@
     import ElSheet from '@/components/el-sheet.vue';
     import { mediaUrl } from '@/services/data.js';
 
-    const TYPE_ORDER = ['person', 'specimen', 'media', 'item', 'article', 'location', 'expedition', 'other'];
+    const TYPE_ORDER = ['person', 'specimen', 'media', 'item', 'publication', 'location', 'expedition', 'other'];
     const TYPE_ICONS = {
         person : 'person',
         specimen : 'specimen',
         media : 'image',
         location : 'location',
         item : 'item',
-        article : 'book',
+        publication : 'book',
         expedition : 'anchor',
         other : 'info'
     };
