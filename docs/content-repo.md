@@ -124,5 +124,20 @@ Meer plaatjes in een galerij (een carrousel om doorheen te bladeren) zet je tuss
 - Obsidian kent `:::` niet en toont die regels als gewone tekst, met de plaatjes ertussen. Op de site wordt het een galerij.
 - Zonder afsluitende `:::` waarschuwt de pipeline en toont de site de plaatjes los.
 
+## Inklapblokken
+Tekst die niet iedereen hoeft te lezen, zoals een lange lijst bronnen, zet je in een inklapblok: tussen `:::details` met het kopje erachter, en `:::`. Op de site staat dan alleen het kopje; klik je erop, dan klapt de rest open.
+
+```markdown
+:::details Bekijk alle bronnen
+- G.M.W. Acda, [[Op de deining van de wetenschap]] (2019), blz. 149-158.
+- [Expeditie Online van Naturalis](https://expeditieonline.naturalis.nl/nl/expeditie/siboga-expeditie).
+:::
+```
+
+- In een inklapblok werkt alle gewone markdown: lijsten, links, wikilinks, plaatjes.
+- Een galerij in een inklapblok mag, maar wordt daar een rij losse plaatjes met bijschrift, geen carrousel. Een plugin wordt er een gewone link.
+- Net als bij een galerij: `:::details` en `:::` aan het begin van de regel, en zonder afsluitende `:::` waarschuwt de pipeline en toont de site het als gewone tekst. Obsidian toont de regels met `:::` als gewone tekst.
+- Zonder kopje (alleen `:::details`) toont de browser zijn eigen woord, zoals "Details".
+
 ## Onaffe content
 Er staan nu al lege bestanden, `uri`'s die geen URL zijn (`wikidata`), en links naar bestanden die niet bestaan. De pipeline slaat zoiets over, logt een waarschuwing met de bestandsnaam en gaat door.

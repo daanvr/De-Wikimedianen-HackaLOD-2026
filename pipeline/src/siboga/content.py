@@ -18,8 +18,9 @@ _FRONTMATTER = re.compile(
     r"\A﻿?---[ \t]*\n(.*?)^(?:---|\.\.\.)[ \t]*(?:\n|\Z)",
     re.DOTALL | re.MULTILINE
 )
-_GALLERY_CLOSE = re.compile(r"^:::[ \t]*$")
-_GALLERY_OPEN = re.compile(r"^:::[ \t]*gallery[ \t]*$")
+_BLOCK_CLOSE = re.compile(r"^:::[ \t]*$")
+# ::: gallery and :::details Summary; the frontend makes a gallery and a collapsible block of them.
+_BLOCK_OPEN = re.compile(r"^:::[ \t]*(gallery[ \t]*$|details\b)")
 _I18N_TYPE = "i18n"
 _KINDS = {
     "chapter": ItemKind.CHAPTER,
@@ -204,7 +205,7 @@ def convert_body(
 ) -> ConvertedBody:
     converter = _BodyConverter(index = index, item = item, report = report)
     markdown = _TOKEN.sub(converter.replace, item.body)
-    _check_galleries(markdown, item, report)
+    _check_blocks(markdown, item, report)
     return ConvertedBody(
         attachments = converter.attachments,
         links = converter.links,
@@ -296,14 +297,17 @@ def slugify(text: str) -> str:
     text = "".join(char for char in text if not unicodedata.combining(char))
     return re.sub(r"[^a-z0-9]+", "-", text).strip("-") or "item"
 
-def _check_galleries(
+def _check_blocks(
     markdown: str,
     item: ContentItem,
     report: Report
 ) -> None:
-    """Warns about a `::: gallery` without its closing `:::`; the frontend then shows the images as plain text."""
+    """Warns about a `::: gallery` or `:::details` without its closing `:::`; the frontend then shows it as plain text.
+
+    A details block can hold a gallery, but a gallery can hold no other block.
+    """
     fence = None
-    is_open = False
+    open_blocks = []
     for line in markdown.splitlines():
         match = _FENCE_LINE.match(line)
         if match:
@@ -315,14 +319,16 @@ def _check_galleries(
             continue
         if fence is not None:
             continue
-        if _GALLERY_OPEN.match(line):
-            if is_open:
-                report.warn("::: gallery inside a gallery that was not closed with :::", item.path)
-            is_open = True
-        elif _GALLERY_CLOSE.match(line) and is_open:
-            is_open = False
-    if is_open:
-        report.warn("::: gallery without a closing :::, shown as plain text", item.path)
+        block = _BLOCK_OPEN.match(line)
+        if block:
+            name = "gallery" if block.group(1).startswith("gallery") else "details"
+            if "gallery" in open_blocks:
+                report.warn(f"::: {name} inside a gallery that was not closed with :::", item.path)
+            open_blocks.append(name)
+        elif _BLOCK_CLOSE.match(line) and open_blocks:
+            open_blocks.pop()
+    for name in open_blocks:
+        report.warn(f"::: {name} without a closing :::, shown as plain text", item.path)
 
 def _deduplicate_ids(items: list[ContentItem], report: Report) -> None:
     """Gives duplicate ids within one kind a suffix -2, -3, ... (in path order)."""

@@ -374,3 +374,18 @@ def test_convert_gallery_unclosed(index):
     converted, report = _convert("```\n::: gallery\n```\n", index)
     assert report.warnings == []
 
+def test_convert_details(index):
+    body = ":::details Bekijk alle bronnen\n- [[Foto van Anna.png]]\n\n::: gallery\n![[Foto van Anna.png]]\n:::\n:::\n"
+    converted, report = _convert(body, index)
+    assert converted.markdown.startswith(":::details Bekijk alle bronnen\n- ")
+    assert converted.markdown.endswith(":::\n:::\n")
+    assert report.warnings == []
+
+def test_convert_details_unclosed(index):
+    converted, report = _convert(":::details Bronnen\n- Acda (2019)\n", index)
+    assert len(report.warnings) == 1
+    assert "details without a closing" in report.warnings[0]
+    converted, report = _convert(":::details Bronnen\n::: gallery\n![[Foto van Anna.png]]\n:::\n", index)
+    assert len(report.warnings) == 1
+    assert "details without a closing" in report.warnings[0]
+

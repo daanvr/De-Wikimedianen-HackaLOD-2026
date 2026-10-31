@@ -2,6 +2,13 @@ import { Marked, Parser } from 'marked';
 import { mediaUrl } from '@/services/data.js';
 import { MANIFEST_URL } from '@/services/iiif.js';
 
+// :::details Summary ... ::: (not indented) is a collapsible block. Its closing
+// ::: is the first one that doesn't close a ::: block nested inside it.
+const DETAILS_OPEN = /^:::[ \t]*details\b[ \t]*(.*)$/;
+const DETAILS_START = /^:::[ \t]*details\b/m;
+const FENCE_CLOSE = /^:::[ \t]*$/;
+const FENCE_OPEN = /^:::[ \t]*\S/;
+
 // ::: gallery ... ::: (not indented). Without the closing ::: it is no gallery,
 // and the images inside are shown as ordinary images.
 const GALLERY = /^:::[ \t]*gallery[ \t]*\n([\s\S]*?)\n:::[ \t]*(?:\n+|$)/;
@@ -40,6 +47,61 @@ function figureTokens(token) {
         caption : caption ?? null
     };
 }
+
+// The lines of the ::: block at the start of src, including its opening and
+// closing line, or null if it isn't closed
+function fencedLines(src) {
+    const lines = src.split('\n');
+    let depth = 0;
+
+    for (const [index, line] of lines.entries()) {
+        if (FENCE_CLOSE.test(line)) {
+            depth -= 1;
+        } else if (FENCE_OPEN.test(line)) {
+            depth += 1;
+        }
+
+        if (depth === 0) {
+            return lines.slice(0, index + 1);
+        }
+    }
+
+    return null;
+}
+
+const detailsExtension = {
+    name : 'details',
+    level : 'block',
+    start(src) {
+        return src.match(DETAILS_START)?.index;
+    },
+    tokenizer(src) {
+        const opening = DETAILS_OPEN.exec(src.split('\n', 1)[0]);
+        const lines = opening ? fencedLines(src) : null;
+
+        if (!lines) {
+            return undefined;
+        }
+
+        const block = lines.join('\n');
+        const token = {
+            type : 'details',
+            raw : block + src.slice(block.length).match(/^\n*/)[0],
+            summary : this.lexer.inlineTokens(opening[1].trim()),
+            tokens : []
+        };
+
+        this.lexer.blockTokens(lines.slice(1, -1).join('\n'), token.tokens);
+
+        return token;
+    },
+    // Without a summary the browser shows its own label
+    renderer(token) {
+        const summary = token.summary.length ? `<summary>${this.parser.parseInline(token.summary)}</summary>` : '';
+
+        return `<details class="details">${summary}<div class="details-body">${this.parser.parse(token.tokens)}</div></details>\n`;
+    }
+};
 
 const galleryExtension = {
     name : 'gallery',
@@ -81,7 +143,7 @@ function createMarked(lookupKind, zoomLabel) {
     });
 
     marked.use({
-        extensions : [galleryExtension],
+        extensions : [detailsExtension, galleryExtension],
         renderer : {
             image({ href, title, text }) {
                 const src = escapeHtml(mediaUrl(href));

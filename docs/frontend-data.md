@@ -170,9 +170,10 @@ Sleutels in camelCase.
 - `[[IIIF#https://…/default.jpg]]` wordt `[IIIF](/plugins/iiif?argument=https%3A%2F%2F…)`: het argument komt URL-gecodeerd in `argument`. Een alinea met alleen zo'n link toont de frontend als de plugin zelf;
 - een link naar iets wat niet bestaat wordt gewone tekst, met een waarschuwing.
 
-Twee schrijfwijzen gaan ongewijzigd door; de frontend maakt ze op ([content-repo.md](content-repo.md#plaatjes-bijschriften-en-galerijen)):
+Drie schrijfwijzen gaan ongewijzigd door; de frontend maakt ze op ([content-repo.md](content-repo.md#plaatjes-bijschriften-en-galerijen)):
 - een plaatje met direct eronder een regel helemaal in cursief wordt een plaatje met bijschrift;
-- `::: gallery` ... `:::` wordt een galerij. Dat is geen standaard-markdown: een andere parser toont de twee regels als tekst, met de plaatjes ertussen.
+- `::: gallery` ... `:::` wordt een galerij. Dat is geen standaard-markdown: een andere parser toont de twee regels als tekst, met de plaatjes ertussen;
+- `:::details Tekst` ... `:::` wordt een inklapblok (`<details>`) met `Tekst` als kopje. Ook dat is geen standaard-markdown.
 
 ## Wijzigen
 Pas bij een wijziging dit document, de Pydantic-modellen in `pipeline/src/siboga/build.py` en de voorbeeld-JSON samen aan. `uv run siboga check` controleert de uitvoer tegen die modellen. Breekt het de frontend, dan gaat `schemaVersion` omhoog; dat is nu 3, omdat `location` van een chapter (een ref) vervangen is door `coordinates`.
